@@ -1,318 +1,87 @@
-# GetCNPJ Community — preparação de release 1.1.0
+# GetCNPJ Community — preparação final da release 1.1.0
 
-## H03 — preparada para homologação manual no SysEmpresa — 2026-11-24
+Estado em **2026-11-24: preparação local concluída; publicação pendente de autorizações separadas**. Nenhum pacote definitivo foi gerado. Estas alterações documentais ainda precisam de revisão, commit aprovado e CI antes da geração final em árvore limpa. Versão mantida em1.1.0; sem código funcional/dependências/frameworks/CI/licença alterados, consultas cadastrais novas ou funcionalidades1.2.0.
 
-Mantenedor confirmou a conclusão H02.1, com revisão ChatGPT de relatórios/metadados e [GitHub Actions45470735591](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45470735591), commit `a069e0decc0163f78f9788d204189e4b0d8055e0`. Não equivale a integração concluída no SysEmpresa.
+## H03 concluída e evidência manual do SysEmpresa
 
-**Candidato H03 pronto para instalação manual**, não publicado. Árvore inicial limpa em develop/HEAD aprovado. Antes de editar documentos, `git archive` exportou essa revisão para `artifacts/H03/approved-source`; restore/build/test/pack executados nessa cópia, com RepositoryCommit/SourceRevisionId explícitos e posteriores verificações do conteúdo. Nenhum código da biblioteca/versão/dependência/framework/licença/workflow alterado. SysEmpresa não foi lido, modificado ou executado.
+Mantenedor informou revisão ChatGPT e [GitHub Actions45475015057](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45475015057), commit `2e676ae4055cff9ab0497f2d644b8c2c305c7f0b`. Também confirmou que **instalou, compilou e testou GetCNPJ.Community1.1.0 no SysEmpresa, funcionando normalmente, com percepção de melhoria em relação à biblioteca original**.
 
-| Evidência do candidato H03 | Valor |
+Trata-se de **relato de homologação manual pelo mantenedor**. Não foram informados testes individuais, configuração de ambiente, hash do pacote instalado ou métricas. Não se afirma ganho mensurado de desempenho, aprovação de cada fluxo/controle/campo fiscal, ou nova consulta por provedor. O agente não executou nem modificou o SysEmpresa. Os24 cenários por consumidor e ensaio WinForms detalhados da H03 são evidência independente, não detalhamento presumido desse relato. H03 concluída nesse escopo; a distribuição pública é etapa distinta.
+
+## Conclusão das tarefas nos seus escopos
+
+| Tarefa | Estado e alcance |
 |---|---|
-| Caminho relativo | `artifacts/H03/packages/GetCNPJ.Community.1.1.0.nupkg` |
-| Caminho absoluto | `D:\Meus Projetos\GetCNPJ\artifacts\H03\packages\GetCNPJ.Community.1.1.0.nupkg` |
-| Tamanho | **234174 bytes** |
-| SHA-256 | **`3DD07A96B6B29411B554496C79E1064B45AEEEBDB668AA324A9699B35F5A34FE`** |
-| PackageId / Version | GetCNPJ.Community /1.1.0 |
-| RepositoryCommit no nuspec | `a069e0decc0163f78f9788d204189e4b0d8055e0` |
-| InformationalVersion nas cinco DLLs | `1.1.0+a069e0decc0163f78f9788d204189e4b0d8055e0` |
-| AssemblyName / AssemblyVersion / FileVersion | GetCNPJ /1.0.0.0 /1.1.0.0 |
-| Assets | netstandard2.0, net48, net481, net8.0, net9.0 |
+| T01 | Concluída: infraestrutura de testes/CI, sem publicação automática; cobertura ampliada nas etapas seguintes |
+| T02 | Concluída: validação/normalização/formatação numérica/alfanumérica e DVs; validade local não comprova cadastro |
+| T03 | Concluída: aquisição atômica no limiter embutido, segurança concorrente e compatibilidade externa; par legado continua não atômico |
+| T04 | Concluída: timeout/fallback/cancelamento, preservando prioridades, falhas e consultas dirigidas sem fallback/retry |
+| T05 | Concluída: recursos HTTP, propriedade/reutilização/Dispose e testes simulados |
+| T06 | Concluída: dependências/contratos/mapeamentos/fontes; revisão externa foi parcial, revisão técnica local complementada na H01; limites documentais preservados |
+| T07 | Concluída como identidade/preparação/pack/inspeção/consumidores; não inclui publicação, candidatos preservados |
+| H01 | Concluída: nulabilidade/qualidade e revisão técnica local T06, zero avisos sem supressão; contratos CLR preservados |
+| H02 | Concluída: console manual e quatro numéricas dirigidas autorizadas; complemento separado H02.1 |
+| H02.1 | Concluída: seis consultas complementares autorizadas, operação alfanumérica pontual nos quatro serviços; transição real após falha não observada |
+| H03 | Concluída: candidato do commit aprovado/consumidores/guia, revisão/CI informados e confirmação manual geral do mantenedor |
 
-O pacote histórico T07 em `artifacts/packages` continua com229798bytes/hash04F2FB...44EB6 e **não deve ser instalado para esta homologação**. Nenhum arquivo foi substituído nessa pasta. O nupkg H03 contém os documentos exatos do commit aprovado; menções à T07 no README/CHANGELOG são históricas. Este relatório H03, INTEGRATION.md e ferramentas de validação posteriores não estão no nupkg, pois não pertencem à revisão aprovada e a lista de distribuição é explícita. Não adicionar documentos locais silenciosamente ao pacote já conferido. Mudanças futuras podem alterar tamanho/hash; preservar o candidato identificado durante homologação.
+Revisões, execuções remotas e commits de cada etapa permanecem em [PROGRESS.md](../PROGRESS.md), [AUDIT.md](../AUDIT.md), [ROADMAP.md](../ROADMAP.md) e [HOMOLOGATION.md](HOMOLOGATION.md). Não se declara revisão integral onde o escopo foi parcial. [INTEGRATION.md](INTEGRATION.md) mantém o guia e distingue orientações de testes efetivamente relatados.
 
-### Validação real executada na H03
+## Validação final desta preparação
 
-| Etapa | Resultado / limites |
-|---|---|
-| Restore com NuGetAudit=true/Mode=all | Aprovado sem avisos após acesso de rede autorizado. Tentativa sandbox teve NU1900 e não foi considerada auditoria completa. Logs H03/restore.log e restore-authorized.log. |
-| Vulnerabilidades diretas/transitivas | Solução e dois consumidores com saída0 e nenhum pacote vulnerável conhecido reportado; relatórios H03/vulnerabilities-authorized.json e consumer-*-vulnerabilities.json. Não audita runtime/Windows ou vulnerabilidades ainda não catalogadas. |
-| Rebuild completo Release | Cinco targets, **zero avisos/erros**, H03/build.log. |
-| Testes da solução aprovada | **450 por net48/net481/net8/net9**,1800 execuções, zero falhas/ignorados; H03/test-*.log e TestResults. net9 com host local9.0.23; não repetido comando global conhecido por falhar pela ausência de runtime9 global. |
-| Ferramenta de homologação | Build sem avisos/erros e **20 cenários offline** aprovados; H03/console-*.log. Nenhuma consulta real. |
-| dotnet pack | Aprovado, pasta H03/packages separada, sem avisos; H03/pack.log. |
-| Inspeção integral | **14 entradas**: cinco DLLs, cinco documentos e quatro OPC/NuGet. DLLs/documentos byte a byte iguais ao build/fonte aprovada; créditos/MIT/copyright/URLs/tags/descrição/notas/dep/frameworks conferidos. Sem ferramentas/testes/fontes/config/logs/credenciais/temp/logo/PDB. H03/inspection.log, inspection/evidence.json e package.nuspec. |
-| Proveniência dos assemblies | Leitura PE dos cinco assets confirmou nome/versão e InformationalVersion aprovada; H03/assembly-provenance.log. Não foi necessário carregar DLL de outro runtime para inspecioná-la. |
-| Consumidores independentes | net48/WinForms e net8, somente PackageReference1.1.0 por fonte local/cache isolado. Build **zero avisos/erros**, **24 cenários sintéticos aprovados por consumidor**, mais STA/message loop/await/atualização de controle WinForms sem janela visível. H03/consumer-*.log. |
-| Origem/cache/dependências | .nupkg.metadata aponta H03/packages, hash no cache idêntico ao candidato; assets selecionam lib/net48 e lib/net8. STJ/HTTP modernos fornecidos pelo framework; legados JSON8.0.6 e HTTP da plataforma. Redirect Unsafe6.0.0.0 gerado no consumidor Framework. Nenhum conflito observado no grafo isolado. |
-
-Os24 cenários por consumidor verificam identidade/proveniência/DVs, quatro provedores×dois modos×duas entradas numérica/alfanumérica (incluindo preservação da URL), respostas parciais/null, endereço/CEP/IBGE/CNAEs/IE por UF/opções Simples/rascunho de cadastro, cancelamento antes/durante HTTP, timeout com fallback e dirigido, reutilização e propriedade/descarte do HttpClient/CnpjClient/respostas. Transporte exclusivamente falso; não consulta API nem cliente real. As450 expectativas existentes da biblioteca não foram alteradas.
-
-Consumidores e inspeção reproduzíveis em `tools/GetCNPJ.PackageValidation` (fora da solução/CI/pacote). Configuração usa fonte local por padrão exato e `artifacts/H03/consumer-cache`, sem reutilizar candidato T07 ou cache global. Conferência ZIP/nuspec com `powershell -NoProfile -ExecutionPolicy Bypass -File tools/GetCNPJ.PackageValidation/Inspect-Package.ps1` (política apenas do processo); conferência de atributos PE com ModernConsumer recebendo `artifacts/H03/inspection/lib`. A cópia de System.Net.Http não existe no bin net48; vem da plataforma. No ensaio foram carregados STJ8.0.0.6, Encodings.Web8.0.0.0, Unsafe6.0.0.0 e Memory4.0.1.2; não copiar manualmente para outro grafo.
-
-Falhas intermediárias registradas: restore do consumidor falhou em TLS do serviço de assinatura e foi repetido com rede autorizada, sem desligar verificações. No auxiliar de inspeção, BOM UTF8 do nuspec passou a ser tratado; nos cenários novos, expectativa de objeto Simples obrigatoriamente null foi corrigida para flags nullable desconhecidas, conforme contrato existente. Nenhum defeito exigiu alterar a biblioteca, seus testes, dependências ou o candidato aprovado. Erros dos auxiliares não foram declarados como validação aprovada antes da correção.
-
-Ambiente: Windows10.0.26200 x64, SDK11.0.100/MSBuild18.12.2, runtime8.0.34, Framework4.8.1, host9.0.23 local. netstandard compilado; Framework4.8 executado sobre4.8.1, sem instalação isolada4.8. VSTest continua emitindo aviso preexistente VSTEST_ARTIFACTS_DIRECTORY, sem supressão e sem confundir com diagnóstico de compilação. Não foram homologados packages.config, designer/uso visual, grafo/arquitetura/implantação do SysEmpresa ou consumidores separados net481/net9/netstandard.
-
-### Handoff para o mantenedor
-
-Seguir [INTEGRATION.md](INTEGRATION.md) para fonte local/Visual Studio, remoção do pacote original sem coexistência, cache isolado, ciclo de vida, formulário assíncrono, IE por UF/ausência fiscal, mapeamento e conflitos/redirects. Homologar o **hash indicado**, confirmar que o executável carrega essa revisão e registrar o resultado no SysEmpresa sem dados pessoais. **Estado H03: preparada para homologação manual; integração efetiva pendente de confirmação do mantenedor.** Não houve alteração naquele sistema, consulta cadastral nova, versão nova, commit/push/merge/tag/GitHub Release/publicação.1.2.0 não iniciada. Aprovação de envio/publicação é ação separada.
-
-## Histórico anterior à H03
-
-## Estado atual — H02.1 concluída localmente em 2026-11-24
-
-Mantenedor informou revisão ChatGPT dos principais trechos da H02 e validação remota [45467304721](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45467304721), commit `5e07ff467fa8d917586c3c32f990b54686547836`. Revisão delimitada, não integral; não é validação remota das alterações locais H02.1.
-
-Complemento H02.1 especificamente autorizado executado com ferramenta existente: quatro dirigidas alfanuméricas sync, automática numérica async e automática alfanumérica sync. **Seis GETs de até12 permitidos**, todos HTTP200/identidade correspondente e mapeamento bem-sucedido, respeitando intervalo21s e execução sequencial. **Operação alfanumérica confirmada por teste real autorizado nos quatro provedores**, limitada à amostra/data/endpoint. Nas automáticas CNPJWS respondeu primeiro, sem chamar os demais; transição real após falha não observada, continua coberta apenas por simulação. Sem bloqueios/retries/redirecionamentos ou defeito comprovado de adaptador. Evidências/tempos/campos/ausências em [HOMOLOGATION.md](HOMOLOGATION.md), classificações em [PROVIDERS.md](PROVIDERS.md).
-
-Restore aprovado, rebuild Release dos cinco targets e console **zero avisos/erros**; **450 testes por framework executável/1800 execuções**, zero falhas/ignorados, mais20 cenários offline do console. Host net9 local9.0.23, Framework4.8 sobre4.8.1, netstandard compilado; aviso VSTest preexistente mantido sem supressão. Logs artifacts/h021-*.log/TRX TestResults/H021/Final. Biblioteca funcional/ferramenta/contratos/versão/dependências/targets/CI/licença intactos; somente documentação e descrição/notas dos metadados ajustadas para evidência pontual. Nenhuma resposta completa ou dado pessoal persistido.
-
-H02/H02.1 concluídas no plano autorizado, revisão/CI do complemento ainda pendentes. Homologação pontual não certifica todos os cadastros, atualização, correção fiscal ou disponibilidade futura. **O candidato T07 abaixo permanece histórico e não foi regenerado.** Futuro pack deve partir de commit aprovado após homologação e repetir inspeção/consumidores/hash/proveniência; não reutilizar o hash antigo para implementação atual. Nenhuma autorização implícita de publicação; H03 não iniciada, sem alteração de versão/commit/push/merge/tag/pack/publicação nesta etapa.
-
-## Histórico da preparação T07/H01/H02 anterior ao complemento
-
-Atualização **H01/H02 — 2026-11-24**: T07 validada remotamente conforme mantenedor na execução [45450063413](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45450063413), commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Revisão ChatGPT delimitada a metadados, licença, empacotamento documentado e CI. H01 validada remotamente na execução [45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433), commit 9fcb8b893fc30b18371aff9faf44d153f1de0557, com revisão dos principais trechos pelo ChatGPT informada pelo mantenedor. Rebuild sem avisos/erros e 450 testes aprovados por target. H02 em andamento, evidências em docs/HOMOLOGATION.md.
-
-**O nupkg descrito abaixo é registro histórico da T07 e não contém H01.** Não foi regenerado nesta tarefa. Após homologação, gerar novamente a partir de commit aprovado e repetir inspeção/consumo/hash. O hash anterior não identifica a implementação atual. As seções de build/avisos/empacotamento da T07 abaixo são históricas, com resultado H01 atualizado na próxima seção.
-
-Nenhuma publicação, tag, GitHub Release, commit, push ou merge nesta tarefa; versão mantida em **1.1.0**. H03 e 1.2.0 não iniciadas. Publicação continua dependendo de autorização específica.
-
-## Resultado H01 e compatibilidade de nulabilidade
-
-- Base b06d48c, develop inicialmente limpa. Restore aprovado sem mudança de dependências; `dotnet build GetCNPJ.sln -c Release -t:Rebuild` compilou os cinco targets com **zero avisos e zero erros**, sem desativar Nullable/NoWarn/pragma ou suprimir diagnósticos. Os 255 diagnósticos por target/1275 avisos iniciais foram reproduzidos e resolvidos por modelagem e fluxo, não por valores artificiais.
-- **450 testes por target** net48/net481/net8/net9: **1800 execuções aprovadas**, zero falhas/ignorados. Os 360 casos anteriores foram preservados, com assertivas adicionais e anotações dos fakes; 90 novos cobrem DTOs/modelos/serviços/mapeamentos. Setenta combinações percorrem todos os 35 DTOs internos, com propriedades ausentes e explicitamente null. Os 89 primeiros casos, executados em cópia isolada da base, reproduziram 36 falhas/53 aprovações; os mesmos casos passaram depois. O 90º verifica CreateSuccess(null).
-- Resultados: artifacts/h01-before-build.log, h01-baseline-reproduction.log, h01-build.log, h01-test-*.log; TRX TestResults/H01/Before, Focused, FinalSolution e FinalNet9. A execução global terminou em 1 pelo runtime9 global ausente; os outros três targets passaram e net9 passou com DotNetHostPath local9.0.23. O aviso de execução VSTEST_ARTIFACTS_DIRECTORY permanece, não é aviso de compilação e não foi suprimido.
-- Mesmo ambiente da T07: Framework4.8.1 instalado executa net48/net481; não foi testada instalação isolada4.8. netstandard foi compilado. Nenhuma API real consultada, nenhum pacote gerado/consumido novamente nesta tarefa. Evidência operacional alfanumérica continua não comprovada.
-
-| Área pública | Anotação/contrato após H01 | Compatibilidade e semântica |
-|---|---|---|
-| CnpjData | Cnpj, RazaoSocial, NomeFantasia, Situacao, Tipo, Porte, NaturezaJuridica, Email, Provedor: string?; Endereco/AtividadePrincipal/Simples: objeto? | Já podiam ser null; não recebem objetos/strings fabricados para satisfazer análise. As quatro listas continuam inicializadas, não nullable no contrato; lista vazia não prova condição fiscal. |
-| Endereco / AtividadeEconomica / Socio / InscricaoEstadual | Strings opcionais passam a string?; CodigoIbge e flags nullable existentes preservados | Dados desconhecidos permanecem null. ToString/EnderecoCompleto mantêm apresentação legada; flags bool antigas continuam projeções de compatibilidade, sem substituir os campos nullable informados. |
-| CnpjResult / ProviderError | Data, ErrorMessage, ProviderName e Exception opcionais nullable; errors opcional em CreateError é List<ProviderError>? | CreateSuccess continua exigindo dados não null e agora rejeita esse argumento inválido com ArgumentNullException. FailedProviders tolera null em JSON e omite nomes desconhecidos, sem NRE. Errors continua lista inicializada. |
-| ICnpjProvider / CnpjProviderBase / quatro FetchDataAsync | Task<CnpjData?> | Declara ausência que já era retornada. Por Task<T> ser invariante, implementações/overrides externos podem receber novos avisos de análise estática ao recompilar e devem alinhar suas anotações. Não há membro obrigatório novo nem mudança de tipo CLR. |
-| CnpjValidator.Format / base.FormatCnpj | string? → string? | Null de apresentação preservado; não valida cadastro/DV. ValidateAndNormalize continua retornando string não null ou lançando exceção; IsValid continua bool. O normalizador usa guarda explícita em vez de null-forgiving. |
-
-Reflexão comparou **307 entradas públicas CLR** antes/depois (tipos/herança/membros/assinaturas), sem diferenças: artifacts/h01-api-before.txt e h01-api-after.txt. Nome/versão/namespace/assembly/dependências/frameworks/LICENÇA/workflow preservados. Nulabilidade é metadado de análise estática: consumidores que antes confiavam em campos possivelmente ausentes devem verificar null ao recompilar. Como os modelos são mutáveis, Success sozinho não garante Data não null; os exemplos checam ambos. Sem novos atributos que prometam uma invariável inexistente.
-
-### Achados e revisão técnica T06 concluída localmente
-
-DTOs internos usam referências/listas/itens nullable e int? para campos opcionais. Não foi usado required/default vazio/zero para esconder ausência. Null de JSON não causa falha por tipo numérico obrigatório interno. JsonElement mantém Undefined para ausência e Null para null explícito nos campos auxiliares flexíveis.
-
-Mapeamentos não criam logradouro vazio, CNAE zero ou descrições como `0 - ` a partir de objetos sem dados. Composição preserva apenas as partes conhecidas; listas filtram itens null antes de acessá-los. CNAE Brasil é capturado por pattern antes de formatar, sem Nullable.Value inseguro. Porte Brasil admite string, inteiro legado e ausência; objeto/lista/bool gera falha de JSON em vez de ser ignorado. Datas, capital, IBGE versus SIAFI, máscaras, flags fiscais, identidade retornada, erros em HTTP200, descarte, prioridade, cancelamento e fallback anteriores continuam cobertos pelos testes.
-
-No serviço, provedores null geram ArgumentException de configuração; a sequência é capturada/ordenada uma vez, sem ficar dependente de mutações da coleção externa. A lista usada na construção deixa de ser configuração dinâmica. FailedProviders filtra entradas/nome null e CreateSuccess rejeita dado obrigatório null, preservando usos válidos. Esses são endurecimentos documentados, não mudanças silenciosas de anotações.
-
-A revisão técnica local das alterações T06 foi concluída no escopo do código da biblioteca e dos contratos/documentos disponíveis: dependências/configuração, modelos aditivos/flags legadas, quatro DTOs/mapeamentos, validação de identidade/JSON, testes e tratamento de ausência. Não equivale a nova revisão integral externa pelo ChatGPT ou a verificação do servidor em operação. Fontes e limitações de PROVIDERS.md/DEPENDENCIES.md permanecem; não houve revalidação operacional dos serviços.
-
-## Identidade e atribuição
-
-| Campo | Valor |
-|---|---|
-| PackageId / versão | `GetCNPJ.Community` / `1.1.0` |
-| Title | GetCNPJ Community |
-| Mantenedor do fork independente | Thalison Santos |
-| Autor original | Bruno da Cunha Felipe, projeto [azumamagus/GetCNPJ](https://github.com/azumamagus/GetCNPJ) |
-| Authors no nuspec | Bruno da Cunha Felipe,Thalison Santos |
-| RepositoryUrl / PackageProjectUrl | https://github.com/ThalisonSantos/GetCNPJ |
-| RepositoryType / licença | git / MIT |
-| Namespace / assembly | `GetCNPJ` / `GetCNPJ.dll` |
-| AssemblyVersion / FileVersion | `1.0.0.0` preservada / `1.1.0.0` |
-| Targets | netstandard2.0, net48, net481, net8.0, net9.0 |
-
-Não instalar `GetCNPJ` e `GetCNPJ.Community` simultaneamente, inclusive por dependências transitivas: contêm a mesma DLL e os mesmos tipos. A migração troca o PackageReference, mantendo os namespaces. Não há mudança funcional de código C# na T07. Informações fiscais desconhecidas, campos aditivos e endurecimentos anteriores continuam documentados em [PROVIDERS.md](PROVIDERS.md) e CHANGELOG.md.
-
-`LICENSE` foi preservado **byte a byte**, inclusive `Copyright (c) 2025 Bruno da Cunha Felipe`, e incluído integralmente no pacote. SHA-256 do arquivo original/preservado: `779E6F6DB397233CCD7AF0E7926846990E118613FB4BB2DA6A5BA9F18E4044F0`. O nuspec usa `license type="expression"` = MIT; o SDK também gera o link padrão licenses.nuget.org/MIT. Nenhum aviso de copyright original foi removido/substituído.
-
-Company FeTx foi removida por não representar o fork. A atribuição original permanece em Authors, Copyright, LICENSE, descrição e README. A propriedade Company gerada pelo SDK deriva de Authors, sem FeTx. O logotipo foi adicionado no histórico pelo commit `56956eb4d114cd26bc5a0a4672b4c16fcbcf16eb`, mas não foi localizada autorização específica de reutilização da identidade visual. Por decisão conservadora solicitada pelo mantenedor, foi retirado de PackageIcon, conteúdo NuGet e README. `logo.png` permanece somente no Git como arquivo histórico. Reintrodução depende de comprovação de autorização ou identidade visual própria; não foi criada nova imagem nesta tarefa.
-
-## Verificação do nome no NuGet.org
-
-Em 2026-11-24, 17:06:21–22 UTC (14:06:21–22 America/Sao_Paulo), consultas HTTP de leitura retornaram:
-
-| Fonte oficial | Resultado |
-|---|---|
-| [Página GetCNPJ.Community](https://www.nuget.org/packages/GetCNPJ.Community) | HTTP 404 |
-| [Índice de versões do pacote](https://api.nuget.org/v3-flatcontainer/getcnpj.community/index.json) | HTTP 404 |
-
-Evidência local: `artifacts/t07-package-id.json`. Primeira tentativa falhou por TLS no sandbox; a repetição com acesso de rede autorizado obteve os códigos acima. O [guia oficial de autoria NuGet](https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices) recomenda conferir a existência da página do ID. A evidência indica ausência de pacote público nas consultas realizadas; **não reserva o nome**, não comprova ausência de restrições/prefixos reservados e não garante aceitação futura pelo servidor. Não foi testado upload para verificar o nome. Repetir a conferência quando a publicação for autorizada.
-
-## Resultado de validação local
-
-Ambiente: Windows 10.0.26200 x64, SDK 11.0.100/MSBuild 18.12.2. Runtime .NET 8.0.34; runtime .NET 9.0.23 local em `artifacts/dotnet9`; .NET Framework 4.8.1 instalado (Release 533509). O SDK 11 utilizado não adiciona frameworks ao pacote. Workflow existente `.github/workflows/main.yml` preservado integralmente: restore/build/test, sem pack/push/segredo de publicação.
+Base develop/HEAD `2e676ae4055cff9ab0497f2d644b8c2c305c7f0b`, árvore limpa antes das alterações. Ambiente: Windows10.0.26200 x64, SDK11.0.100/MSBuild18.12.2, runtime8.0.34/Framework4.8.1 e host9.0.23 local. O SDK não adiciona targets10/11.
 
 | Etapa | Resultado / evidência |
 |---|---|
-| Restore + NuGetAudit/all | Aprovado após repetição com rede autorizada. Tentativa sandbox teve NU1900 e não foi considerada auditoria concluída. `artifacts/t07-restore.log`. |
-| Diretas/transitivas | Inventário `artifacts/t07-packages.json`; `dotnet list ... --vulnerable --include-transitive --format json`: saída 0, nenhum pacote vulnerável reportado nos dois projetos. `artifacts/t07-vulnerable.json`. Falha TLS inicial não foi contada como resultado negativo. |
-| Build Release/rebuild | Cinco targets compilados, **1275 avisos**, zero erros. `artifacts/t07-build.log` e `t07-build-final.log`. Nenhum aviso suprimido. |
-| Testes | **360 aprovados por target executável**, zero falhas/ignorados, **1440 execuções**. Casos/expectativas da T06 intactos. TRX em `TestResults/T07/`; execução final em `FinalSolution/` e `FinalNet9/`. |
-| Comando global de testes | Saída 1 pela ausência de runtime 9 global; net48/net481/net8 passaram. net9 passou separadamente com DotNetHostPath local, sem roll-forward. Aviso VSTEST_ARTIFACTS_DIRECTORY do SDK11/Test SDK17.12 não impediu descoberta/execução. |
-| dotnet pack | Aprovado, sem avisos na execução final. Tentativas iniciais falharam com NU5039 por exclusão indevida do README; lista explícita corrigida para avaliação externa dos múltiplos targets. |
-| Inspeção | 14 entradas: cinco assemblies, cinco documentos e quatro arquivos de metadados NuGet/OPC. Nuspec/identidade/dependências e bytes dos documentos conferidos. `artifacts/t07-inspection.log`, `t07-package-manifest.txt`, `t07-package.nuspec`. |
-| Consumidores independentes | Projetos net48 e net8, apenas PackageReference (sem ProjectReference/cópia de fontes da biblioteca). Restore de fonte local com cache isolado, build e execução aprovados, ambos com zero avisos/erros de build. |
+| Nome NuGet | [Página oficial](https://www.nuget.org/packages/GetCNPJ.Community) e [flat container](https://api.nuget.org/v3-flatcontainer/getcnpj.community/index.json): HTTP404 em2026-11-24 às17:09:35 America/Sao_Paulo. Nenhum pacote público encontrado; nome não reservado nem aceitação/permissão garantida. artifacts/ReleasePreparation/package-id.json |
+| Restore/auditoria direta e transitiva | Aprovados, sem vulnerabilidades conhecidas reportadas para a solução. Restore inicial NU1900 no sandbox não foi considerado válido; repetido com rede autorizada sem avisos. restore-authorized.log, vulnerabilities.json e inventário packages.json na mesma pasta |
+| Rebuild Release completo | Cinco targets, **zero avisos e zero erros**; build.log |
+| Testes | **450 por net48/net481/net8/net9**,1800 execuções, zero falhas/ignorados; test-*.log e TestResults/ReleasePreparation |
+| Ferramenta manual | Build zero avisos/erros e **20 cenários offline** aprovados; console-build.log/console-selftest.log. Sem requisições cadastrais |
+| Metadados/licença | Revisados e mantidos conforme tabela abaixo; LICENSE hash779E6F6DB397233CCD7AF0E7926846990E118613FB4BB2DA6A5BA9F18E4044F0 |
+| Candidatos | Arquivos T07/H03 reconferidos com os mesmos hashes/tamanhos; nenhum novo nupkg |
+| Procedimento/notas | [PUBLICATION.md](PUBLICATION.md) e [RELEASE_NOTES_1.1.0.md](RELEASE_NOTES_1.1.0.md) preparados localmente; sem GitHub draft externo/tag/upload |
 
-Os cinco assemblies dentro do ZIP são idênticos aos arquivos compilados em `bin/Release/<target>/GetCNPJ.dll` e mantêm nome GetCNPJ/AssemblyVersion 1.0.0.0. Não há renomeação implícita da DLL pelo novo PackageId.
+Framework4.8 foi executado sobre4.8.1; não houve máquina isolada com apenas4.8. netstandard2.0 compilado, sem runtime próprio. net9 usou DotNetHostPath local; comando global conhecido por abortar na ausência de runtime9 global não foi repetido. Aviso VSTest preexistente de VSTEST_ARTIFACTS_DIRECTORY permanece sem supressão; não é diagnóstico de compilação. Auditoria não cobre runtime/Windows nem falhas ainda não catalogadas.
 
-### Revisão dos 1275 avisos
+Estas validações cobrem o código funcional inalterado e o estado local de preparação; **não são CI do futuro commit final nem inspeção/teste de um nupkg que ainda não foi gerado**. Não atribuir os resultados de consumidores H03 a um novo arquivo sem repetir os ensaios nele.
 
-Foram inventariados os diagnósticos por arquivo, linha, coluna, código, target **e mensagem**. O console repete diagnósticos no resumo; essa repetição foi descartada, mas mensagens de propriedades diferentes no mesmo construtor foram preservadas. Resultado: **255 diagnósticos por target × cinco targets = 1275**. CSV integral local: `artifacts/t07-warnings.csv`. Todos são de nulabilidade, nos modelos/DTOs/mapeamentos/base existentes, não no código dos testes.
+## Metadados e compatibilidade revisados
 
-| Código | Por target | Total | Natureza / risco residual |
-|---|---:|---:|---|
-| CS8618 | 225 | 1125 | Propriedades de referência não inicializadas em DTOs e modelos, inclusive objetos preenchidos pela desserialização e resultados com dados/erro opcionais. Campo ausente pode permanecer null apesar de anotação não nullable; consumidor pode sofrer NullReferenceException se confiar só na anotação. |
-| CS8601 | 22 | 110 | Mapeamento de fontes opcionais para propriedades não nullable (endereço, email, descrições etc.). Ausência legítima não deve virar informação inventada; assinatura/anotação atual não representa perfeitamente essa ausência. |
-| CS8603 | 5 | 25 | Base e quatro FetchDataAsync podem retornar null para ausência de dados, embora declarados não nullable. Serviço trata esse resultado; consumidores diretos de provedores precisam considerar ausência. |
-| CS8625 | 1 | 5 | `CnpjResult.CreateError(..., errors = null)` aceita argumento padrão null em referência não nullable; implementação converte em lista vazia, mas anotação é incoerente. |
-| CS8629 | 1 | 5 | `codigo.Value` no Select da BrasilAPI após Where com HasValue. Fluxo entre lambdas não é reconhecido pelo compilador; há filtro antes do acesso no fluxo atual, sem compartilhamento do DTO entre consultas. Preservar o filtro em alterações futuras. |
-| CS8604 | 1 | 5 | CEP opcional do CNPJá passado a FormatCep não nullable. Método verifica IsNullOrWhiteSpace antes de acessar comprimento; comportamento tolera null, anotação não expressa isso. |
+| Campo | Valor |
+|---|---|
+| PackageId / Version / Title | GetCNPJ.Community /1.1.0 /GetCNPJ Community |
+| Autor original / mantenedor | Bruno da Cunha Felipe /Thalison Santos |
+| Authors no nuspec | Bruno da Cunha Felipe,Thalison Santos |
+| RepositoryUrl / PackageProjectUrl | https://github.com/ThalisonSantos/GetCNPJ |
+| RepositoryType / PackageLicenseExpression | git /MIT |
+| Copyright | Copyright (c) 2025 Bruno da Cunha Felipe, conforme LICENSE original íntegra |
+| Namespace / assembly | GetCNPJ /GetCNPJ.dll |
+| AssemblyVersion / FileVersion | 1.0.0.0 /1.1.0.0 |
+| Targets | netstandard2.0, net48, net481, net8.0, net9.0 |
+| Conteúdo explícito | Cinco DLLs, README/LICENSE/CHANGELOG/docs de provedores/dependências e metadados OPC/NuGet; sem ferramentas/testes/fontes/logs/config/credenciais/temp/logo/PDB |
+| Dependências | STJ8.0.6 somente nos legados; JSON/HTTP do framework nos modernos; System.Net.Http frameworkAssembly no Framework |
 
-A maioria descreve diferença entre modelos públicos/DTOs e dados opcionais, mas **não é seguro declarar todos inofensivos**: campos podem ser null em respostas parciais e afetar consumidores ou alterações futuras. Testes simulados cobrem cenários específicos, não todo JSON/handler externo possível. Nenhum Nullable/NoWarn/pragma foi alterado; não houve inicialização artificial, mudança de contrato ou refatoração global para zerar o número. Tratar adequadamente a nulabilidade requer tarefa separada e revisão de compatibilidade, fora da versão 1.2.0 nesta sessão.
+Company comercial antiga e PackageIcon não são reaplicados. Logo permanece fora da distribuição por falta de comprovação específica de autorização. NuGet não reserva o nome por consulta404; revalidar na ocasião autorizada. A auditoria não justifica atualizar dependência por mera novidade: nenhum defeito novo comprovado exigiu mudança.
 
-## Conteúdo do pacote e dependências
+Não instalar GetCNPJ e GetCNPJ.Community simultaneamente. API CLR/namespaces/assembly preservados; a comparação H01 encontrou307 entradas públicas iguais em net48. Referências opcionais e retornos Task<CnpjData?> foram anotados corretamente; consumidores/overrides podem precisar de ajustes de nullable ao recompilar. Listas continuam inicializadas. Flags nullable distinguem desconhecido de negativo; bools e ToString legados preservam suas projeções. Propriedades aditivas podem aparecer na serialização do consumidor. Respostas parciais não certificam completude/fiscalidade. Detalhes atuais nos modelos, README e PROVIDERS.md; matriz/achados históricos H01 em RELEASE_HISTORY.md.
 
-```text
-GetCNPJ.Community.nuspec
-lib/netstandard2.0/GetCNPJ.dll
-lib/net48/GetCNPJ.dll
-lib/net481/GetCNPJ.dll
-lib/net8.0/GetCNPJ.dll
-lib/net9.0/GetCNPJ.dll
-README.md
-LICENSE
-CHANGELOG.md
-docs/PROVIDERS.md
-docs/DEPENDENCIES.md
-_rels/.rels
-[Content_Types].xml
-package/services/metadata/core-properties/nuget.psmdcp
-```
+## Candidatos anteriores — evidências preservadas
 
-Dependências declaradas no nuspec: System.Text.Json >= 8.0.6 somente em netstandard2.0/net48/net481; net8/net9 com grupos vazios (componentes fornecidos pelo framework). System.Net.Http como frameworkAssembly apenas em net48/net481. Sem dependências de testes, referência ao projeto original ou pacote GetCNPJ. Grafo transitivo/justificativas em [DEPENDENCIES.md](DEPENDENCIES.md).
+| Candidato | Caminho | Tamanho | SHA-256 |
+|---|---|---|---|
+| T07 histórico, não contém H01 | artifacts/packages/GetCNPJ.Community.1.1.0.nupkg | 229798 bytes | `04F2FB78207597463E4BFC71B38AEB57AA4E648B0DF56E7B5407E2F475F44EB6` |
+| H03 para homologação local | artifacts/H03/packages/GetCNPJ.Community.1.1.0.nupkg | 234174 bytes | `3DD07A96B6B29411B554496C79E1064B45AEEEBDB668AA324A9699B35F5A34FE` |
 
-Nenhum arquivo de teste, fonte C#, PDB, log, TRX, credencial, NuGet.Config, bin/obj temporário, script de validação ou logo incluído. Itens de conteúdo e None são excluídos por padrão de empacotamento e somente os documentos acima são explicitamente incluídos; assemblies vêm dos outputs padrão. `IncludeSource=false`; `GeneratePackageOnBuild=false`. **Este RELEASE.md não é empacotado**, pois contém hash/evidências do próprio nupkg; isso evita referência circular. Documentos de acompanhamento/release permanecem no repositório.
+T07 registrou RepositoryCommit8652242894604cf28c96121ea2bee67b51fa0a7a e InformationalVersion1.1.0+esseSHA, base que não continha as alterações T07 locais. H03 foi exportado do commit aprovado a069e0decc0163f78f9788d204189e4b0d8055e0 antes de editar os documentos; nuspec e cinco DLLs confirmaram esse commit/InformationalVersion1.1.0+a069e0decc0163f78f9788d204189e4b0d8055e0. Cada ZIP tinha14 entradas, documentos/DLLs comparados byte a byte com sua fonte/build e metadados inspecionados. H03 validou24 cenários por consumidor net48/WinForms/net8, cache isolado/hash/origem e redirect Unsafe6.0.0.0, com HTTP falso. Não foram copiados ou alterados esses candidatos para formar um definitivo.
 
-### Artefato histórico T07 inspecionado e consumido — não contém H01
+A confirmação geral do mantenedor no SysEmpresa não informa hash instalado; não é prova adicional de correspondência de bytes desses arquivos. [RELEASE_HISTORY.md](RELEASE_HISTORY.md) preserva integralmente os registros anteriores, naturezas dos1275 avisos resolvidos e evidências de pack/inspeção/consumidores. Seus comandos/estados antigos são históricos e não devem ser usados para gerar/publicar1.1.0 agora.
 
-- Caminho relativo: `artifacts/packages/GetCNPJ.Community.1.1.0.nupkg`
-- Caminho absoluto: `D:\Meus Projetos\GetCNPJ\artifacts\packages\GetCNPJ.Community.1.1.0.nupkg`
-- Tamanho: **229798 bytes**.
-- SHA-256: **`04F2FB78207597463E4BFC71B38AEB57AA4E648B0DF56E7B5407E2F475F44EB6`**.
+## Próxima execução — somente após autorização
 
-Hash verificado também no nupkg extraído para o cache dos consumidores, garantindo que receberam exatamente esse arquivo da fonte local. Arquivos `artifacts/` e `TestResults/` são ignorados pelo Git. Nenhum nupkg foi publicado ou versionado.
+Seguir o [checklist definitivo](PUBLICATION.md): revisão/aprovação destas alterações → commit/push autorizados → merge autorizado → CI do SHA resultante em main → checkout limpo do commit congelado → restore/auditoria/rebuild/testes/offline → geração do nupkg definitivo → inspeção/proveniência/hash → consumidores independentes do mesmo arquivo → aprovação/tagv1.1.0 no mesmo SHA → NuGet/indexação/verificação pública → GitHub Release com notas em português e o mesmo arquivo/checksum.
 
-O nuspec registra `repository commit=8652242894604cf28c96121ea2bee67b51fa0a7a`, base da árvore local; InformationalVersion é `1.1.0+8652242894604cf28c96121ea2bee67b51fa0a7a`. **Esse commit não contém as alterações locais da T07.** Portanto o pacote é candidato de preparação, não uma release com rastreabilidade final para commit aprovado. Uma geração futura pode produzir outro tamanho/hash; nunca reutilizar este hash para outro arquivo.
+**Não gerar pacote definitivo da árvore local com alterações não commitadas.** Não usar hash de candidato ou CI da H03 como identificação/validação do artefato futuro. Mudança após congelamento exige novo commit aprovado/CI e repetição das etapas; não reescrever tag ou substituir nupkg publicado.
 
-## Procedimento de geração e inspeção
+Os auxiliares H03 em tools/GetCNPJ.PackageValidation têm SHA/caminhos específicos de a069e0d e H03. PUBLICATION.md explica a preparação de cópias isoladas para o commit/fonte/cache do pacote futuro, mantendo checagens de identidade e sem editar a fonte congelada. Esse ajuste futuro não foi executado nem anunciado como validação do definitivo. A licença/conteúdo do pacote serão reconferidos no arquivo real.
 
-Executar na raiz, em develop/feature/*/fix/* autorizada; conferir árvore de trabalho sem sobrescrever alterações de terceiros. Não executar estes comandos como publicação implícita:
-
-```powershell
-git status --short
-git branch --show-current
-dotnet restore GetCNPJ.sln --force-evaluate --no-http-cache -p:NuGetAudit=true -p:NuGetAuditMode=all
-dotnet list GetCNPJ.sln package --include-transitive --format json
-dotnet list GetCNPJ.sln package --vulnerable --include-transitive --format json
-dotnet build GetCNPJ.sln -c Release -t:Rebuild
-dotnet test GetCNPJ.sln -c Release --no-build --settings tests/test.runsettings --logger trx --results-directory TestResults
-dotnet pack GetCNPJ.csproj -c Release --no-build --no-restore --output artifacts/packages
-Get-Item artifacts/packages/GetCNPJ.Community.1.1.0.nupkg | Select-Object FullName,Length
-Get-FileHash artifacts/packages/GetCNPJ.Community.1.1.0.nupkg -Algorithm SHA256
-```
-
-Falhas NU1900/NU1301/TLS impedem concluir a auditoria; saída 0 de restore com aviso de auditoria não equivale a auditoria aprovada. Não ignorar vulnerabilidades nem falhas de descoberta. Nesta máquina, repetir testes por target, usando o host local para net9 conforme [tests/README.md](../tests/README.md):
-
-```powershell
-dotnet test GetCNPJ.sln -c Release --no-build -f net9.0 --settings tests/test.runsettings --logger trx --results-directory TestResults -- "RunConfiguration.DotNetHostPath=D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"
-```
-
-Abrir o nupkg como ZIP, ler o nuspec e conferir lista de entradas, grupos de dependências, cinco DLLs e identidade acima; comparar os bytes de LICENSE/README/CHANGELOG/docs com os originais. Qualquer arquivo inesperado deve ser investigado antes da release. Não descompactar caminhos arbitrários de ZIP sem validar destino. A inspeção nesta sessão usou script local `artifacts/Inspect-T07Package.ps1` com lista explícita; a política de scripts exigiu execução com liberação apenas no processo (`powershell -NoProfile -ExecutionPolicy Bypass -File ...`), sem alteração da política da máquina.
-
-## Reprodução dos consumidores independentes
-
-Foram criados dois projetos em `artifacts/T07Consumers/FrameworkConsumer` e `ModernConsumer`, separados da solução e excluídos da compilação/empacotamento da biblioteca. Nenhum ProjectReference nem fonte de implementação do GetCNPJ foi usado. Para repetir, criar os seguintes arquivos (nomes dos csproj conforme as pastas).
-
-`FrameworkConsumer/FrameworkConsumer.csproj`:
-
-```xml
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net48</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <ItemGroup><PackageReference Include="GetCNPJ.Community" Version="1.1.0" /></ItemGroup>
-</Project>
-```
-
-Para `ModernConsumer/ModernConsumer.csproj`, usar o mesmo modelo com `TargetFramework=net8.0` (AutoGenerateBindingRedirects não é necessário). Em ambas as pastas colocar `Program.cs` com validação somente local:
-
-```csharp
-using System;
-using GetCNPJ.Validation;
-internal static class Program
-{
-    private static void Main()
-    {
-        var numeric = CnpjValidator.ValidateAndNormalize("12.345.678/0001-95");
-        var alpha = CnpjValidator.ValidateAndNormalize("12.abc.345/01de-35");
-        if (numeric != "12345678000195" || !CnpjValidator.IsValid(numeric)) throw new Exception("Numérico");
-        if (alpha != "12ABC34501DE35" || !CnpjValidator.IsValid(alpha)) throw new Exception("Alfanumérico");
-        if (CnpjValidator.Format(alpha) != "12.ABC.345/01DE-35") throw new Exception("Máscara");
-        if (CnpjValidator.IsValid("12345678000194") || CnpjValidator.IsValid("12ABC34501DE34")) throw new Exception("DV");
-        var assembly = typeof(CnpjValidator).Assembly;
-        if (assembly.GetName().Name != "GetCNPJ" || assembly.GetName().Version.ToString() != "1.0.0.0") throw new Exception("Assembly");
-        Console.WriteLine("APROVADO: " + numeric + "; " + alpha + "; " + assembly.Location);
-    }
-}
-```
-
-Em `artifacts/T07Consumers/NuGet.Config` (o caminho local é relativo a esse arquivo):
-
-```xml
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="t07-local" value="../packages" />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
-  </packageSources>
-  <packageSourceMapping>
-    <clear />
-    <packageSource key="t07-local"><package pattern="GetCNPJ.Community" /></packageSource>
-    <packageSource key="nuget.org"><package pattern="*" /></packageSource>
-  </packageSourceMapping>
-  <config><add key="globalPackagesFolder" value="./final-packages" /></config>
-</configuration>
-```
-
-O padrão exato garante GetCNPJ.Community da fonte local; NuGet.org fornece apenas as dependências. Usar **cache novo** para cada pacote refeito com a mesma versão, evitando consumir cópia anterior sem perceber. O cache novo nesta sessão foi `final-packages` e `.nupkg.metadata` confirmou origem `D:\Meus Projetos\GetCNPJ\artifacts\packages`; SHA-256 do nupkg no cache corresponde ao artefato final.
-
-```powershell
-dotnet restore artifacts/T07Consumers/FrameworkConsumer/FrameworkConsumer.csproj --configfile artifacts/T07Consumers/NuGet.Config -p:NuGetAudit=true -p:NuGetAuditMode=all
-dotnet restore artifacts/T07Consumers/ModernConsumer/ModernConsumer.csproj --configfile artifacts/T07Consumers/NuGet.Config -p:NuGetAudit=true -p:NuGetAuditMode=all
-dotnet build artifacts/T07Consumers/FrameworkConsumer/FrameworkConsumer.csproj -c Release --no-restore
-dotnet build artifacts/T07Consumers/ModernConsumer/ModernConsumer.csproj -c Release --no-restore
-& artifacts/T07Consumers/FrameworkConsumer/bin/Release/net48/FrameworkConsumer.exe
-dotnet artifacts/T07Consumers/ModernConsumer/bin/Release/net8.0/ModernConsumer.dll
-```
-
-Ambos retornaram saída 0 e validações aprovadas, incluindo rejeição dos DVs inválidos. `project.assets.json` selecionou `lib/net48/GetCNPJ.dll` e `lib/net8.0/GetCNPJ.dll`, respectivamente. Logs em `artifacts/t07-consumer-net48-*` e `t07-consumer-net8-*`; fontes e caches temporários ignorados pelo Git. Primeira restauração Framework falhou por TLS para assinatura do repositório NuGet, repetida com rede autorizada sem desabilitar verificação de assinatura/auditoria. O consumidor Framework executou no runtime 4.8.1 instalado; não equivale a máquina isolada com somente 4.8. Não houve consumo separado do nupkg por projetos net481/net9/netstandard; esses assemblies foram inspecionados, compilados e os targets executáveis testados na solução.
-
-## Limitações e pendências antes de publicar
-
-- T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT da T06 foi parcial; revisão técnica local complementar foi concluída na H01 conforme seção atual. T07 e H01 receberam validação/revisão delimitada informada acima; isso não conclui a homologação operacional H02.
-- H02 original executou quatro numéricas dirigidas/async; H02.1 complementou quatro alfanuméricas dirigidas/sync e duas automáticas autorizadas, todos HTTP200/identidade correspondente, sem incompatibilidade comprovada. Suporte operacional alfanumérico confirmado por teste real autorizado nos quatro para a amostra/data/endpoint; documentação explícita confirmada apenas BrasilAPI/ReceitaWS, sem inventar evidência documental para CNPJ.WS/CNPJá. Não certifica operação geral/cobertura integral/fiscalidade. Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis; transição real de fallback após falha não observada.
-- Os 1275 avisos históricos foram resolvidos na H01; modelos agora anotam ausência corretamente. API CLR/namespace/assembly preservados; 450 casos por target, incluindo os 360 anteriores. Zero avisos/testes aprovados não demonstram ausência de toda regressão possível ou validam dados de APIs reais.
-- Auditoria NuGet não reportou vulnerabilidades conhecidas nessa data, sem garantir ausência de falhas não catalogadas ou segurança do Windows/runtime. Manter runtimes corrigidos; não estender suporte oficial dos frameworks por inferência.
-- Logotipo permanece fora do pacote. Nome do pacote não reservado nem upload testado. Revalidar disponibilidade/permissões da conta na ocasião autorizada.
-- Candidato gerado a partir de árvore com alterações locais não commitadas; hash/proveniência documentados. Quando houver autorização para versionamento/release, gerar novamente a partir da revisão aprovada e registrar o novo hash, repetindo validação/consumo. Não alterar silenciosamente o artefato aprovado.
-
-## Registro histórico H01/H02 antes da H02.1 — 2026-11-24
-
-Conforme mantenedor, revisão ChatGPT dos principais trechos da H01 e [GitHub Actions 45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433) aprovados no commit `9fcb8b893fc30b18371aff9faf44d153f1de0557`. Não equivale a revisão integral nem a teste real das APIs. O candidato T07 permanece histórico; hash/tamanho anteriores não foram substituídos.
-
-H02: [plano e evidências](HOMOLOGATION.md), console independente `tools/GetCNPJ.Homologation` fora da solução/CI/pacote, prévia sem rede e 20 cenários sintéticos auxiliares. Restore e rebuild completo dos cinco targets aprovados com zero avisos/erros; 450 testes por target executável (1800), com host9 local pela ausência do runtime global. Autorizadas e executadas somente quatro consultas numéricas dirigidas/async: HTTP 200 e identidade correspondente nos quatro provedores; uma tentativa TLS sem HTTP adicional registrada. Sem bloqueios, retries de servidor ou defeito comprovado de adaptador. Alfanumérico/sync/fallback reais não autorizados/não executados; ampliação/repetição depende de nova autorização específica. Suporte operacional alfanumérico permanece inconclusivo; classificações documentais em PROVIDERS.md preservadas. Nenhuma alteração de versão/dependência/API pública, H03 ou geração de pacote nesta etapa.
-
-Após homologação e aprovação de um commit, regenerar o candidato 1.1.0 e repetir restore/build/test, pack, inspeção e consumidores independentes descritos neste documento, registrando novo hash/tamanho/proveniência. Não reutilizar o pacote histórico como se contivesse H01/H02. Publicação exige autorização específica adicional.
-
-## Publicação manual futura — somente após autorização específica
-
-O workflow atual **não publica** e não deve receber credenciais/etapas de push como consequência desta tarefa. Publicação futura é ação separada: confirmar pacote/versão, acesso da conta NuGet, evidências, hash do arquivo aprovado e autorização explícita. Não se exige nem executa merge/tag/GitHub Release automaticamente.
-
-Com autorização específica já concedida para **aquele arquivo/versão**, o mantenedor poderá executar manualmente com NuGet 7.6+/SDK 10.0.300+ (inclui o SDK 11 usado nesta validação), que lê `NUGET_API_KEY` do ambiente sem expor a chave como argumento. Este comando **não foi executado**:
-
-```powershell
-# Somente após autorização. Chave fornecida ao processo por meio seguro, nunca no Git/log.
-dotnet nuget push "./artifacts/packages/GetCNPJ.Community.1.1.0.nupkg" --source "https://api.nuget.org/v3/index.json"
-```
-
-Usar arquivo exato, sem wildcard; não imprimir/gravar a chave, não habilitar publicação automática e não assumir que uma falha/duplicidade é sucesso. Conferir depois a página do pacote, versão, metadados e instalação pública. Orientação oficial: [publicação NuGet.org](https://learn.microsoft.com/en-us/nuget/nuget-org/publish-a-package). A publicação efetiva está fora do escopo e permanece pendente.
+O workflow permanece sem publicação automática. As notas são arquivo local, não GitHub Release criada. Identificação/tamanho/SHA-256 do definitivo e CI do futuro commit permanecem pendentes. Nenhuma publicação, commit, push, merge, tag, GitHub Release ou funcionalidade1.2.0 foi realizada nesta preparação.

@@ -1,10 +1,16 @@
 # Testes e CI
 
+## Preparação final de1.1.0 — 2026-11-24
+
+Rebuild completo dos cinco targets com zero avisos/erros;450 testes preservados/aprovados por net48/net481/net8/net9 (1800, zero falhas/ignorados) e20 cenários offline do console aprovados. Logs `artifacts/ReleasePreparation/build.log`, `test-*.log`, `console-*.log`; TRX `TestResults/ReleasePreparation`. net9 usou host local9.0.23; Framework4.8 foi executado sobre4.8.1, netstandard compilado. Aviso VSTest preexistente não é diagnóstico de compilação e permanece sem supressão.
+
+A confirmação do mantenedor de instalação/compilação/teste no SysEmpresa é relato manual geral, sem cenários individuais ou métricas presumidos; não é nova execução automatizada daquele sistema. Não houve nova consulta real ou geração de pacote nesta preparação. Checklist do futuro commit/artefato definitivo em [PUBLICATION.md](../docs/PUBLICATION.md).
+
 H02/H02.1:450 casos por target preservados/aprovados; consultas reais permanecem fora da suíte/CI. O console independente e seus20 cenários auxiliares de HTTP sintético estão documentados em [docs/HOMOLOGATION.md](../docs/HOMOLOGATION.md). Após as quatro numéricas dirigidas da H02, o complemento autorizado executou quatro alfanuméricas dirigidas/sync e duas automáticas (numérica async/alfanumérica sync), seis GETs/HTTP200 com identidade correspondente. Confirmação operacional limitada à amostra/data/endpoint. Automáticas encerraram no primeiro sucesso; transição real após falha não ocorreu, permanecendo validada apenas por simulação. Não foram necessárias correções de adaptadores nem novos testes de regressão, pois nenhum defeito foi comprovado.
 
 O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 450 casos em `net48`, `net481`, `net8.0` e `net9.0` (1800 execuções aprovadas na H01). Preservados os 360 casos anteriores, incluindo os 281 da T05, com quatro expectativas de listas nulas ajustadas na T06 conforme histórico abaixo. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
-Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
+Os três casos iniciais da T01 exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP503 registrado como falha e provedor inexistente sem HTTP. A suíte atual foi ampliada para os quatro provedores e demais comportamentos descritos abaixo. Handlers locais interceptam as consultas; não há rede cadastral, credenciais ou dados de clientes. Fixtures sintéticos não representam evidência de cadastro existente.
 
 A T02 adicionou 62 casos da classe independente `CnpjValidator`: CNPJs numéricos com zeros iniciais, exemplo alfanumérico oficial `12.ABC.345/01DE-35`, vetores sintéticos que cobrem A–Z e restos 0/1 nos dois DVs, máscara, letras minúsculas, cultura turca, entradas inválidas e caracteres proibidos. O valor esperado do exemplo oficial foi retirado das páginas 3–4 do [manual da RFB/Serpro](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf); os demais vetores são sintéticos, com DVs calculados separadamente por pesos explícitos.
 

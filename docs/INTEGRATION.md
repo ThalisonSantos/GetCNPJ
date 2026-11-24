@@ -1,10 +1,12 @@
 # Homologação manual do GetCNPJ Community no SysEmpresa
 
-Estado em **2026-11-24: preparada para homologação manual**. O SysEmpresa não foi aberto, alterado ou executado nesta tarefa. Os resultados abaixo são de consumidores independentes; somente o mantenedor poderá confirmar a integração no seu ambiente. Versão mantida em1.1.0, sem publicação no NuGet.org ou consultas cadastrais novas.
+Estado em **2026-11-24: H03 concluída, com homologação manual confirmada pelo mantenedor**. O mantenedor informou que instalou, compilou e testou GetCNPJ.Community1.1.0 no SysEmpresa, funcionando normalmente, com percepção de melhoria em relação à biblioteca original. É evidência manual relatada: não foram informados cenários individuais, ambiente, hash instalado ou métricas. Não se presume ganho mensurado de desempenho, validação de cada campo/fluxo ou um formato específico de instalação.
+
+Também informou revisão ChatGPT e [GitHub Actions45475015057](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45475015057), commit `2e676ae4055cff9ab0497f2d644b8c2c305c7f0b`. Os resultados detalhados abaixo continuam sendo dos consumidores independentes da H03, não testes individuais do SysEmpresa. O agente não abriu/alterou/executou aquele sistema e não fez consultas cadastrais novas. Versão mantida em1.1.0; [sequência de publicação futura](PUBLICATION.md), sem pacote definitivo gerado nesta preparação.
 
 ## Candidato aprovado e pré-requisitos
 
-Use exclusivamente o candidato H03, separado do pacote histórico T07:
+Para reproduzir os ensaios locais da H03, use o candidato H03 identificado abaixo, separado do histórico T07. Esses dados identificam o artefato preparado, sem afirmar que o mantenedor conferiu esse hash no SysEmpresa. O futuro pacote definitivo terá identificação própria após geração de commit final aprovado/árvore limpa; não substituir candidatos silenciosamente.
 
 - Arquivo: `D:\Meus Projetos\GetCNPJ\artifacts\H03\packages\GetCNPJ.Community.1.1.0.nupkg`.
 - Tamanho: **234174 bytes**.
@@ -162,4 +164,4 @@ dotnet tools/GetCNPJ.PackageValidation/ModernConsumer/bin/Release/net8.0/ModernC
 
 Passaram **24 cenários por consumidor**, incluindo numérico/alfanumérico, quatro provedores×dois modos×duas entradas, campos opcionais, mapeamento rico e rascunho por UF, cancelamento antes/durante HTTP, timeout com fallback/dirigido, compartilhamento/descarte e proveniência. FrameworkConsumer também exercitou STA, message loop WinForms real, await e atualização de controle sem janela visível. Isso não equivale a teste visual, designer, arquitetura de implantação ou execução do SysEmpresa. Logs em artifacts/H03/consumer-*.log. Dependências instaladas vieram de NuGet.org; handlers de consulta não abrem conexões reais.
 
-Aceite ainda **pendente do mantenedor no SysEmpresa**: instalar o hash indicado, confirmar dependências/redirects carregados, recompilar sem conflitos, abrir formulário, verificar responsividade/cancelamento/fechamento, revisar o rascunho e persistência sem perda de dados, conferir IEs/UF e desconhecidos. Qualquer consulta real deve ter autorização específica. Registrar ambiente/versão do SysEmpresa, arquitetura, resultados e limitações, sem dados de clientes/credenciais. Até essa confirmação, H03 permanece **preparada para homologação manual**, não integração concluída.
+**Aceite manual geral recebido; H03 concluída nesse escopo.** Instalação, compilação e teste no SysEmpresa foram confirmados pelo mantenedor conforme relato inicial. As sugestões deste guia (redirects, UI/cancelamento, fechamento, persistência, IEs/UF e desconhecidos) permanecem orientações; não foram apresentadas como uma lista de testes individuais executados por ele. Nova geração/instalação de pacote ou consulta real exige as autorizações correspondentes. Se houver confirmação adicional, registrar somente ambiente/cenários/resultados efetivamente informados, sem dados de clientes/credenciais.

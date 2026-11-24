@@ -2,346 +2,129 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Fork independente**, mantido por **Thalison Santos**, do [GetCNPJ original](https://github.com/azumamagus/GetCNPJ), desenvolvido por **Bruno da Cunha Felipe**. Repositório do fork: [ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ). Não é uma publicação do autor original nem possui afiliação oficial com a Receita Federal ou com os provedores.
+Fork independente do [GetCNPJ de Bruno da Cunha Felipe](https://github.com/azumamagus/GetCNPJ), mantido por **Thalison Santos** em [ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ). Licença [MIT](LICENSE) e copyright original preservados. Sem afiliação oficial com a Receita Federal ou com os provedores.
 
-Identidade aprovada: **GetCNPJ.Community 1.1.0**, **ainda não publicado nesta etapa**. O pacote gerado na T07 é candidato histórico e não contém as correções H01; deverá ser regenerado após homologação, a partir de commit aprovado. Namespace e assembly continuam **GetCNPJ**; não é necessário mudar os `using`. A licença MIT e o copyright original estão preservados integralmente em [LICENSE](LICENSE).
+**GetCNPJ.Community 1.1.0 está preparada para publicação, ainda não publicada por esta preparação.** T01–T07, H01, H02, H02.1 e H03 foram concluídas nos escopos registrados. O mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria em relação à biblioteca original. Esse relato não contém métricas ou detalhes de testes individuais. O pacote definitivo será gerado somente de commit final aprovado, com árvore limpa e CI validado; os candidatos anteriores permanecem identificados no [procedimento de release](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md).
 
-**Não instale GetCNPJ e GetCNPJ.Community simultaneamente**, nem por dependências transitivas: ambos fornecem `GetCNPJ.dll` e os mesmos namespaces/tipos, causando conflitos de compilação ou carregamento. Ao migrar, remova a referência ao pacote original e valide também o grafo de dependências. AssemblyVersion permanece 1.0.0.0 por compatibilidade; versão do pacote/arquivo é 1.1.0.
+## Compatibilidade e instalação
 
-Biblioteca .NET para consulta de CNPJ em APIs públicas brasileiras, com suporte a múltiplos provedores e rate limiting integrado.
+| Item | Contrato |
+|---|---|
+| PackageId / versão | `GetCNPJ.Community` / `1.1.0` |
+| Namespace / assembly | `GetCNPJ` / `GetCNPJ.dll` |
+| AssemblyVersion | `1.0.0.0` preservada |
+| Targets | `netstandard2.0`, `net48`, `net481`, `net8.0`, `net9.0` |
+| Provedores, na ordem padrão | CNPJWS → ReceitaWS → BrasilAPI → CNPJA |
 
-## 📋 Características
+**Não instale GetCNPJ e GetCNPJ.Community simultaneamente**, inclusive por dependências transitivas: ambos fornecem a mesma DLL e os mesmos tipos. Remova a referência ao original e confira o grafo antes de migrar. Anotações nullable corrigidas podem exigir checagens/ajustes de overrides ao recompilar; assinaturas CLR existentes foram preservadas.
 
-- ✅ **Multi-Target**: Suporta .NET Framework 4.8, 4.8.1, .NET 8, .NET 9 e .NET Standard 2.0
-- 🔄 **Chain of Responsibility**: Tenta automaticamente outros provedores em caso de falha
-- ⏱️ **Rate Limiting**: Padrão local de 3 aquisições por minuto por provedor; cotas externas variam por serviço/IP
-- 🎯 **Retorno Padronizado**: Modelo comum, com disponibilidade/preenchimento variáveis por provedor
-- 📋 **Inscrição Estadual**: Mapeamento dos dados disponibilizados pelo CNPJ.WS; ausência não comprova não contribuinte
-- 🔌 **Múltiplos Provedores**:
-  - **CNPJ.WS** (https://publica.cnpj.ws) - **Provedor padrão** ⭐ *IE documentada no endpoint público integrado*
-  - ReceitaWS (https://receitaws.com.br)
-  - BrasilAPI (https://brasilapi.com.br)
-  - CNPJA (https://open.cnpja.com)
-- 🛡️ **Validação**: Validação local de CNPJ numérico e alfanumérico, incluindo dígitos verificadores
-- ⚡ **Async/Await**: API totalmente assíncrona + métodos síncronos para compatibilidade
-- 🎨 **Clean Code**: Seguindo padrões SOLID e melhores práticas
+Após publicação autorizada no NuGet.org:
 
-## CNPJ numérico e alfanumérico
+```powershell
+dotnet add package GetCNPJ.Community --version 1.1.0
+```
 
-A validação independente está em `GetCNPJ.Validation.CnpjValidator`, conforme o [manual de cálculo da Receita Federal/Serpro](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf). São aceitos 12 caracteres ASCII de `0–9` ou `A–Z`, seguidos de dois DVs numéricos, sem máscara ou na máscara padrão. CNPJs numéricos válidos continuam aceitos.
+Até lá, a instalação local deve selecionar o **candidato H03**, em `artifacts/H03/packages`, com hash conferido, fonte mapeada e cache isolado conforme o [guia de integração](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/INTEGRATION.md). Não usar a pasta histórica `artifacts/packages`. Esses candidatos não substituem o futuro pacote definitivo.
+
+## Validação local numérica e alfanumérica
 
 ```csharp
 using GetCNPJ.Validation;
 
-// Exemplo do manual oficial; não indica existência de cadastro.
+// Vetor oficial RFB/Serpro; não comprova existência de cadastro.
 var cnpj = CnpjValidator.ValidateAndNormalize("12.abc.345/01de-35"); // 12ABC34501DE35
-var valido = CnpjValidator.IsValid(cnpj);                           // true
-var formatado = CnpjValidator.Format(cnpj);                       // 12.ABC.345/01DE-35
+var valido = CnpjValidator.IsValid(cnpj);
+var formatado = CnpjValidator.Format(cnpj); // 12.ABC.345/01DE-35
 ```
 
-Como conveniência de entrada, letras ASCII minúsculas são convertidas para maiúsculas e espaços externos são removidos. Máscaras incorretas, espaços internos, acentos, caracteres Unicode e letras nas duas posições dos DVs são rejeitados com `InvalidCnpjException` por `ValidateAndNormalize`; `IsValid` retorna `false`. A normalização não descarta letras ou símbolos para tentar produzir outro identificador. Esse tratamento substitui a antiga remoção indiscriminada de caracteres não numéricos.
+A [especificação oficial](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf) usa 12 posições ASCII de `0–9`/`A–Z` e dois DVs numéricos. Numéricos anteriores e zeros iniciais continuam válidos. Aceita identificador sem máscara ou com máscara padrão; minúsculas ASCII viram maiúsculas e espaços externos são tolerados. Caracteres proibidos/máscara incorreta são rejeitados por `ValidateAndNormalize` com `InvalidCnpjException`; `IsValid` retorna false. Letras não são removidas. `Format` é apresentação, sem validar DV/cadastro, e preserva null.
 
-`Format` aplica apenas a máscara a strings de 14 posições e preserva os caracteres; não valida DVs nem comprova cadastro. Outros valores são mantidos para preservar o comportamento de apresentação existente.
+## Consulta e campos opcionais
 
-Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam letras nas URLs e respostas. Em 2026-11-24, **os quatro provedores tiveram suporte operacional alfanumérico confirmado por teste real autorizado** na H02.1, para a filial pública `00000000E08G12`: HTTP 200, CNPJ correspondente e mapeamento bem-sucedido. BrasilAPI/ReceitaWS também possuem confirmação documental explícita; para CNPJ.WS/CNPJá essa evidência documental continua não confirmada. As automáticas numérica/async e alfanumérica/sync encerraram no primeiro sucesso CNPJWS; transição real após falha não ocorreu, permanecendo coberta pelos testes simulados. A H02 original havia homologado quatro numéricas dirigidas. São observações pontuais, sem garantia de todos os registros, disponibilidade futura, atualização ou consistência fiscal. Validade local não comprova cadastro. Consulte a [matriz de provedores, contratos, fontes e termos](docs/PROVIDERS.md) e as [evidências e console de homologação manual](docs/HOMOLOGATION.md).
-
-## Dados disponíveis e dependências
-
-Respostas parciais com CNPJ válido e correspondente ao solicitado podem ser aceitas; sucesso não garante preenchimento completo. Identidade ausente/inválida/divergente, JSON inválido e envelopes explícitos de erro em HTTP 200 não são sucesso. No cliente, falhas permitem fallback conforme as regras existentes; consultas direcionadas continuam sem fallback.
-
-Na H01, campos opcionais dos modelos e retornos dos provedores passaram a ter anotações nullable coerentes com a ausência já possível. As assinaturas CLR foram preservadas, mas consumidores/overrides podem precisar de checagens e anotações ao recompilar. Confira `result.Success` e `result.Data != null` antes de usar dados; endereço e outros campos continuam opcionais. Matriz e endurecimentos documentados em [docs/RELEASE.md](docs/RELEASE.md).
-
-`Endereco.CodigoIbge` preserva o código municipal quando documentado, sem confundi-lo com SIAFI. Para distinguir informação fiscal desconhecida de negativa, use os novos campos nullable `SimplesNacional.OptanteInformado`, `OptanteSimeiInformado` e `InscricaoEstadual.AtivoInformado`: null = desconhecido, false = negativo informado, true = positivo informado. Os bools antigos continuam false quando desconhecidos por compatibilidade, e o `ToString()` de IE mantém o comportamento anterior. Lista de IE vazia nunca prova não contribuinte. Propriedades novas são independentes e podem aparecer ao serializar os modelos.
-
-Os cinco frameworks foram preservados. System.Text.Json 8.0.6 é referência somente em netstandard2.0/net48/net481; net8/net9 usam o componente do framework. HTTP usa referências da plataforma, com HttpClient compartilhado. A [auditoria de dependências diretas e transitivas](docs/DEPENDENCIES.md) registra versões, justificativas e comandos; não houve vulnerabilidade conhecida reportada pelo NuGet na verificação de 2026-11-24. Consumidores devem manter runtimes atualizados.
-
-## 📦 Instalação
-
-Após publicação autorizada no NuGet.org (os comandos abaixo não indicam que ela já ocorreu):
-
-```bash
-dotnet add package GetCNPJ.Community --version 1.1.0
-```
-
-Ou via NuGet Package Manager:
-
-```
-Install-Package GetCNPJ.Community -Version 1.1.0
-```
-
-Para avaliar o pacote gerado nesta preparação usando uma fonte local:
-
-```powershell
-dotnet add package GetCNPJ.Community --version 1.1.0 --no-restore
-dotnet restore --source "./artifacts/packages" --source "https://api.nuget.org/v3/index.json"
-```
-
-Execute no projeto consumidor e ajuste o caminho para a pasta do pacote; a segunda fonte resolve as dependências transitivas. Para garantir a origem local do pacote principal, use o mapeamento de fontes descrito no procedimento completo. Hashes, consumidores independentes, avisos e pendências em [docs/RELEASE.md no repositório](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md). CI permanece somente build/test, sem publicação automática.
-
-## 🚀 Uso Básico
-
-### Consulta Simples
+Os exemplos com GetAsync/Get fazem rede se executados. As validações automatizadas do projeto usam somente HTTP simulado. Reutilize o mesmo cliente durante o ciclo da aplicação; não crie um por clique/consulta.
 
 ```csharp
-using GetCNPJ;
 using System;
+using System.Threading;
+using GetCNPJ;
+using GetCNPJ.Exceptions;
 
-// Criar cliente
-using var client = new CnpjClient();
-
-// Consultar CNPJ (numérico ou alfanumérico, com ou sem máscara; suporte externo depende da API)
-var result = await client.GetAsync("03.312.791/0001-83");
-
-if (result.Success && result.Data != null)
+using var client = new CnpjClient(); // Em aplicação real, compartilhar entre consultas.
+using var cancellation = new CancellationTokenSource();
+try
 {
+    var result = await client.GetAsync("00000000000191", cancellation.Token);
+    if (!result.Success || result.Data == null)
+    {
+        Console.WriteLine("Consulta indisponível; conferir cadastro manualmente.");
+        foreach (var failure in result.Errors)
+            Console.WriteLine($"Provedor: {failure.ProviderName}; tipo: {failure.Exception?.GetType().Name}");
+        return;
+    }
+
     var data = result.Data;
-
-    Console.WriteLine($"Razão Social: {data.RazaoSocial}");
-    Console.WriteLine($"Nome Fantasia: {data.NomeFantasia}");
-    Console.WriteLine($"CNPJ: {data.Cnpj}");
-    Console.WriteLine($"Situação: {data.Situacao}");
-    Console.WriteLine($"Endereço: {data.Endereco?.EnderecoCompleto}");
-    Console.WriteLine($"Email: {data.Email}");
-    Console.WriteLine($"Telefones: {string.Join(", ", data.Telefones)}");
-
-    // Inscrições Estaduais (disponível quando usa CNPJ.WS)
-    if (data.InscricoesEstaduais != null && data.InscricoesEstaduais.Any())
+    Console.WriteLine(data.RazaoSocial ?? "Razão social não informada");
+    Console.WriteLine(data.Endereco?.CodigoIbge ?? "IBGE não informado");
+    bool? simples = data.Simples?.OptanteInformado; // null = desconhecido.
+    Console.WriteLine(simples switch { true => "Optante", false => "Não optante informado", null => "Opção desconhecida" });
+    foreach (var ie in data.InscricoesEstaduais)
     {
-        Console.WriteLine("Inscrições Estaduais:");
-        foreach (var ie in data.InscricoesEstaduais)
-        {
-            Console.WriteLine($"  - {ie}"); // Formato: Inscrição (UF) - Status
-        }
-    }
-
-    Console.WriteLine($"Provedor usado: {data.Provedor}");
-}
-else
-{
-    Console.WriteLine($"Erro: {result.ErrorMessage}");
-
-    // Exibir erros de cada provedor
-    foreach (var error in result.Errors)
-    {
-        Console.WriteLine($"- {error.ProviderName}: {error.ErrorMessage}");
+        var situacao = ie.AtivoInformado switch { true => "ativa", false => "inativa", null => "desconhecida" };
+        Console.WriteLine($"UF: {ie.Estado}; situação IE: {situacao}");
     }
 }
-```
-
-### Consulta com Provedor Específico
-
-```csharp
-using var client = new CnpjClient();
-
-// Forçar uso de um provedor específico
-var result = await client.GetFromProviderAsync("03312791000183", "BrasilAPI");
-
-if (result.Success)
+catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
 {
-    Console.WriteLine($"Razão Social: {result.Data.RazaoSocial}");
+    Console.WriteLine("Consulta cancelada pelo consumidor.");
+}
+catch (InvalidCnpjException)
+{
+    Console.WriteLine("CNPJ inválido.");
 }
 ```
 
-### Consulta Síncrona
+Consulta dirigida: `await client.GetFromProviderAsync(cnpj, "BrasilAPI", token)`. Os métodos legados `Get(cnpj)` e `GetFromProvider(cnpj, "ReceitaWS")` continuam disponíveis; verifique Success e Data também nesses caminhos. Na UI WinForms/WPF use await para manter responsividade; [exemplo de formulário compilado e integração SysEmpresa](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/INTEGRATION.md).
 
-Para aplicações que não usam async/await, você pode usar os métodos síncronos:
+| Informação | Tratamento |
+|---|---|
+| Strings/objetos opcionais de CnpjData | Podem ser null: razão/fantasia/situação/endereço/atividade principal/Simples e demais campos anotados no [modelo atual](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/Models/CnpjData.cs) |
+| Datas/capital | `DateTime?` / `decimal?`; ausência permanece null |
+| Listas | Inicializadas; vazias quando não há itens mapeados, sem comprovar cobertura fiscal |
+| IBGE | `Endereco.CodigoIbge`, string nullable; não inferido de SIAFI/nome do município |
+| Simples / MEI | `OptanteInformado` / `OptanteSimeiInformado`: true positivo, false negativo informado, null desconhecido |
+| Situação IE | `AtivoInformado`, bool nullable; os bools e ToString legados preservam suas projeções de compatibilidade |
 
-```csharp
-using var client = new CnpjClient();
+IE vazia ou ausente não comprova não contribuinte; IE inativa tampouco equivale a essa condição. Filtre IEs pela UF e peça escolha quando houver várias. Campos aditivos podem aparecer na serialização feita pelo consumidor. Sucesso com identidade correspondente pode conter dados parciais; não preencher desconhecidos com zero/false/vazio nem sobrescrever cadastro automaticamente. Não registrar contatos, sócios ou mensagens/corpos HTTP brutos; ErrorMessage/Exception.Message podem incorporar esses dados.
 
-// Método síncrono
-var result = client.Get("03312791000183");
+## Rate limiter, timeout, fallback e recursos HTTP
 
-if (result.Success)
-{
-    Console.WriteLine($"Razão Social: {result.Data.RazaoSocial}");
-    Console.WriteLine($"Nome Fantasia: {result.Data.NomeFantasia}");
-}
-
-// Provedor específico síncrono
-var result2 = client.GetFromProvider("03312791000183", "ReceitaWS");
-```
-
-**Nota**: Os métodos síncronos bloqueiam a thread atual. Para aplicações modernas (ASP.NET Core, WPF, etc.), recomenda-se usar os métodos assíncronos.
-
-### Configuração Customizada
-
-```csharp
-var options = new CnpjClientOptions
-{
-    MaxRequestsPerMinute = 5,           // Aumentar rate limit (use com cuidado!)
-    Timeout = TimeSpan.FromSeconds(60), // Timeout customizado
-    EnableReceitaWS = true,             // Habilitar/desabilitar provedores
-    EnableBrasilAPI = true,
-    EnableCNPJA = false                 // Desabilitar CNPJA, por exemplo
-};
-
-using var client = new CnpjClient(null, options);
-var result = await client.GetAsync("03312791000183");
-```
-
-### HttpClient Customizado
+- Padrão local: três aquisições/minuto/provedor/instância. O limiter usa janela deslizante com tempo monotônico, filas independentes e aquisição/registro atômicos em `AcquireAsync`, sem registro duplicado. Reset/GetAvailableRequests são concorrentes seguros; limites/intervalos não positivos são rejeitados.
+- `IRateLimiter` preserva seus quatro membros. Implementações externas antigas continuam no par WaitIfNeededAsync/RecordRequest, que não é atômico; `IAtomicRateLimiter` oferece adesão opcional ao caminho atômico. Após AcquireAsync não chamar RecordRequest para a mesma aquisição.
+- Consulta automática tenta na ordem padrão, uma vez por provedor e sem retry; sucesso encerra. Timeout/falha permite o próximo; consulta dirigida não faz fallback. Falha de todos preserva Errors.
+- Token cancelado pelo consumidor propaga OperationCanceledException/TaskCanceledException e encerra novas tentativas, inclusive durante a espera do limiter. Cancelamento interno sem esse sinal é falha do provedor. O timeout HTTP não é prazo global da cadeia/espera.
+- CnpjClientOptions.Timeout configura o HttpClient interno. Se externo, configure Timeout no próprio HttpClient. A opção MaxRequestsPerMinute não amplia cotas do provedor; conservar o padrão e considerar o tráfego total do IP.
+- Uma instância HttpClient é compartilhada pelos provedores. HttpClient externo nunca é descartado pelo wrapper; seu proprietário cuida dele. A instância interna é descartada com o CnpjClient, inclusive em falha de construção. Dispose repetido é seguro.
+- Respostas/conteúdos/streams são descartados após uso, inclusive em erro, desserialização, disponibilidade e fallback.
 
 ```csharp
-// A aplicação cria e controla a vida deste HttpClient, reutilizado entre consultas.
-using var httpClient = new HttpClient
-{
-    Timeout = TimeSpan.FromSeconds(30)
-};
-
-using var client = new CnpjClient(httpClient);
-var result = await client.GetAsync("03312791000183");
+using System.Net.Http;
+using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+using var client = new CnpjClient(http);
+// Reutilizar ambos; encerrar na ordem client e depois http.
 ```
 
-`CnpjClient` usa uma única instância de HttpClient, compartilhada por todos os seus provedores e consultas. Reutilize o cliente entre consultas; não crie um HttpClient para cada requisição. Quando você fornece o HttpClient, ele é emprestado: a aplicação continua responsável pelo seu descarte, inclusive se o construtor de CnpjClient falhar. Se ele vier de um serviço/factory da aplicação, siga o ciclo de vida definido por esse serviço.
+## Evidências e limites dos provedores
 
-Sem HttpClient fornecido, CnpjClient cria e possui a instância. `Dispose` libera esse cliente e seu handler uma única vez; chamadas repetidas são seguras. Se a configuração ou a construção falhar depois da criação, a instância própria também será descartada. Use `using`/`Dispose` ao encerrar o ciclo de vida de CnpjClient.
+Em 2026-11-24 os quatro endpoints públicos tiveram resposta alfanumérica com identidade correspondente em **teste real autorizado**, limitado a um cadastro público. BrasilAPI/ReceitaWS também possuem confirmação documental explícita; CNPJ.WS/CNPJá não têm essa confirmação documental nas fontes consultadas. As automáticas reais encerraram no primeiro sucesso CNPJWS; transição após falha permanece coberta por simulação. Não há garantia de todos os registros, disponibilidade futura, atualização ou consistência fiscal.
 
-Os provedores descartam cada HttpResponseMessage após ler e mapear a resposta, inclusive em erros HTTP, JSON inválido e fallback. O descarte inclui conteúdo e streams associados; o resultado contém somente dados mapeados. `IsAvailableAsync`, herdado da base pelos quatro provedores, também descarta suas respostas e preserva o retorno booleano existente. O buffering/timeout de GetAsync continua igual ao da T04. Referências: [descarte de respostas](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage.dispose?view=net-9.0) e [reutilização de HttpClient](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines).
+[PROVIDERS.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/PROVIDERS.md) diferencia documentação, operação, cotas, campos e termos comerciais. CNPJ.WS documenta IE no endpoint integrado; os outros não oferecem esse recurso no contrato público usado. Limiter por instância não coordena processos/IP compartilhado e não evita todo429 externo. Acesso gratuito não concede uso comercial/redistribuição irrestritos. A suíte/CI não consultam cadastros reais.
 
-## 📊 Modelo de Dados Retornado
+System.Text.Json8.0.6 é referência apenas em netstandard2.0/net48/net481; net8/net9 usam o componente do framework. System.Net.Http vem da plataforma, sem pacote4.3.4 requerido pela biblioteca. Versões e auditoria em [DEPENDENCIES.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/DEPENDENCIES.md). Consumidores devem manter runtimes corrigidos e revisar conflitos/redirects no Framework.
 
-```csharp
-public class CnpjData
-{
-    public string Cnpj { get; set; }                    // CNPJ formatado
-    public string RazaoSocial { get; set; }             // Razão social
-    public string NomeFantasia { get; set; }            // Nome fantasia
-    public DateTime? DataAbertura { get; set; }         // Data de abertura
-    public string Situacao { get; set; }                // Situação cadastral
-    public DateTime? DataSituacao { get; set; }         // Data da situação
-    public string Tipo { get; set; }                    // MATRIZ/FILIAL
-    public string Porte { get; set; }                   // Porte da empresa
-    public string NaturezaJuridica { get; set; }        // Natureza jurídica
-    public decimal? CapitalSocial { get; set; }         // Capital social
-    public Endereco Endereco { get; set; }              // Endereço completo
-    public AtividadeEconomica AtividadePrincipal { get; set; }
-    public List<AtividadeEconomica> AtividadesSecundarias { get; set; }
-    public List<Socio> QuadroSocietario { get; set; }   // QSA
-    public List<string> Telefones { get; set; }         // Telefones
-    public string Email { get; set; }                   // Email
-    public List<InscricaoEstadual> InscricoesEstaduais { get; set; }  // Inscrições estaduais (CNPJ.WS)
-    public SimplesNacional Simples { get; set; }        // Info Simples Nacional
-    public DateTime? UltimaAtualizacao { get; set; }    // Data da atualização
-    public string Provedor { get; set; }                // Provedor usado
-}
-```
+## Validação, release e contribuição
 
-## ⚙️ Padrões de Projeto Utilizados
+Build dos cinco targets e **450 testes por framework executável** (net48/net481/net8/net9), mais **20 cenários offline** da ferramenta manual. Framework4.8 foi executado sobre4.8.1; netstandard é compilado, sem runtime próprio. Evidências e limites em [tests/README.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/tests/README.md), [HOMOLOGATION.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/HOMOLOGATION.md) e [RELEASE.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md). A homologação manual do SysEmpresa é relato do mantenedor, sem cenário individual ou métrica presumidos.
 
-- **Strategy Pattern**: Diferentes implementações de provedores de API
-- **Chain of Responsibility**: Tentativa automática em múltiplos provedores
-- **Factory Pattern**: Criação de instâncias dos provedores
-- **Repository Pattern**: Abstração da lógica de consulta
-- **DTO Pattern**: Padronização dos retornos
-- **Rate Limiter Pattern**: Controle de requisições usando Sliding Window
+CI realiza restore/build/test sem pack/publicação automática. Notas e checklist de1.1.0 são rascunhos locais até autorização das etapas externas. Planejamento futuro exclusivamente em [ROADMAP.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/ROADMAP.md); nenhuma funcionalidade1.2.0 é parte desta preparação.
 
-## 🔒 Rate Limiting
-
-A biblioteca usa uma janela deslizante de até 3 aquisições por minuto por provedor, por padrão. Os provedores de uma instância de `CnpjClient` compartilham o limiter, com filas independentes por nome. Instâncias diferentes do cliente têm limiters independentes; não há coordenação entre processos.
-
-`SlidingWindowRateLimiter.AcquireAsync` espera uma vaga e registra a aquisição atomicamente. Cada registro expira após o intervalo configurado, inclusive no instante exato do fim da janela; chamadas que disputam a mesma vaga reavaliam a fila antes de entrar. O tempo decorrido vem de `Stopwatch`, sem usar horário UTC para expiração. Nenhum bloqueio síncrono é mantido durante as esperas assíncronas.
-
-```csharp
-var limiter = new GetCNPJ.RateLimiter.SlidingWindowRateLimiter(3, TimeSpan.FromMinutes(1));
-await limiter.AcquireAsync("MeuProvedor", cancellationToken);
-// A vaga já foi registrada. Não chamar RecordRequest para a mesma aquisição.
-```
-
-`Reset` limpa os registros do provedor e acorda as esperas para disputar a capacidade reiniciada. `GetAvailableRequests` e os métodos legados compartilham a proteção da fila. Cancelamento durante a espera não registra uma aquisição; uma aquisição já concluída permanece contada mesmo se o consumidor cancelar depois. Limites e intervalos devem ser positivos; o construtor lança `ArgumentOutOfRangeException` caso contrário. Intervalos positivos longos são atendidos por esperas em partes, e esperas menores que 1 ms são arredondadas para cima.
-
-O contrato `IRateLimiter` mantém seus quatro membros. A nova interface opcional `IAtomicRateLimiter` permite que implementações externas ofereçam `AcquireAsync`. A base dos provedores usa essa capacidade quando disponível, sem registro adicional. Implementações antigas continuam sendo chamadas na ordem `WaitIfNeededAsync` e `RecordRequest`, uma vez cada; sua concorrência continua sob responsabilidade da implementação externa. O par legado de chamadas separadas não reserva atomicamente uma vaga; para concorrência com o limiter embutido, use `AcquireAsync`.
-
-## Timeout, fallback e cancelamento
-
-`GetAsync`/`GetCnpjAsync` consultam os provedores em ordem de prioridade: CNPJWS, ReceitaWS, BrasilAPI e CNPJA na configuração padrão. Falha, ausência de dados ou timeout permitem uma tentativa no próximo provedor. Cada provedor é consultado uma vez, sem retry, e a primeira resposta com dados encerra a consulta. Se todos falharem, `Success` será `false` e `Errors` preservará nomes, mensagens e exceções das tentativas, incluindo timeouts.
-
-`GetFromProviderAsync`/`GetCnpjFromProviderAsync` consultam somente o provedor escolhido. Um timeout retorna resultado de falha com o erro desse provedor; não ativa fallback para outros.
-
-O estado do `CancellationToken` recebido do consumidor determina o cancelamento da consulta. Quando cancelado, a operação propaga `OperationCanceledException` (inclusive sua subclasse `TaskCanceledException`) e não inicia novas tentativas. O token é verificado antes e depois das consultas e repassado ao HTTP e ao rate limiter. Cancelamento tem precedência mesmo se um provedor retornar dados ou outro erro depois do pedido. Provedores externos devem observar o token durante seu trabalho; o cancelamento é cooperativo.
-
-`OperationCanceledException`/`TaskCanceledException` sem cancelamento do token do consumidor são tratadas como falha do provedor, permitindo fallback. Elas podem representar timeout ou cancelamento interno; o tipo da exceção, isoladamente, não comprova a causa. Os tipos produzidos por timeout variam entre runtimes e handlers, conforme a [documentação de HttpClient.GetAsync](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.getasync?view=net-9.0). Não é necessário que a exceção tenha um token igual ao token do consumidor ou uma TimeoutException interna.
-
-`CnpjClientOptions.Timeout` configura o timeout HTTP por requisição do HttpClient criado pela biblioteca (30 segundos por padrão). Quando um HttpClient é fornecido, sua configuração de timeout é preservada. Esse limite não inclui a espera do rate limiter nem define um prazo global para a cadeia de fallback; o consumidor pode limitar a consulta inteira pelo seu token. A aquisição atômica continua sendo feita uma vez por tentativa; timeout após aquisição não desfaz o registro.
-
-## 🛠️ Arquitetura
-
-```
-GetCNPJ/
-├── Models/              # DTOs padronizados
-├── Interfaces/          # Contratos da biblioteca
-├── Exceptions/          # Exceções customizadas
-├── Enums/              # Enumerações
-├── Providers/
-│   ├── Base/           # Classe base para providers
-│   ├── ReceitaWS/      # Provider ReceitaWS
-│   ├── BrasilAPI/      # Provider BrasilAPI
-│   └── CNPJA/          # Provider CNPJA
-├── Services/           # Serviço principal (Chain of Responsibility)
-├── RateLimiter/        # Implementação do Rate Limiter
-└── CnpjClient.cs       # Cliente principal
-```
-
-## 🧪 Tratamento de Erros
-
-A biblioteca trata erros de forma elegante:
-
-- **CNPJ Inválido**: Lança `InvalidCnpjException`
-- **Provedor Indisponível**: Tenta o próximo provedor automaticamente
-- **Rate Limit Excedido**: Aguarda automaticamente antes de fazer nova requisição
-- **Timeout**: Falha do provedor; permite fallback em consulta automática e retorna erro em consulta direcionada
-- **Cancelamento do consumidor**: Propaga cancelamento e encerra novas tentativas, inclusive durante espera do rate limiter
-- **Todos Provedores Falharam**: Retorna `CnpjResult` com `Success = false` e lista de erros
-
-## 📝 Requisitos
-
-- .NET Framework 4.8+ **ou**
-- .NET 8+ **ou**
-- .NET Standard 2.0+
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Sinta-se à vontade para:
-
-1. Fazer fork do projeto
-2. Criar uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abrir um Pull Request
-
-## 📄 Licença
-
-Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para detalhes.
-
-## 🔗 APIs Utilizadas
-
-- [**CNPJ.WS**](https://publica.cnpj.ws) - **API padrão** ⭐ IE documentada no endpoint público integrado
-- [ReceitaWS](https://receitaws.com.br) - API gratuita de consulta de CNPJ
-- [BrasilAPI](https://brasilapi.com.br) - API pública brasileira
-- [CNPJA](https://open.cnpja.com) - API aberta de CNPJ
-
-**Nota**: CNPJ.WS continua como primeira opção (prioridade 1), seguido por ReceitaWS, BrasilAPI e CNPJá. Entre os endpoints públicos integrados, o CNPJ.WS documenta IE. Operações comerciais de IE oferecidas por outros serviços não estão integradas. Limites, recursos e condições constam em [docs/PROVIDERS.md](docs/PROVIDERS.md); a biblioteca não concede autorização de uso comercial dos serviços.
-
-## ⚠️ Avisos Importantes
-
-- **Rate Limiting**: Respeite os limites de requisição das APIs públicas (3 req/min por padrão)
-- **Uso Responsável**: Esta biblioteca é para uso educacional e em aplicações que respeitem os termos de uso das APIs
-- **Dados Públicos**: Os dados retornados são públicos e provenientes da Receita Federal do Brasil
-- **Sem Garantias**: Os provedores podem ter indisponibilidade ou mudanças sem aviso prévio
-
-## 🎯 Roadmap
-
-- [ ] Adicionar cache de consultas
-- [ ] Suporte a mais provedores
-- [ ] Métricas e telemetria
-- [ ] Retry policy configurável
-- [ ] Suporte a consulta em lote
-- [ ] Logging integrado
-
-## 📞 Suporte
-
-Para reportar bugs ou solicitar melhorias do fork, abra uma [issue em ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ/issues). Mantenedor: Thalison Santos. Autor original: Bruno da Cunha Felipe. Nenhum logotipo foi incluído nesta distribuição porque a autorização específica de reutilização não foi comprovada.
-
----
-
-Desenvolvido com ❤️ seguindo as melhores práticas de Clean Code e SOLID
+Para contribuir, ler AGENTS.md, trabalhar em develop/feature/*/fix/* e abrir revisão no [repositório do fork](https://github.com/ThalisonSantos/GetCNPJ). Relatos de falhas devem omitir dados pessoais/segredos. Mantenedor: Thalison Santos. Autor original: Bruno da Cunha Felipe. Logotipo fora da distribuição por ausência de comprovação de autorização específica.

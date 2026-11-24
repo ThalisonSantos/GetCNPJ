@@ -1,6 +1,8 @@
 # Progresso do desenvolvimento
 
-## Estado inicial — 2026-11-24
+## Estado atual da preparação — 2026-11-24
+
+Preparação local1.1.0 concluída; publicação e pacote definitivo pendentes de autorizações/commit final/CI. Os registros cronológicos posteriores preservam o estado à época: pendências históricas encerradas pelas confirmações seguintes não são bloqueios atuais.
 - [x] Fork criado e clonado pelo mantenedor.
 - [x] Compilação original bem-sucedida, segundo o mantenedor.
 - [x] Branch develop criada e confirmada no GitHub.
@@ -17,7 +19,7 @@
 - [x] H01 — Nulabilidade e qualidade final 1.1.0 (revisão dos principais trechos/CI remoto informados pelo mantenedor).
 - [x] H02 — Homologação real dos provedores (H02 original com revisão delimitada/CI remoto; plano complementar H02.1 concluído localmente, com limitações documentadas).
 - [x] H02.1 — Concluída; revisão de relatórios/metadados e CI remoto informados pelo mantenedor (45470735591/a069e0d).
-- [ ] H03 — Preparada para homologação manual no SysEmpresa; candidato local e consumidores independentes aprovados, integração efetiva pendente do mantenedor.
+- [x] H03 — Concluída: revisão ChatGPT/CI45475015057 informados; mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria, sem detalhes/métricas presumidos.
 
 ## Handoff inicial
 - Agente: ChatGPT.
@@ -270,6 +272,21 @@
 - Ferramentas auxiliares corrigidas durante preparação: leitura XML do nuspec passou a tratar BOM UTF8 e uma expectativa inicial que exigia objeto Simples=null foi alinhada às flags desconhecidas dos contratos existentes (inclusive objeto fiscal vazio). Não houve correção na biblioteca nem mudança dos450 casos. Scripts/fixtures só sintéticos e fora do nupkg/CI.
 - docs/INTEGRATION.md detalha fonte local/Visual Studio/cache/remoção do pacote original, ciclo de vida, formulário async compilado, cadastro e IE/UF, ausência fiscal, conflitos/redirects e termos. H03 é **preparada para homologação manual**, não integração concluída. Framework4.8 rodou sobre4.8.1; sem ambiente isolado4.8, sem ensaio packages.config, designer/inspeção visual ou SysEmpresa.
 - Handoff: mantenedor instalar o hash indicado e confirmar funcionamento real no SysEmpresa, registrando ambiente/arquitetura/resultado sem dados pessoais. Nenhum arquivo daquele sistema foi lido/alterado. Não regenerar silenciosamente o candidato, consultar APIs ou publicar. HEAD permanece aprovado; documentos H03/ferramentas auxiliares locais ainda não commitados, sem alteração da biblioteca/CI/licença/versão ou início1.2.0.
+
+## 2026-11-24 — Preparação final da release 1.1.0 — concluída localmente, publicação pendente
+- Base develop/2e676ae4055cff9ab0497f2d644b8c2c305c7f0b, árvore inicialmente limpa. Documentos de acompanhamento, homologação, integração e release lidos integralmente.
+- H03: mantenedor informou revisão ChatGPT e CI [45475015057](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45475015057), commit2e676ae4055cff9ab0497f2d644b8c2c305c7f0b. Também confirmou instalação, compilação e teste de GetCNPJ.Community1.1.0 no SysEmpresa, funcionando normalmente, com percepção de melhoria ante a biblioteca original. Evidência manual relatada pelo mantenedor, sem detalhamento de cenários/ambiente/métricas; não se inferem verificações individuais nem desempenho mensurado.
+- Escopo: registrar conclusão T01–T07/H01/H02/H02.1/H03 nos seus limites; revisar documentação/changelog/metadados; revalidar nome NuGet e auditoria; rebuild cinco targets/450 casos por runtime/20 cenários offline; preparar notas GitHub Release e checklist/sequência futura. Sem código funcional novo, consultas reais,1.2.0, pack definitivo, commit/push/merge/tag/GitHub Release/publicação.
+- Conclusão de todas as tarefas confirmada nos seus escopos, incluindo T07 como preparação (não publicação) e H03 com evidência manual geral do mantenedor. Limites de revisão T06/H01 e operação pontual H02.1 mantidos. Não se atribuiu hash específico, testes individuais, ambiente ou ganho mensurado ao relato do SysEmpresa.
+- Nome NuGet revalidado em2026-11-24 às17:09:35 America/Sao_Paulo: página oficial e flat container404. Nenhum pacote público encontrado; sem reserva/garantia de aceitação/permissão. Evidência artifacts/ReleasePreparation/package-id.json. Somente HTTP NuGet/documentação, sem requisições cadastrais.
+- Auditoria direta/transitiva final sem vulnerabilidades conhecidas reportadas para solução; inventário e relatório em artifacts/ReleasePreparation/packages.json/vulnerabilities.json. Restore inicial NU1900 não foi contado como válido; repetição com rede autorizada sem avisos. Frameworks/versões/referências/metadados revisados e preservados, sem alteração de código funcional/dependências/CI/licença.
+- Validação: rebuild completo cinco targets zero avisos/erros;450 testes aprovados em cada net48/net481/net8/net9 (1800, zero falhas/ignorados); console20 cenários offline e build sem avisos/erros. Logs artifacts/ReleasePreparation/build.log, test-*.log, console-*.log, restore-authorized.log; TRX TestResults/ReleasePreparation. net9 com host9.0.23 local; Framework4.8 sobre4.8.1, netstandard compilado; aviso VSTest preexistente registrado sem supressão, não é aviso de compilação.
+- Revisão documental: README corrigiu fonte antiga, exemplos Data/nullable/IE, mensagens sensíveis, limite local e lista de funcionalidades futuras divergente do ROADMAP. Modelo público duplicado desatualizado substituído por referência ao fonte/semântica atual. CHANGELOG1.1.0 consolidado, cronologia/evidências preservadas em AUDIT/PROGRESS/relatórios. INTEGRATION/HOMOLOGATION/RELEASE agora distinguem relato manual geral de ensaios independentes detalhados. Metadados do csproj não necessitaram mudança; MIT/créditos/logo excluído preservados.
+- Entregues docs/RELEASE_NOTES_1.1.0.md (rascunho local em português) e docs/PUBLICATION.md (checklist/sequência autorizável: revisão/commit/push→merge→CI do SHA resultante→checkout limpo→pack→inspeção/consumidores→tagv1.1.0→NuGet→GitHub Release). Ferramentas H03 têm SHA/caminhos fixos; roteiro exige adaptar cópias de teste fora do checkout, sem remover checagens nem alterar o pacote. Nenhuma etapa externa foi executada.
+- RELEASE.md consolidado como estado atual; seu conteúdo anterior foi preservado integralmente em docs/RELEASE_HISTORY.md, identificado como histórico e sem validade de roteiro atual. Sintaxe PowerShell do roteiro novo analisada sem executá-lo; nenhuma geração/publicação foi acionada por essa conferência.
+- Candidatos preservados: T07,229798bytes/hash04F2FB78207597463E4BFC71B38AEB57AA4E648B0DF56E7B5407E2F475F44EB6; H03,234174bytes/hash3DD07A96B6B29411B554496C79E1064B45AEEEBDB668AA324A9699B35F5A34FE. LICENSE SHA-256779E6F6DB397233CCD7AF0E7926846990E118613FB4BB2DA6A5BA9F18E4044F0. Nenhum nupkg novo/definitivo gerado. Alterações desta preparação ainda locais: exigem commit aprovado e CI antes da geração final.
+- Handoff: mantenedor revisar e autorizar separadamente versionamento/envio/merge/geração/tag/publicações conforme PUBLICATION.md. Não confundir CI2e676ae da H03 com CI do futuro commit final. Não executar consultas reais nem1.2.0. Preparação local concluída; distribuição pública e identificação/hash do pacote definitivo permanecem pendentes.
+- Revisão final do diff aprovada sem erros de whitespace; links locais conferidos, sintaxe do roteiro analisada sem execução e histórico anterior comparado integralmente com HEAD. Nenhum fonte funcional, metadado csproj, teste, ferramenta versionada, LICENSE ou workflow alterado. Os hashes dos candidatos e da licença foram reconferidos no encerramento; nenhum nupkg na pasta de preparação.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.

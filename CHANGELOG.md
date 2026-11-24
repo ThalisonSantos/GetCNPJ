@@ -1,73 +1,47 @@
 # Changelog
 
-Alterações relevantes do fork serão registradas aqui, seguindo categorias de adição, alteração, correção, remoção e segurança. Adotar SemVer após definição da identidade do pacote.
+## [1.1.0] — Preparada para publicação, ainda não publicada
 
-## [Não publicado]
-Identidade aprovada para a versão **1.1.0**: GetCNPJ.Community / GetCNPJ Community. Fork independente mantido por Thalison Santos, derivado de GetCNPJ de Bruno da Cunha Felipe. Esta seção registra preparação local, sem publicação/tag/release.
+Primeira versão do fork independente **GetCNPJ.Community**, mantido por **Thalison Santos**, derivado de GetCNPJ de **Bruno da Cunha Felipe**. Licença MIT e copyright original preservados. Preparação final registrada em2026-11-24; sem data de publicação, tag ou GitHub Release criada nesta etapa.
 
 ### Adicionado
-- H03: candidato local1.1.0 do commit aprovado a069e0d, inspecionado com cinco targets/proveniência/hash documentados; consumidores independentes net48/WinForms/net8 por fonte local/cache isolado,24 cenários sintéticos cada, mais guia docs/INTEGRATION.md. Build sem avisos/erros,450 testes por runtime e20 cenários offline preservados/aprovados. Estado preparada para homologação manual no SysEmpresa; integração efetiva pendente, sem consultas reais novas ou publicação.
-- H02.1: complemento manual autorizado executado com ferramenta existente: quatro alfanuméricas dirigidas/sync, automática numérica/async e automática alfanumérica/sync. Seis GETs de até12, todos HTTP200, sucesso/identidade correspondente, intervalos21s respeitados. Suporte operacional alfanumérico confirmado por teste real autorizado nos quatro provedores para a amostra/data/endpoint; modos automáticos encerraram no primeiro sucesso CNPJWS, sem exercer transição real após falha. Evidências/campos/limitações em docs/HOMOLOGATION.md. Sem incompatibilidade comprovada ou alteração de adaptador/testes existentes;450 testes por target e20 cenários offline aprovados, rebuild sem avisos/erros.
-- H02: console manual independente em tools/GetCNPJ.Homologation, seleção de provedor/fallback e sync/async, prévia sem rede, medição HTTP/campos/consistência e parada em bloqueios; 20 cenários auxiliares com HTTP sintético. Plano e resultados em docs/HOMOLOGATION.md. Homologação parcial: somente quatro consultas numéricas dirigidas/async autorizadas, HTTP 200/identidade correspondente nos quatro provedores, sem defeito comprovado de adaptador. Tentativa TLS sem HTTP registrada separadamente. Consultas alfanuméricas/sync/fallback reais não autorizadas/não executadas; nenhuma consulta real na suíte/CI/pacote.
-- H01: 90 casos de nulabilidade/ausência, incluindo todos os 35 DTOs com propriedades ausentes e null, modelos públicos, serviços e respostas incompletas. Suíte atual com 450 casos por target (1800 execuções aprovadas), preservados os 360 casos anteriores.
-- Preparação de GetCNPJ.Community 1.1.0, documentação de geração/inspeção/instalação local e futura publicação manual em docs/RELEASE.md. Namespace e assembly GetCNPJ preservados; AssemblyVersion 1.0.0.0 mantida e FileVersion 1.1.0.0.
-- Matriz documental dos quatro provedores em docs/PROVIDERS.md e inventário/auditoria de todas as dependências em docs/DEPENDENCIES.md, verificados em 2026-11-24, sem consultas cadastrais reais.
-- Endereco.CodigoIbge e flags nullable SimplesNacional.OptanteInformado/OptanteSimeiInformado e InscricaoEstadual.AtivoInformado; distinguem informação desconhecida de negativa, preservando os bools e ToString existentes. Adições podem aparecer na serialização dos modelos pelo consumidor.
-- Na T06, 79 casos sintéticos de contratos/mapeamento/identidade/erros JSON e fallback ampliaram a suíte para 360 casos por target (1440 execuções aprovadas), preservados 281 anteriores com quatro expectativas corrigidas de listas [null]. NuGetAudit/all habilitado em restore/CI.
-- Diretrizes de manutenção e colaboração entre agentes de IA.
-- Auditoria técnica inicial, roadmap e controle de progresso.
-- Projeto xUnit integrado à solução, com HTTP simulado e três testes iniciais executados em net48, net481, net8.0 e net9.0.
-- Configuração para falhar quando não houver testes descobertos e instruções de validação em tests/README.md.
-- NuGet.Config com fonte pública explícita para restauração independente das fontes privadas da máquina.
-- Classe independente GetCNPJ.Validation.CnpjValidator para validar e normalizar CNPJs numéricos e alfanuméricos e aplicar a máscara, com cálculo de DV conforme manual oficial RFB/Serpro.
-- Testes do exemplo oficial 12.ABC.345/01DE-35, vetores sintéticos, zeros iniciais, DVs, formato, cultura e caracteres proibidos; testes HTTP simulados dos quatro adaptadores para preservar letras nas URLs e respostas. Suíte ampliada para 117 casos por target executável.
-- Interface opcional IAtomicRateLimiter e SlidingWindowRateLimiter.AcquireAsync para aquisição e registro atômicos, preservando os quatro membros de IRateLimiter.
-- 28 casos de testes de concorrência, expiração, limites por provedor, cancelamento, Reset, parâmetros, registro único e compatibilidade; suíte ampliada para 145 casos por target executável na T03.
-- 44 casos de timeout/fallback e cancelamento em provedores falsos/HTTP simulado, incluindo timer nativo de HttpClient sem rede; suíte ampliada para 189 casos por target executável na T04.
-- Na T05, 92 casos de recursos HTTP, com respostas/conteúdos/streams/handlers/clientes rastreáveis, falhas e reutilização, ampliaram a suíte para 281 casos por target executável.
 
-### Alterado
-- H02.1 registrada como concluída conforme revisão ChatGPT de relatórios/metadados e CI remoto informados pelo mantenedor:45470735591, commit a069e0decc0163f78f9788d204189e4b0d8055e0. Não certifica integração SysEmpresa; nupkg H03 preserva exatamente os documentos do commit aprovado, sem incorporar este registro posterior.
-- H02 original registrada com revisão ChatGPT dos principais trechos e CI remoto conforme mantenedor: execução45467304721, commit5e07ff467fa8d917586c3c32f990b54686547836. Não equivale a revisão integral ou validação remota da H02.1 local. README/metadados distinguem homologação pontual numérica/alfanumérica de garantia de disponibilidade/cobertura integral; versão1.1.0 mantida e candidato histórico não regenerado.
-- H01 registrada como revisada pelo ChatGPT nos principais trechos e validada remotamente conforme mantenedor: GitHub Actions 45461414433, commit 9fcb8b893fc30b18371aff9faf44d153f1de0557. Escopo de revisão limitado; não comprova operação dos serviços. H02 preserva versão/contratos/cinco targets e 450 testes por target, sem regenerar o candidato histórico.
-- T07 registrada como revisada pelo ChatGPT nos metadados/licença/empacotamento documentado/CI e validada remotamente conforme mantenedor: execução 45450063413, commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Candidato anterior não contém H01 e deve ser regenerado após homologação a partir de commit aprovado.
-- H01: anotações nullable corretas em propriedades opcionais dos modelos públicos, retornos dos provedores e Format/FormatCnpj, preservando assinaturas CLR. DTOs internos representam ausência com null, inclusive IDs numéricos e itens de listas. Recompilação de consumidores/overrides pode exigir novas checagens e anotações; matriz em docs/RELEASE.md. Sem versão/dependência/framework novo e sem supressão de diagnósticos.
-- T06 validada remotamente conforme mantenedor: GitHub Actions 45443368700, commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão técnica ChatGPT apenas parcial, sem bloqueios nos trechos revisados; não equivale a revisão integral ou teste das APIs reais.
-- Metadados do fork, autoria original/mantenedor, URLs, descrição, tags e instalação atualizados. GetCNPJ e GetCNPJ.Community não devem coexistir no mesmo grafo por compartilharem GetCNPJ.dll/tipos.
-- T05 registrada como concluída local e remotamente conforme revisão ChatGPT/validação GitHub Actions informadas pelo mantenedor: execução 45435902138, commit 038723f43c67f5527339a10cc5856625f555635b.
-- System.Text.Json atualizado de 8.0.5 para patch estável 8.0.6 somente em netstandard2.0/net48/net481; net8/net9 usam componente do framework. Dependências de testes mantidas após auditoria direta/transitiva sem vulnerabilidades conhecidas reportadas. STJ 8.0.5 já corrigia CVE-2024-43485; atualização não atribui essa vulnerabilidade à versão anterior.
-- Na T06, evidência documental alfanumérica confirmada para BrasilAPI/ReceitaWS; CNPJ.WS/CNPJá sem documentação explícita confirmada. Na H02.1, os quatro receberam confirmação operacional por teste real autorizado; isso não altera retroativamente a evidência documental ou garante todos os cadastros.
-- CI em Windows para restore/build/test em push e pull request, com actions atualizadas e permissão de leitura.
-- Fontes e recursos de testes e artefatos locais excluídos dos itens do projeto principal; cinco targets originais preservados.
-- Métodos protegidos de validação, normalização e formatação da base delegam à classe central, sem alterar suas assinaturas. Letras ASCII minúsculas são normalizadas para maiúsculas e espaços externos são tolerados; DVs permanecem numéricos.
-- Documentação registra a conclusão remota da T01 informada pelo mantenedor (execução 45415710723, commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475) e a validação local da T02.
-- Conclusão remota da T02 registrada conforme revisão/validação informadas pelo mantenedor (execução 45418466167, commit e4863f10bbd4da2bcddfba59a54364607373b0ea).
-- Conclusão remota da T03 registrada conforme revisão/validação informadas pelo mantenedor (execução 45428236555, commit 45d4a6476a7a661da96877295679849efdd32c8a).
-- Conclusão remota da T04 registrada conforme revisão/validação informadas pelo mantenedor (execução 45431741152, commit 7dd0a9db79bdc6c9a1b8276adac5d7e6d05a8aa1).
-- Anotações nullable locais nos argumentos opcionais de CnpjClient, sem mudança de assinatura CLR ou comportamento de null aceito.
-- Expiração do limiter usa tempo decorrido de Stopwatch, com esperas fora dos locks e compatibilidade com intervalos positivos longos. Limites e intervalos não positivos passam a ser rejeitados no construtor; CnpjClient valida antes de criar seu HttpClient.
+- Validação independente de CNPJ numérico/alfanumérico em CnpjValidator, com normalização preservando letras, DV conforme RFB/Serpro e formatação. Validade local não comprova cadastro.
+- IAtomicRateLimiter/AcquireAsync opcionais, preservando implementações existentes de IRateLimiter; testes de concorrência, cancelamento, Reset e expiração.
+- Endereco.CodigoIbge e flags nullable OptanteInformado/OptanteSimeiInformado/AtivoInformado para distinguir ausência de negativa fiscal.
+- Infraestrutura de testes e CI sem publicação:450 casos por framework executável,20 cenários offline do console e consumidores independentes net48/WinForms/net8 com24 cenários cada na H03.
+- Console manual de homologação fora da suíte/CI/pacote; relatórios de provedores, dependências, integração, candidatos, notas e procedimento de release.
 
 ### Corrigido
-- H01: NullReferenceException em FailedProviders com itens null e validação de provedores null; coleção de provedores capturada uma vez para evitar mutações externas. CreateSuccess rejeita dado obrigatório null. Mapeamentos não fabricam logradouro vazio, códigos zero ou descrições com separadores quando as partes estão ausentes; CNAE nullable lido após pattern seguro. Porte BrasilAPI com tipo objeto/lista/bool rejeitado como JSON inválido.
-- H01: 255 diagnósticos por target (1275 avisos) resolvidos por modelagem e fluxo corretos, com rebuild dos cinco targets sem avisos/erros. Nenhum NoWarn/pragma/desativação de Nullable nem preenchimento genérico de dados ausentes. Revisão técnica local das alterações T06 concluída, sem comprovar operação das APIs externas.
-- Contratos BrasilAPI: códigos numéricos, porte textual, nomes atuais de matriz/filial e logradouro, e-mail/IBGE. CNPJá: company.id textual tolerado no DTO interno, head ausente não vira FILIAL, IBGE e e-mail preenchido mapeados. CNPJ.WS tolera campos auxiliares string/objeto/null inconsistentes no schema/exemplos; listas ignoram itens null.
-- CNPJ retornado ausente/inválido/divergente rejeitado na base (incluindo subclasses que a utilizam). Erros explícitos dentro de HTTP 200 deixam de ser sucesso; ReceitaWS ERROR gera ProviderException na consulta direta em vez de null, mantendo falha/fallback no cliente. Dados parciais com identidade válida continuam aceitos. JsonException preservada para JSON inválido; documentos/respostas descartados nas falhas.
-- SIMEI isolado preservado; flags fiscais ausentes permanecem desconhecidas nas propriedades nullable. Capital textual não interpreta vírgula malformada como milhar; datas usam formatos documentados invariantes. Sem alterar máscara histórica de CNAE, apresentação de CNPJ ReceitaWS ou inferir situação tributária de lista IE vazia.
-- Normalização deixa de remover letras e caracteres arbitrários. Entradas com máscara incorreta, símbolos, Unicode, espaços internos ou letras nos DVs são rejeitadas por InvalidCnpjException, em vez de poderem se transformar em outro identificador. Mensagens textuais de erro foram ajustadas; CNPJs numéricos válidos continuam aceitos.
-- Corrida entre checagem e registro no limiter embutido corrigida pelo caminho atômico dos provedores, sem registro duplicado. Reset, GetAvailableRequests e RecordRequest compartilham a proteção da fila por provedor. Reset não desconecta chamadas em andamento e acorda esperas; registros expiram na fronteira exata da janela. Cancelamento durante espera não consome vaga.
-- Timeout/OperationCanceledException sem cancelamento do token do consumidor deixa de interromper fallback automático. Consulta direcionada retorna falha do provedor sem fallback. Cancelamento explícito encerra novas tentativas antes/depois das chamadas e após espera do limiter. Preservadas prioridade, falhas completas quando todos falham, aquisição atômica, contratos públicos e ausência de retry.
-- Respostas HTTP agora descartadas nas consultas dos quatro provedores e na verificação de disponibilidade herdada da base, incluindo conteúdo/streams em sucesso, falhas HTTP/JSON/mapeamento/leitura e fallback.
-- HttpClient próprio limpo quando a configuração/construção de CnpjClient falha; Dispose repetido/concorrente libera a instância uma única vez. HttpClient externo nunca descartado pelo wrapper; compartilhamento/reutilização e buffering/timeout preservados.
+
+- Corrida entre espera e registro no limiter embutido; filas internas protegidas, limites por provedor independentes, aquisição única, tempo monotônico e parâmetros inválidos rejeitados.
+- Timeout/falha de um provedor permite fallback automático; cancelamento explícito interrompe novas tentativas e consultas dirigidas permanecem sem fallback ou retry. Falhas completas preservadas.
+- Descarte de respostas/conteúdos/streams em sucesso, erros HTTP/JSON, disponibilidade e fallback. Reutilização de HttpClient e propriedade externo/interno preservadas, com limpeza em falha de construção e Dispose seguro repetido.
+- DTOs/mapeamentos de CNPJ.WS, ReceitaWS, BrasilAPI e CNPJá: tipos/aliases, listas com null, IBGE/CNAEs/datas/capital/flags fiscais. Identidade ausente/inválida/divergente e envelopes de erro HTTP200 rejeitados; respostas parciais com identidade válida continuam aceitas.
+- Nulabilidade real nos modelos/DTOs/serviços:1275 avisos históricos resolvidos sem supressões ou dados fabricados; guardas contra NRE, FailedProviders com itens null, CreateSuccess(null), configuração de provedores e coleção capturada uma vez.
+
+### Alterado e compatibilidade
+
+- Identidade aprovada: PackageId GetCNPJ.Community, Title GetCNPJ Community, versão1.1.0; namespace/assembly GetCNPJ e AssemblyVersion1.0.0.0 preservados, FileVersion1.1.0.0.
+- Cinco targets preservados: netstandard2.0, net48, net481, net8.0 e net9.0. Mesmas assinaturas públicas CLR; anotações nullable podem exigir checagens/ajustes em consumidores/overrides ao recompilar.
+- Entradas com caracteres proibidos/máscara incorreta agora são rejeitadas em vez de transformadas por remoção indiscriminada. Minúsculas ASCII e espaços externos são conveniências de entrada; DVs continuam numéricos.
+- Lista de IE vazia não comprova não contribuinte. Bools legados mantêm suas projeções; usar propriedades nullable para distinguir desconhecido. Campos aditivos podem aparecer na serialização do consumidor. ReceitaWS preserva a apresentação recebida e máscaras públicas históricas de CNAE continuam compatíveis.
+- System.Text.Json8.0.5→8.0.6 apenas nos legados; net8/net9 usam framework. System.Net.Http4.3.4 removido em favor da plataforma. Auditoria direta/transitiva não reportou vulnerabilidades conhecidas; não se atribui CVE-2024-43485 a8.0.5, que já era correção.
+- README/exemplos/modelos e documentação sincronizados com ausência fiscal, propriedade HTTP, evidência operacional e migração. GetCNPJ e GetCNPJ.Community não podem coexistir no mesmo grafo.
 
 ### Removido
-- Referência comercial FeTx dos metadados e logotipo dos metadados/conteúdo NuGet e README, sem comprovação específica de autorização de reutilização da identidade visual. LICENSE/copyright/créditos originais preservados; logo.png permanece somente como arquivo histórico no repositório.
-- Pacote System.Net.Http 4.3.4 e transitivas exclusivas, substituídos por referência ao assembly da plataforma nos targets Framework (biblioteca e testes), sem criar/descartar HttpClient adicional.
-- Empacotamento e publicação NuGet do workflow, incluindo referência ao segredo de publicação.
-- Geração automática de pacote no build; projeto de testes não empacotável.
 
-T06 validada remotamente pelo mantenedor; revisão técnica parcial não substitui revisão integral nem comprova operação das APIs. T07 corresponde à identidade/preparação do pacote 1.1.0, sem autorização de publicação; evidências de build/testes/empacotamento/consumidores e pendências constam em AUDIT.md, PROGRESS.md e docs/RELEASE.md. Chamadas legadas separadas WaitIfNeededAsync/RecordRequest continuam disponíveis e não constituem aquisição atômica; implementações externas antigas mantêm sua semântica. Validade de CNPJ não comprova cadastro ou operação externa. Nenhum commit, push, merge, tag, GitHub Release ou publicação nesta tarefa; versão 1.2.0 não iniciada.
+- Publicação/pack automáticos e segredo NuGet do workflow; geração de pacote em build.
+- Referência comercial FeTx dos metadados e logotipo da distribuição/README sem comprovação específica de autorização. Créditos e LICENSE originais preservados; logo histórico permanece somente no repositório.
+
+### Homologação e limites
+
+- T01–T07, H01, H02, H02.1 e H03 concluídas nos escopos documentados. Revisões/CI remotos informados pelo mantenedor, com limites preservados em AUDIT.md/PROGRESS.md.
+- H02/H02.1: quatro consultas numéricas dirigidas e seis complementares autorizadas, com HTTP200/identidade correspondente. Operação alfanumérica pontual confirmada nos quatro provedores. Automáticas encerraram em CNPJWS; transição real após falha não observada, coberta por HTTP simulado.
+- H03: revisão ChatGPT e CI45475015057 para2e676ae4055cff9ab0497f2d644b8c2c305c7f0b informados. Mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria ante a original. Relato manual sem detalhes de casos/métricas/ambiente; não é benchmark ou certificação de todos os fluxos.
+- Candidatos T07/H03, caminhos, tamanhos e hashes preservados em docs/RELEASE.md. Nenhum pacote definitivo gerado nesta preparação: dependerá de commit final aprovado, árvore limpa, CI, inspeção, consumidores e autorizações externas separadas.
+- Provedores sem SLA/cobertura fiscal garantidos; termos/cotas e informações ausentes permanecem aplicáveis. Framework4.8 testado localmente sobre4.8.1; netstandard compilado. Não houve consulta real nova nem implementação1.2.0 nesta preparação.
 
 ## [1.0.0] — Versão original herdada
-- Código herdado do projeto GetCNPJ de azumamagus.
-- Consultas por múltiplos provedores, fallback e rate limiting.
-- Histórico original e licença MIT a preservar.
+
+Código original de Bruno da Cunha Felipe ([azumamagus/GetCNPJ](https://github.com/azumamagus/GetCNPJ)), com múltiplos provedores, fallback e rate limiting. O histórico de evolução e validações T01–H03 permanece em AUDIT.md, PROGRESS.md e nos relatórios em docs/; a consolidação acima descreve o resultado1.1.0 sem substituir essas evidências.

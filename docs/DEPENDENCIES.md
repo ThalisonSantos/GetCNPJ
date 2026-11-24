@@ -1,5 +1,13 @@
 # Dependências — auditoria T06
 
+## Auditoria final de1.1.0 — 2026-11-24
+
+Restore com NuGetAudit=true/Mode=all e listagens direta/transitiva/vulnerável da solução repetidos na preparação final. Nenhuma vulnerabilidade conhecida reportada, sem atualização de versões ou supressão de avisos; inventário `artifacts/ReleasePreparation/packages.json`, resultado `vulnerabilities.json`, restore aprovado `restore-authorized.log`. A primeira tentativa restrita retornou NU1900 e não foi considerada auditoria válida; acesso autorizado ao NuGet concluiu sem avisos. Auditoria não cobre componentes do runtime/Windows ou falhas ainda não catalogadas.
+
+Metadados/referências condicionais revisados e mantidos: STJ8.0.6 somente nos legados, HTTP da plataforma, frameworks/contratos preservados. O inventário e as justificativas T06 abaixo permanecem históricos e compatíveis com o grafo final; não afirmam que toda versão é a mais recente. Procedimento de revalidação do futuro commit definitivo em [PUBLICATION.md](PUBLICATION.md).
+
+## Registro histórico T06
+
 Data: **2026-11-24**. Solução inteira, todos os targets e pacotes diretos/transitivos, incluindo infraestrutura de testes e referências implícitas do SDK. Fonte: NuGet.org (NuGet.Config). Inventário e relatórios locais: `artifacts/t06-packages-before.json`, `t06-packages-after.json`, `t06-vulnerable-before.json`, `t06-vulnerable-after.json` (não versionados; reproduzíveis pelos comandos abaixo).
 
 ## Decisões por framework
