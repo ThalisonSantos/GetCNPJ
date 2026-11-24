@@ -16,6 +16,8 @@ Versões propostas para planejamento interno; sujeitas à revisão de compatibil
 
 Ordem proposta: T01, T02, T03, T04, T05, T06, T07. A separação de CI e publicação deve ser feita antes de qualquer merge em main.
 
+Estado em 2026-11-24: T01 concluída localmente, com build dos cinco targets e 12 execuções de testes aprovadas (três por target executável). Workflow sem publicação preparado; primeira execução no GitHub Actions depende de envio autorizado pelo mantenedor. T02 permanece pendente e não foi iniciada. Evidências e limitações em PROGRESS.md e AUDIT.md.
+
 Critério de saída: build e testes aprovados nos ambientes pertinentes, compatibilidade revisada, documentação atualizada e autorização específica para release.
 
 ## 1.2.0 — Resiliência

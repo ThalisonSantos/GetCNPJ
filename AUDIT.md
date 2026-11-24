@@ -11,14 +11,24 @@ Escopo: inspeção estática inicial do projeto original. O mantenedor informou 
 | A03 | Alta | Confirmado por inspeção | Services/CnpjService.cs propaga toda OperationCanceledException, inclusive em consultas específicas. Timeouts HTTP podem impedir fallback. Distinguir cancelamento explícito de timeout e testar ambos. |
 | A04 | Média | Parcialmente confirmado | CnpjProviderBase.IsAvailableAsync não descarta HttpResponseMessage explicitamente. Revisar todos os FetchDataAsync, respostas HTTP e ciclo de vida do HttpClient. |
 | A05 | Alta | Dependências identificadas; risco a avaliar | GetCNPJ.csproj referencia System.Text.Json 8.0.5 e System.Net.Http 4.3.4. Auditar vulnerabilidades e compatibilidade antes de atualizar; não presumir vulnerabilidade sem verificação. |
-| A06 | Alta | Confirmado por inspeção | Não foi localizado projeto de testes na árvore original. Criar testes e evitar inclusão acidental das fontes de teste pelo projeto SDK situado na raiz. |
-| A07 | Alta | Confirmado por inspeção | .github/workflows/main.yml publica NuGet em push para main e usa checkout@main e setup-dotnet@v1. Separar CI de publicação; atualizar actions e exigir release autorizada. |
+| A06 | Alta | Resolvido na T01; cobertura inicial | Projeto tests/GetCNPJ.Tests integrado à solução; fontes/recursos de testes excluídos da biblioteca. Três testes HTTP determinísticos aprovados em cada um dos quatro targets executáveis (12 execuções). Itens Compile avaliados sem fontes de tests/. Cobertura funcional ampliada fica para tarefas posteriores. |
+| A07 | Alta | Corrigido localmente na T01; execução remota pendente | Workflow substituído por restore/build/test em Windows, com checkout@v7, setup-dotnet@v6 e contents: read. Removidos pack, push e segredo NuGet; GeneratePackageOnBuild desabilitado. Workflow revisado localmente; GitHub Actions não executado porque não houve push. |
 | A08 | Alta | Confirmado por inspeção | GetCNPJ.csproj mantém PackageId GetCNPJ, versão 1.0.0 e URL upstream. Definir identidade disponível e créditos antes da publicação. |
 | A09 | Alta | Pendente | Revisar CNPJ.WS, BrasilAPI, CNPJá e ReceitaWS: endpoints, mapeamentos, dados ausentes, limites, termos e suporte alfanumérico. |
 | A10 | Média | Pendente | Revisar métodos síncronos, API pública, nulabilidade, modelos, classificação de erros e gestão do HttpClient. |
 
 ## Procedimento de auditoria
 Para cada item registrar evidência, reprodução, impacto, alteração proposta, testes de regressão e resultado. Não marcar problema como resolvido apenas porque o código foi modificado.
+
+## Validação T01 — 2026-11-24
+- Base: develop / bbc8a79; Windows 10.0.26200 x64, SDK 11.0.100 / MSBuild 18.12.2. O uso desse SDK local não adiciona targets .NET 10/11 à biblioteca.
+- Restore aprovado após isolar NuGet.org em NuGet.Config e restaurar dependências com acesso de rede autorizado. A primeira tentativa falhou com NU1301, fonte privada herdada e TLS no sandbox.
+- Build Release aprovado para netstandard2.0, net48, net481, net8.0 e net9.0: 0 erros e 1290 avisos de nulabilidade no código existente. Não houve alteração funcional nem supressão dos avisos.
+- Teste global inicial: net48/net481/net8.0 aprovados; net9.0 abortado por ausência do runtime. Instalado runtime 9.0.23 em artifacts/dotnet9 e executado net9.0 com RunConfiguration.DotNetHostPath: 3/3 aprovados. Reexecuções por target com runsettings: 12 execuções aprovadas, nenhuma falha ou ignorado. Evidências TRX em TestResults/ (não versionadas).
+- A instalação local expôs resolução indevida de referências do .NET Framework para DLLs em artifacts/; uma recompilação falhou. DefaultItemExcludes passou a excluir artifacts/** e a recompilação completa foi aprovada. Fontes de tests/ também permanecem excluídas.
+- netstandard2.0 verificado por compilação; não tem runtime próprio. Os testes net48/net481 usam o runtime .NET Framework instalado nesta máquina, sem comprovar uma instalação isolada de 4.8.
+- Nenhum provedor real consultado. Nenhum pacote gerado pelo build, publicado ou enviado. LICENSE, autoria, API e dependências de produção preservadas. T02 não iniciada.
+- Proteção contra descoberta vazia reproduzida com filtro sem correspondência: execução retornou código 1 conforme esperado. O SDK 11 emitiu aviso de VSTEST_ARTIFACTS_DIRECTORY ausente com Test SDK 17.12.0, sem impedir a descoberta e aprovação dos testes reais.
 
 ## Limitações
 As falhas de concorrência e timeout ainda não foram reproduzidas em testes. Suporte alfanumérico dos provedores, disponibilidade das APIs e vulnerabilidades atuais não foram verificados. Ausência de IE no retorno não comprova condição tributária. A auditoria deve evoluir à medida que o código for revisado.
