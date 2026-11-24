@@ -43,7 +43,7 @@ Como conveniência de entrada, letras ASCII minúsculas são convertidas para ma
 
 `Format` aplica apenas a máscara a strings de 14 posições e preserva os caracteres; não valida DVs nem comprova cadastro. Outros valores são mantidos para preservar o comportamento de apresentação existente.
 
-Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam letras nas URLs e respostas. Em 2026-11-24, **BrasilAPI e ReceitaWS têm suporte alfanumérico confirmado por documentação oficial**; **CNPJ.WS e CNPJá permanecem não confirmados**. Não houve teste real autorizado. Validade local não comprova cadastro ou disponibilidade. Consulte a [matriz de provedores, contratos, fontes e termos](docs/PROVIDERS.md).
+Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam letras nas URLs e respostas. Em 2026-11-24, **BrasilAPI e ReceitaWS têm suporte alfanumérico confirmado por documentação oficial**; **CNPJ.WS e CNPJá permanecem não confirmados**. A H02 executou quatro consultas reais numéricas dirigidas/assíncronas autorizadas, uma por provedor, todas com HTTP 200 e CNPJ correspondente. Isso não comprova suporte operacional alfanumérico: consultas reais alfanuméricas, síncronas e com fallback não foram autorizadas nem executadas. Validade local não comprova cadastro ou disponibilidade futura. Consulte a [matriz de provedores, contratos, fontes e termos](docs/PROVIDERS.md) e as [evidências e console de homologação manual](docs/HOMOLOGATION.md).
 
 ## Dados disponíveis e dependências
 

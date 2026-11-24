@@ -1,6 +1,8 @@
 # Provedores — auditoria T06
 
-Verificação documental: **2026-11-24**. Escopo: os quatro endpoints públicos usados pelo GetCNPJ. Acesso a documentação e código oficial não equivale a consulta cadastral. **Nenhuma consulta real foi executada ou autorizada nesta tarefa.** Testes usam JSON sintético e handlers locais; não comprovam disponibilidade operacional, atualização ou existência de cadastro.
+Atualização H02 em 2026-11-24: console e evidências em [HOMOLOGATION.md](HOMOLOGATION.md). Mantenedor autorizou somente quatro consultas numéricas dirigidas/async ao Banco do Brasil matriz: **os quatro provedores retornaram HTTP 200, sucesso e CNPJ correspondente**. Uma tentativa TLS inicial sem HTTP registrada separadamente; quatro GETs com resposta, cinco tentativas no handler. Sem incompatibilidade de adaptador comprovada. Alfanumérico real, sync e fallback real não autorizados/não executados; **não há mudança nas classificações alfanuméricas abaixo**. Homologação parcial não garante disponibilidade futura ou consistência fiscal para outros cadastros. H01 validada remotamente pelo mantenedor (Actions 45461414433, commit 9fcb8b893fc30b18371aff9faf44d153f1de0557), com revisão dos principais trechos. As limitações históricas da coleta documental T06 permanecem registradas.
+
+Verificação documental T06: **2026-11-24**. Escopo: os quatro endpoints públicos usados pelo GetCNPJ. Acesso a documentação e código oficial não equivale a consulta cadastral. **Na T06 nenhuma consulta real foi executada ou autorizada; na H02 houve as quatro consultas numéricas descritas acima.** A suíte automatizada continua exclusivamente com JSON sintético e handlers locais; esses testes não comprovam disponibilidade operacional, atualização ou existência de cadastro.
 
 ## Matriz de acesso
 

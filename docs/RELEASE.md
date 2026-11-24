@@ -1,10 +1,10 @@
 # GetCNPJ Community — preparação de release 1.1.0
 
-Atualização **H01 — 2026-11-24**: T07 validada remotamente conforme mantenedor na execução [45450063413](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45450063413), commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Revisão ChatGPT delimitada a metadados, licença, empacotamento documentado e CI. H01 concluída **localmente**, com rebuild sem avisos/erros e 450 testes aprovados por target; aguarda homologação/CI remoto.
+Atualização **H01/H02 — 2026-11-24**: T07 validada remotamente conforme mantenedor na execução [45450063413](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45450063413), commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Revisão ChatGPT delimitada a metadados, licença, empacotamento documentado e CI. H01 validada remotamente na execução [45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433), commit 9fcb8b893fc30b18371aff9faf44d153f1de0557, com revisão dos principais trechos pelo ChatGPT informada pelo mantenedor. Rebuild sem avisos/erros e 450 testes aprovados por target. H02 em andamento, evidências em docs/HOMOLOGATION.md.
 
 **O nupkg descrito abaixo é registro histórico da T07 e não contém H01.** Não foi regenerado nesta tarefa. Após homologação, gerar novamente a partir de commit aprovado e repetir inspeção/consumo/hash. O hash anterior não identifica a implementação atual. As seções de build/avisos/empacotamento da T07 abaixo são históricas, com resultado H01 atualizado na próxima seção.
 
-Nenhuma publicação, tag, GitHub Release, commit, push ou merge nesta tarefa; versão mantida em **1.1.0**. H02/H03 e 1.2.0 não iniciadas. Publicação continua dependendo de autorização específica.
+Nenhuma publicação, tag, GitHub Release, commit, push ou merge nesta tarefa; versão mantida em **1.1.0**. H03 e 1.2.0 não iniciadas. Publicação continua dependendo de autorização específica.
 
 ## Resultado H01 e compatibilidade de nulabilidade
 
@@ -228,12 +228,20 @@ Ambos retornaram saída 0 e validações aprovadas, incluindo rejeição dos DVs
 
 ## Limitações e pendências antes de publicar
 
-- T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT da T06 foi parcial; revisão técnica local complementar foi concluída na H01 conforme seção atual. T07 recebeu validação/revisão delimitada informada acima. H01 ainda aguarda homologação/CI remoto.
-- Nenhum provedor real foi consultado. BrasilAPI/ReceitaWS possuem confirmação documental alfanumérica; CNPJ.WS/CNPJá não confirmados. **Não há suporte operacional alfanumérico comprovado por teste real autorizado em nenhum dos quatro.** Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis.
+- T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT da T06 foi parcial; revisão técnica local complementar foi concluída na H01 conforme seção atual. T07 e H01 receberam validação/revisão delimitada informada acima; isso não conclui a homologação operacional H02.
+- H02 executou somente quatro consultas numéricas dirigidas/async autorizadas, com HTTP 200 e identidade correspondente nos quatro provedores; sem incompatibilidade comprovada. Não certifica operação geral. BrasilAPI/ReceitaWS possuem confirmação documental alfanumérica; CNPJ.WS/CNPJá não confirmados. **Não há suporte operacional alfanumérico comprovado por teste real autorizado em nenhum dos quatro.** Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis.
 - Os 1275 avisos históricos foram resolvidos na H01; modelos agora anotam ausência corretamente. API CLR/namespace/assembly preservados; 450 casos por target, incluindo os 360 anteriores. Zero avisos/testes aprovados não demonstram ausência de toda regressão possível ou validam dados de APIs reais.
 - Auditoria NuGet não reportou vulnerabilidades conhecidas nessa data, sem garantir ausência de falhas não catalogadas ou segurança do Windows/runtime. Manter runtimes corrigidos; não estender suporte oficial dos frameworks por inferência.
 - Logotipo permanece fora do pacote. Nome do pacote não reservado nem upload testado. Revalidar disponibilidade/permissões da conta na ocasião autorizada.
 - Candidato gerado a partir de árvore com alterações locais não commitadas; hash/proveniência documentados. Quando houver autorização para versionamento/release, gerar novamente a partir da revisão aprovada e registrar o novo hash, repetindo validação/consumo. Não alterar silenciosamente o artefato aprovado.
+
+## H01 validada e H02 parcialmente homologada — 2026-11-24
+
+Conforme mantenedor, revisão ChatGPT dos principais trechos da H01 e [GitHub Actions 45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433) aprovados no commit `9fcb8b893fc30b18371aff9faf44d153f1de0557`. Não equivale a revisão integral nem a teste real das APIs. O candidato T07 permanece histórico; hash/tamanho anteriores não foram substituídos.
+
+H02: [plano e evidências](HOMOLOGATION.md), console independente `tools/GetCNPJ.Homologation` fora da solução/CI/pacote, prévia sem rede e 20 cenários sintéticos auxiliares. Restore e rebuild completo dos cinco targets aprovados com zero avisos/erros; 450 testes por target executável (1800), com host9 local pela ausência do runtime global. Autorizadas e executadas somente quatro consultas numéricas dirigidas/async: HTTP 200 e identidade correspondente nos quatro provedores; uma tentativa TLS sem HTTP adicional registrada. Sem bloqueios, retries de servidor ou defeito comprovado de adaptador. Alfanumérico/sync/fallback reais não autorizados/não executados; ampliação/repetição depende de nova autorização específica. Suporte operacional alfanumérico permanece inconclusivo; classificações documentais em PROVIDERS.md preservadas. Nenhuma alteração de versão/dependência/API pública, H03 ou geração de pacote nesta etapa.
+
+Após homologação e aprovação de um commit, regenerar o candidato 1.1.0 e repetir restore/build/test, pack, inspeção e consumidores independentes descritos neste documento, registrando novo hash/tamanho/proveniência. Não reutilizar o pacote histórico como se contivesse H01/H02. Publicação exige autorização específica adicional.
 
 ## Publicação manual futura — somente após autorização específica
 

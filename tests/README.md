@@ -1,5 +1,7 @@
 # Testes e CI
 
+H02: os 450 casos por target foram preservados; consultas reais permanecem fora da suíte/CI. O console independente e seus 20 cenários auxiliares de HTTP sintético estão documentados em [docs/HOMOLOGATION.md](../docs/HOMOLOGATION.md). Somente quatro consultas reais numéricas dirigidas/async foram autorizadas e executadas manualmente; resultados pontuais não validam suporte alfanumérico operacional.
+
 O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 450 casos em `net48`, `net481`, `net8.0` e `net9.0` (1800 execuções aprovadas na H01). Preservados os 360 casos anteriores, incluindo os 281 da T05, com quatro expectativas de listas nulas ajustadas na T06 conforme histórico abaixo. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
