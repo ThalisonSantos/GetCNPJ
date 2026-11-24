@@ -22,7 +22,7 @@ namespace GetCNPJ.Interfaces
         /// <summary>
         /// Consulta dados de um CNPJ
         /// </summary>
-        /// <param name="cnpj">CNPJ a ser consultado (apenas números)</param>
+        /// <param name="cnpj">CNPJ numérico ou alfanumérico; suporte da API externa depende do provedor</param>
         /// <param name="cancellationToken">Token de cancelamento</param>
         /// <returns>Dados do CNPJ ou null em caso de erro</returns>
         Task<CnpjData> GetCnpjDataAsync(string cnpj, CancellationToken cancellationToken = default);

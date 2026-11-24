@@ -9,7 +9,7 @@ namespace GetCNPJ.Models
     public class CnpjData
     {
         /// <summary>
-        /// CNPJ formatado (XX.XXX.XXX/XXXX-XX)
+        /// CNPJ numérico ou alfanumérico formatado (XX.XXX.XXX/XXXX-XX), com dois DVs numéricos
         /// </summary>
         public string Cnpj { get; set; }
 

@@ -16,7 +16,10 @@ Versões propostas para planejamento interno; sujeitas à revisão de compatibil
 
 Ordem proposta: T01, T02, T03, T04, T05, T06, T07. A separação de CI e publicação deve ser feita antes de qualquer merge em main.
 
-Estado em 2026-11-24: T01 concluída localmente, com build dos cinco targets e 12 execuções de testes aprovadas (três por target executável). Workflow sem publicação preparado; primeira execução no GitHub Actions depende de envio autorizado pelo mantenedor. T02 permanece pendente e não foi iniciada. Evidências e limitações em PROGRESS.md e AUDIT.md.
+Estado em 2026-11-24:
+- T01 concluída local e remotamente. Mantenedor confirmou sucesso de todas as etapas do GitHub Actions na execução [45415710723](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45415710723), commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475.
+- T02 concluída localmente: classe independente de validação/normalização/formatação, DV conforme manual oficial, compatibilidade numérica e métodos existentes preservados. Build dos cinco targets e 117 casos aprovados por target executável (468 execuções). Quatro adaptadores verificados com HTTP simulado; suporte alfanumérico das APIs externas não confirmado. Endurecimento de entradas inválidas e limitações registrados em PROGRESS.md e AUDIT.md. Sem validação remota desta alteração.
+- T03 permanece pendente, não iniciada. Nenhuma publicação autorizada.
 
 Critério de saída: build e testes aprovados nos ambientes pertinentes, compatibilidade revisada, documentação atualizada e autorização específica para release.
 

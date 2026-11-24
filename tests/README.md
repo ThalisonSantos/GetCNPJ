@@ -1,8 +1,12 @@
 # Testes e CI
 
-O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos três testes em `net48`, `net481`, `net8.0` e `net9.0`. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
+O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 117 casos em `net48`, `net481`, `net8.0` e `net9.0` (468 execuções na T02). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
+
+A T02 adicionou 62 casos da classe independente `CnpjValidator`: CNPJs numéricos com zeros iniciais, exemplo alfanumérico oficial `12.ABC.345/01DE-35`, vetores sintéticos que cobrem A–Z e restos 0/1 nos dois DVs, máscara, letras minúsculas, cultura turca, entradas inválidas e caracteres proibidos. O valor esperado do exemplo oficial foi retirado das páginas 3–4 do [manual da RFB/Serpro](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf); os demais vetores são sintéticos, com DVs calculados separadamente por pesos explícitos.
+
+Mais 52 casos verificam os quatro adaptadores de provedores: 32 combinações de entradas numéricas/alfanuméricas e respostas com/sem máscara preservam o identificador na URL e no mapeamento, e 20 entradas inválidas são rejeitadas antes do HTTP. ReceitaWS mantém o formato recebido, conforme comportamento anterior; os outros três aplicam a máscara. Esses testes não confirmam suporte das APIs externas.
 
 Em Windows, usar SDK com suporte a .NET 9, runtimes .NET 8 e 9 e .NET Framework 4.8.1. Os reference assemblies de .NET Framework devem estar disponíveis pelos targeting packs ou pelo mecanismo de restauração do SDK. Como .NET Framework 4.8.1 substitui 4.8, os testes de ambos os targets usam o runtime instalado; não comprovam execução em uma máquina com apenas 4.8.
 

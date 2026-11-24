@@ -20,9 +20,28 @@ Biblioteca .NET para consulta de CNPJ em APIs públicas brasileiras, com suporte
   - ReceitaWS (https://receitaws.com.br)
   - BrasilAPI (https://brasilapi.com.br)
   - CNPJA (https://open.cnpja.com)
-- 🛡️ **Validação**: Validação automática de dígitos verificadores do CNPJ
+- 🛡️ **Validação**: Validação local de CNPJ numérico e alfanumérico, incluindo dígitos verificadores
 - ⚡ **Async/Await**: API totalmente assíncrona + métodos síncronos para compatibilidade
 - 🎨 **Clean Code**: Seguindo padrões SOLID e melhores práticas
+
+## CNPJ numérico e alfanumérico
+
+A validação independente está em `GetCNPJ.Validation.CnpjValidator`, conforme o [manual de cálculo da Receita Federal/Serpro](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf). São aceitos 12 caracteres ASCII de `0–9` ou `A–Z`, seguidos de dois DVs numéricos, sem máscara ou na máscara padrão. CNPJs numéricos válidos continuam aceitos.
+
+```csharp
+using GetCNPJ.Validation;
+
+// Exemplo do manual oficial; não indica existência de cadastro.
+var cnpj = CnpjValidator.ValidateAndNormalize("12.abc.345/01de-35"); // 12ABC34501DE35
+var valido = CnpjValidator.IsValid(cnpj);                           // true
+var formatado = CnpjValidator.Format(cnpj);                       // 12.ABC.345/01DE-35
+```
+
+Como conveniência de entrada, letras ASCII minúsculas são convertidas para maiúsculas e espaços externos são removidos. Máscaras incorretas, espaços internos, acentos, caracteres Unicode e letras nas duas posições dos DVs são rejeitados com `InvalidCnpjException` por `ValidateAndNormalize`; `IsValid` retorna `false`. A normalização não descarta letras ou símbolos para tentar produzir outro identificador. Esse tratamento substitui a antiga remoção indiscriminada de caracteres não numéricos.
+
+`Format` aplica apenas a máscara a strings de 14 posições e preserva os caracteres; não valida DVs nem comprova cadastro. Outros valores são mantidos para preservar o comportamento de apresentação existente.
+
+Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam as letras na URL e nos dados retornados, conforme testes com HTTP simulado. **O suporte a CNPJ alfanumérico nas APIs externas permanece não confirmado.** Validade local não comprova cadastro existente ou disponibilidade no provedor. Nenhuma consulta real foi usada nesses testes.
 
 ## 📦 Instalação
 
@@ -47,7 +66,7 @@ using System;
 // Criar cliente
 using var client = new CnpjClient();
 
-// Consultar CNPJ (aceita formatado ou apenas números)
+// Consultar CNPJ (numérico ou alfanumérico, com ou sem máscara; suporte externo depende da API)
 var result = await client.GetAsync("03.312.791/0001-83");
 
 if (result.Success)

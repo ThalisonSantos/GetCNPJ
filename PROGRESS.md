@@ -7,8 +7,8 @@
 - [x] Auditoria estática inicial registrada em AUDIT.md.
 - [x] Documentação inicial preparada para inclusão local.
 - [x] Documentação adicionada e commitada pelo mantenedor em develop (bbc8a79).
-- [x] T01 — Infraestrutura de testes e CI sem publicação (concluída localmente; CI remoto pendente de envio autorizado).
-- [ ] T02 — CNPJ alfanumérico.
+- [x] T01 — Infraestrutura de testes e CI sem publicação (validada local e remotamente).
+- [x] T02 — CNPJ alfanumérico (concluída localmente; suporte externo não confirmado).
 - [ ] T03 — Rate limiter.
 - [ ] T04 — Timeout e fallback.
 - [ ] T05 — Recursos HTTP.
@@ -26,7 +26,7 @@
 
 ## 2026-11-24 — Codex — T01
 - Branch / commit de referência: develop / bbc8a79; árvore limpa no início.
-- Estado: concluído localmente; workflow remoto não executado.
+- Estado: concluído; validação remota posterior informada pelo mantenedor na execução 45415710723 (ver confirmação abaixo).
 - Objetivo e critérios de aceite: integrar testes determinísticos à solução, excluir suas fontes do projeto principal, executar build/test preservando os cinco targets e substituir publicação automática por CI de build/test.
 - Escopo: infraestrutura e testes iniciais do comportamento existente com HTTP simulado; sem iniciar T02 nem alterar contratos públicos.
 - Arquivos alterados: GetCNPJ.csproj, GetCNPJ.sln, .github/workflows/main.yml, NuGet.Config, tests/GetCNPJ.Tests/GetCNPJ.Tests.csproj, tests/GetCNPJ.Tests/CnpjClientTests.cs, tests/GetCNPJ.Tests/StubHttpMessageHandler.cs, tests/test.runsettings, tests/README.md, AUDIT.md, ROADMAP.md, PROGRESS.md e CHANGELOG.md.
@@ -47,6 +47,32 @@
 - Problemas e limitações: comando global de testes requer runtime 9 global ou configuração de host por target nesta máquina. VSTest do SDK 11 emite aviso sobre VSTEST_ARTIFACTS_DIRECTORY ausente com Microsoft.NET.Test.Sdk 17.12.0; não impediu descoberta ou aprovação. Avisos de nulabilidade existentes continuam pendentes, sem supressão. Runtime .NET Framework 4.8.1 substitui 4.8; não houve teste em máquina com apenas 4.8. Workflow GitHub Actions não executado remotamente; validação remota depende de envio autorizado. Cobertura inicial não resolve os demais itens da auditoria.
 - Handoff: alterações locais revisadas, sem commit, push, merge em main ou publicação. LICENSE, créditos, namespaces, API pública e cinco targets preservados. T02 não iniciada.
 - Próximo passo exato: mantenedor revisar o diff da T01 e autorizar seu envio quando desejar; conferir a primeira execução remota de build/test. T02 continua pendente para outra tarefa.
+
+## 2026-11-24 — Confirmação remota da T01
+- Mantenedor confirmou sucesso de todas as etapas do GitHub Actions na execução [45415710723](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45415710723), commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475.
+- T01 concluída; esta confirmação substitui a pendência remota registrada no handoff histórico acima.
+
+## 2026-11-24 — Codex — T02
+- Branch / commit de referência: develop / 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475; árvore limpa no início.
+- Estado: concluído localmente.
+- Escopo e aceite: centralizar validação/normalização/formatação em classe independente; preservar assinaturas existentes e CNPJ numérico; validar DV alfanumérico pela especificação oficial; testes unitários e HTTP simulado nos quatro provedores; preservar cinco targets e distinguir suporte local de suporte externo não confirmado.
+- Proposta comportamental antes da implementação: entradas com símbolos/letras Unicode, máscara incorreta ou letras nos DVs serão rejeitadas, em vez de remover caracteres arbitrários com Regex. CNPJs numéricos válidos, sem máscara ou com máscara padrão, continuam aceitos. Letras ASCII minúsculas serão convertidas para maiúsculas; espaços apenas nas extremidades serão tolerados como conveniência local. Não haverá alteração de assinatura pública ou validação de existência cadastral.
+- Fora de escopo: T03 e demais tarefas, consultas reais, commit, push e publicação.
+- Fonte consultada em 2026-11-24: [Manual de cálculo do DV da Receita Federal/Serpro, páginas 3–4](https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/documentos-tecnicos/cnpj/manual-dv-cnpj.pdf) e [portal oficial](https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/programas-e-atividades/cnpj-alfanumerico). Exemplo oficial 12.ABC.345/01DE-35 conferido; demais vetores sintéticos calculados separadamente por pesos explícitos. Os vetores não indicam cadastro existente.
+- Arquivos alterados: Validation/CnpjValidator.cs; Providers/Base/CnpjProviderBase.cs; comentários em Interfaces/ICnpjProvider.cs e Models/CnpjData.cs; tests/GetCNPJ.Tests/CnpjValidatorTests.cs e ProviderCnpjTests.cs; README.md e tests/README.md; AUDIT.md, PROGRESS.md, ROADMAP.md e CHANGELOG.md.
+- Decisões: classe pública estática independente de HTTP com ValidateAndNormalize, IsValid e Format. Cálculo ASCII menos 48, pesos cíclicos de 2 a 9 da direita para a esquerda e módulo 11; ambos os DVs somente numéricos. Preservadas as três assinaturas protegidas da base e todas as assinaturas públicas existentes. Format continua sendo apenas apresentação, mantendo valores fora de 14 posições inalterados; ReceitaWS continua preservando o formato da resposta.
+- Inspeção dos provedores: quatro URLs recebem a string normalizada diretamente; campos cnpj/taxId são string. BrasilAPI/CNPJA/CNPJWS formatam via base; ReceitaWS preserva response.cnpj. Nenhum adaptador concreto precisou ser alterado. Testes simulados confirmam somente o comportamento local, sem confirmar suporte das APIs externas. A09 e a revisão ampla de provedores permanecem pendentes.
+- Ambiente: Windows 10.0.26200 x64, SDK 11.0.100/MSBuild 18.12.2, .NET 8.0.34 e Framework 4.8.1 (Release 533509); runtime 9.0.23 existente em artifacts/dotnet9. Não foram adicionados targets ou dependências.
+- Comandos e resultados:
+  - `dotnet restore GetCNPJ.sln`: aprovado, sem necessidade de novas dependências.
+  - `dotnet build GetCNPJ.sln -c Release`: aprovado em netstandard2.0, net48, net481, net8.0 e net9.0, 0 erros e 1290 avisos de nulabilidade no código existente; log artifacts/t02-build.log.
+  - `dotnet test GetCNPJ.sln -c Release --no-build`: saída 1 pelo runtime 9 ausente na instalação global; 117 aprovados por target nos outros três. Log artifacts/t02-test-solution.log. Não foi contabilizado como aprovação global.
+  - `dotnet test GetCNPJ.sln -c Release --no-build -f <target> --settings tests/test.runsettings --logger trx --results-directory TestResults/T02`: aprovado para net48, net481 e net8.0.
+  - Para net9.0, mesmo comando acrescido de `-- RunConfiguration.DotNetHostPath="D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"`: aprovado com runtime correto, sem roll-forward para outra versão.
+- Testes: 117 aprovados, 0 falhas e 0 ignorados em cada um dos quatro targets executáveis (468 execuções). Incluem os três testes existentes, 62 de validação/formatação e 52 dos provedores (32 combinações de entrada/resposta e 20 rejeições antes do HTTP). Letras A–Z, máscaras, minúsculas, cultura turca, zeros iniciais, restos 0/1 em ambos os DVs, erros de DV, repetição numérica e caracteres ASCII/Unicode proibidos cobertos. Evidências TRX em TestResults/T02/; nenhum acesso a API real.
+- Limitações: netstandard2.0 validado por compilação; os dois targets Framework rodam na instalação 4.8.1, sem uma máquina isolada com somente 4.8. Comando global depende do runtime 9 global, mas todos os testes foram aprovados por target. Persiste aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0, sem impedir testes. Suporte externo, existência cadastral e execução remota da T02 não confirmados.
+- Handoff: diff revisado e `git diff --check` aprovado; LICENSE, autoria, metadados, dependências e frameworks preservados. T01 registrada como concluída local e remotamente; T02 concluída localmente. Nenhum commit, push ou publicação. T03 não iniciada.
+- Próximo passo exato: mantenedor revisar o diff da T02 e, quando desejar, autorizar envio e conferir o CI. A tarefa T03 permanece pendente para solicitação separada.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.
