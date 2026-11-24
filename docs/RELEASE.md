@@ -1,5 +1,54 @@
 # GetCNPJ Community — preparação de release 1.1.0
 
+## H03 — preparada para homologação manual no SysEmpresa — 2026-11-24
+
+Mantenedor confirmou a conclusão H02.1, com revisão ChatGPT de relatórios/metadados e [GitHub Actions45470735591](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45470735591), commit `a069e0decc0163f78f9788d204189e4b0d8055e0`. Não equivale a integração concluída no SysEmpresa.
+
+**Candidato H03 pronto para instalação manual**, não publicado. Árvore inicial limpa em develop/HEAD aprovado. Antes de editar documentos, `git archive` exportou essa revisão para `artifacts/H03/approved-source`; restore/build/test/pack executados nessa cópia, com RepositoryCommit/SourceRevisionId explícitos e posteriores verificações do conteúdo. Nenhum código da biblioteca/versão/dependência/framework/licença/workflow alterado. SysEmpresa não foi lido, modificado ou executado.
+
+| Evidência do candidato H03 | Valor |
+|---|---|
+| Caminho relativo | `artifacts/H03/packages/GetCNPJ.Community.1.1.0.nupkg` |
+| Caminho absoluto | `D:\Meus Projetos\GetCNPJ\artifacts\H03\packages\GetCNPJ.Community.1.1.0.nupkg` |
+| Tamanho | **234174 bytes** |
+| SHA-256 | **`3DD07A96B6B29411B554496C79E1064B45AEEEBDB668AA324A9699B35F5A34FE`** |
+| PackageId / Version | GetCNPJ.Community /1.1.0 |
+| RepositoryCommit no nuspec | `a069e0decc0163f78f9788d204189e4b0d8055e0` |
+| InformationalVersion nas cinco DLLs | `1.1.0+a069e0decc0163f78f9788d204189e4b0d8055e0` |
+| AssemblyName / AssemblyVersion / FileVersion | GetCNPJ /1.0.0.0 /1.1.0.0 |
+| Assets | netstandard2.0, net48, net481, net8.0, net9.0 |
+
+O pacote histórico T07 em `artifacts/packages` continua com229798bytes/hash04F2FB...44EB6 e **não deve ser instalado para esta homologação**. Nenhum arquivo foi substituído nessa pasta. O nupkg H03 contém os documentos exatos do commit aprovado; menções à T07 no README/CHANGELOG são históricas. Este relatório H03, INTEGRATION.md e ferramentas de validação posteriores não estão no nupkg, pois não pertencem à revisão aprovada e a lista de distribuição é explícita. Não adicionar documentos locais silenciosamente ao pacote já conferido. Mudanças futuras podem alterar tamanho/hash; preservar o candidato identificado durante homologação.
+
+### Validação real executada na H03
+
+| Etapa | Resultado / limites |
+|---|---|
+| Restore com NuGetAudit=true/Mode=all | Aprovado sem avisos após acesso de rede autorizado. Tentativa sandbox teve NU1900 e não foi considerada auditoria completa. Logs H03/restore.log e restore-authorized.log. |
+| Vulnerabilidades diretas/transitivas | Solução e dois consumidores com saída0 e nenhum pacote vulnerável conhecido reportado; relatórios H03/vulnerabilities-authorized.json e consumer-*-vulnerabilities.json. Não audita runtime/Windows ou vulnerabilidades ainda não catalogadas. |
+| Rebuild completo Release | Cinco targets, **zero avisos/erros**, H03/build.log. |
+| Testes da solução aprovada | **450 por net48/net481/net8/net9**,1800 execuções, zero falhas/ignorados; H03/test-*.log e TestResults. net9 com host local9.0.23; não repetido comando global conhecido por falhar pela ausência de runtime9 global. |
+| Ferramenta de homologação | Build sem avisos/erros e **20 cenários offline** aprovados; H03/console-*.log. Nenhuma consulta real. |
+| dotnet pack | Aprovado, pasta H03/packages separada, sem avisos; H03/pack.log. |
+| Inspeção integral | **14 entradas**: cinco DLLs, cinco documentos e quatro OPC/NuGet. DLLs/documentos byte a byte iguais ao build/fonte aprovada; créditos/MIT/copyright/URLs/tags/descrição/notas/dep/frameworks conferidos. Sem ferramentas/testes/fontes/config/logs/credenciais/temp/logo/PDB. H03/inspection.log, inspection/evidence.json e package.nuspec. |
+| Proveniência dos assemblies | Leitura PE dos cinco assets confirmou nome/versão e InformationalVersion aprovada; H03/assembly-provenance.log. Não foi necessário carregar DLL de outro runtime para inspecioná-la. |
+| Consumidores independentes | net48/WinForms e net8, somente PackageReference1.1.0 por fonte local/cache isolado. Build **zero avisos/erros**, **24 cenários sintéticos aprovados por consumidor**, mais STA/message loop/await/atualização de controle WinForms sem janela visível. H03/consumer-*.log. |
+| Origem/cache/dependências | .nupkg.metadata aponta H03/packages, hash no cache idêntico ao candidato; assets selecionam lib/net48 e lib/net8. STJ/HTTP modernos fornecidos pelo framework; legados JSON8.0.6 e HTTP da plataforma. Redirect Unsafe6.0.0.0 gerado no consumidor Framework. Nenhum conflito observado no grafo isolado. |
+
+Os24 cenários por consumidor verificam identidade/proveniência/DVs, quatro provedores×dois modos×duas entradas numérica/alfanumérica (incluindo preservação da URL), respostas parciais/null, endereço/CEP/IBGE/CNAEs/IE por UF/opções Simples/rascunho de cadastro, cancelamento antes/durante HTTP, timeout com fallback e dirigido, reutilização e propriedade/descarte do HttpClient/CnpjClient/respostas. Transporte exclusivamente falso; não consulta API nem cliente real. As450 expectativas existentes da biblioteca não foram alteradas.
+
+Consumidores e inspeção reproduzíveis em `tools/GetCNPJ.PackageValidation` (fora da solução/CI/pacote). Configuração usa fonte local por padrão exato e `artifacts/H03/consumer-cache`, sem reutilizar candidato T07 ou cache global. Conferência ZIP/nuspec com `powershell -NoProfile -ExecutionPolicy Bypass -File tools/GetCNPJ.PackageValidation/Inspect-Package.ps1` (política apenas do processo); conferência de atributos PE com ModernConsumer recebendo `artifacts/H03/inspection/lib`. A cópia de System.Net.Http não existe no bin net48; vem da plataforma. No ensaio foram carregados STJ8.0.0.6, Encodings.Web8.0.0.0, Unsafe6.0.0.0 e Memory4.0.1.2; não copiar manualmente para outro grafo.
+
+Falhas intermediárias registradas: restore do consumidor falhou em TLS do serviço de assinatura e foi repetido com rede autorizada, sem desligar verificações. No auxiliar de inspeção, BOM UTF8 do nuspec passou a ser tratado; nos cenários novos, expectativa de objeto Simples obrigatoriamente null foi corrigida para flags nullable desconhecidas, conforme contrato existente. Nenhum defeito exigiu alterar a biblioteca, seus testes, dependências ou o candidato aprovado. Erros dos auxiliares não foram declarados como validação aprovada antes da correção.
+
+Ambiente: Windows10.0.26200 x64, SDK11.0.100/MSBuild18.12.2, runtime8.0.34, Framework4.8.1, host9.0.23 local. netstandard compilado; Framework4.8 executado sobre4.8.1, sem instalação isolada4.8. VSTest continua emitindo aviso preexistente VSTEST_ARTIFACTS_DIRECTORY, sem supressão e sem confundir com diagnóstico de compilação. Não foram homologados packages.config, designer/uso visual, grafo/arquitetura/implantação do SysEmpresa ou consumidores separados net481/net9/netstandard.
+
+### Handoff para o mantenedor
+
+Seguir [INTEGRATION.md](INTEGRATION.md) para fonte local/Visual Studio, remoção do pacote original sem coexistência, cache isolado, ciclo de vida, formulário assíncrono, IE por UF/ausência fiscal, mapeamento e conflitos/redirects. Homologar o **hash indicado**, confirmar que o executável carrega essa revisão e registrar o resultado no SysEmpresa sem dados pessoais. **Estado H03: preparada para homologação manual; integração efetiva pendente de confirmação do mantenedor.** Não houve alteração naquele sistema, consulta cadastral nova, versão nova, commit/push/merge/tag/GitHub Release/publicação.1.2.0 não iniciada. Aprovação de envio/publicação é ação separada.
+
+## Histórico anterior à H03
+
 ## Estado atual — H02.1 concluída localmente em 2026-11-24
 
 Mantenedor informou revisão ChatGPT dos principais trechos da H02 e validação remota [45467304721](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45467304721), commit `5e07ff467fa8d917586c3c32f990b54686547836`. Revisão delimitada, não integral; não é validação remota das alterações locais H02.1.

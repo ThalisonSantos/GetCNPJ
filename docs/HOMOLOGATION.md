@@ -2,6 +2,8 @@
 
 ## Estado em 2026-11-24
 
+H02.1 concluída e validada remotamente conforme mantenedor: revisão ChatGPT de relatórios/metadados e [GitHub Actions45470735591](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45470735591), commit `a069e0decc0163f78f9788d204189e4b0d8055e0`. Escopo delimitado, não certifica integração com SysEmpresa. H03 prepara o pacote desse commit para homologação manual, sem novas consultas reais; resultados/limitações H02.1 abaixo preservados. Guia em [INTEGRATION.md](INTEGRATION.md).
+
 **H02.1 concluída no escopo autorizado: seis consultas lógicas, seis GETs, todos HTTP 200 com identidade correspondente e mapeamento bem-sucedido. Suporte operacional alfanumérico confirmado por teste real autorizado para os quatro provedores, limitado à amostra/data/endpoint usados.** Nas duas consultas automáticas, CNPJWS teve sucesso e os demais não foram chamados. Não houve falha real que exercitasse passagem ao próximo provedor; esse caminho permanece validado somente com HTTP simulado. Resultados complementares ao final deste documento.
 
 Mantenedor informou revisão ChatGPT dos principais trechos da H02 e validação remota [45467304721](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45467304721), commit `5e07ff467fa8d917586c3c32f990b54686547836`. Revisão delimitada, não integral; refere-se à H02 original, não às alterações locais H02.1. Autorizou expressamente o complemento: quatro dirigidas alfanuméricas sync, automática numérica async e automática alfanumérica sync, somente os dois CNPJs abaixo, teto12 GETs incluindo fallback e intervalo mínimo21s entre consultas lógicas. Registros originais abaixo preservados como históricos.
