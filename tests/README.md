@@ -1,6 +1,6 @@
 # Testes e CI
 
-O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 145 casos em `net48`, `net481`, `net8.0` e `net9.0` (580 execuções na T03). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
+O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 189 casos em `net48`, `net481`, `net8.0` e `net9.0` (756 execuções na T04). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
 
@@ -11,6 +11,12 @@ Mais 52 casos verificam os quatro adaptadores de provedores: 32 combinações de
 A T03 adicionou 28 casos: 18 do limiter e 10 de integração/compatibilidade. Incluem 100 chamadas simultâneas para sete vagas, ondas concorrentes na expiração da janela, expiração individual na fronteira exata, provedores independentes, cancelamento antes/durante a espera, Reset acordando concorrentes sem perder a fila e 2400 operações concorrentes de Reset/Record/GetAvailable/Acquire. Também verificam parâmetros inválidos, valores positivos extremos, intervalo menor que 1 ms e protocolo legado, além de registro único nos quatro provedores e implementações externas antigas/opcionais.
 
 `ManualRateLimiterTime` avança tempo explicitamente e controla as esperas; os testes não precisam aguardar minutos reais. A substituição é interna, acessível somente à assembly de testes por InternalsVisibleTo. `AsyncTest` usa um prazo de 15 segundos apenas para detectar travamentos; asserções de janela usam tempo manual. Evidências completas da T03 ficam em TestResults/T03/Full/. Não há nova dependência de produção ou teste.
+
+A T04 adicionou 44 casos: falhas/timeouts em cadeia, preservação de todos os erros quando não há sucesso, prioridades e empates, consultas direcionadas sem fallback, cancelamento antes da consulta, durante HTTP/espera do limiter e entre tentativas, inclusive provedor que ignora o token e retorna outro resultado. Os quatro adaptadores são exercitados com HTTP simulado, sem requisições adicionais após sucesso/cancelamento. Exceções simuladas incluem OperationCanceledException, TaskCanceledException, TimeoutException interna, HttpRequestException e token interno cancelado sem cancelamento do consumidor.
+
+Antes da correção, os dois casos GetAsync_TimeoutOfFirstProvider_AllowsSecondToSucceed falharam em net8.0: o timeout simulado escapou e impediu fallback. Evidência em TestResults/T04/Baseline/ e artifacts/t04-baseline-reproduction.log. Depois da correção, todos os casos foram aprovados; suíte completa em TestResults/T04/Full/.
+
+Dois casos complementares usam o timer real de HttpClient (100 ms) sobre AsyncStubHttpMessageHandler local, sem rede nem asserção de duração exata. Capturam nos TRX a forma nativa da exceção: TaskCanceledException sem interna em net48/net481 e com TimeoutException interna em net8/net9 nesta máquina. Isso caracteriza o pipeline com handler simulado, não todos os transportes HTTP possíveis. O restante usa sinais explícitos, exceções simuladas ou tempo manual.
 
 Em Windows, usar SDK com suporte a .NET 9, runtimes .NET 8 e 9 e .NET Framework 4.8.1. Os reference assemblies de .NET Framework devem estar disponíveis pelos targeting packs ou pelo mecanismo de restauração do SDK. Como .NET Framework 4.8.1 substitui 4.8, os testes de ambos os targets usam o runtime instalado; não comprovam execução em uma máquina com apenas 4.8.
 

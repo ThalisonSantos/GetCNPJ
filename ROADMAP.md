@@ -19,8 +19,9 @@ Ordem proposta: T01, T02, T03, T04, T05, T06, T07. A separação de CI e publica
 Estado em 2026-11-24:
 - T01 concluída local e remotamente. Mantenedor confirmou sucesso de todas as etapas do GitHub Actions na execução [45415710723](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45415710723), commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475.
 - T02 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45418466167](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45418466167), commit e4863f10bbd4da2bcddfba59a54364607373b0ea, informados pelo mantenedor. Suporte alfanumérico das APIs externas continua não confirmado.
-- T03 concluída localmente: aquisição atômica por interface opcional, filas sincronizadas por provedor, tempo monotônico, Reset/consulta concorrentes e compatibilidade com IRateLimiter antigo. Cinco targets compilados e 145 casos aprovados por target executável (580 execuções). O protocolo legado separado permanece não atômico; detalhes em AUDIT.md/PROGRESS.md. Sem validação remota desta alteração.
-- T04 permanece pendente, não iniciada. Nenhuma publicação autorizada.
+- T03 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45428236555](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45428236555), commit 45d4a6476a7a661da96877295679849efdd32c8a, informados pelo mantenedor. Protocolo legado separado continua não atômico por compatibilidade.
+- T04 concluída localmente: falha reproduzida antes da correção com HTTP simulado; timeout/falha permite fallback sem retry, e token cancelado interrompe novas tentativas. Consulta direcionada sem fallback. Prioridades, erros quando todos falham e aquisição atômica preservados. Cinco targets compilados e 189 casos aprovados por target executável (756 execuções). Sem validação remota desta alteração; detalhes e limitações em AUDIT.md/PROGRESS.md.
+- T05 permanece pendente, não iniciada. Nenhuma publicação autorizada.
 
 Critério de saída: build e testes aprovados nos ambientes pertinentes, compatibilidade revisada, documentação atualizada e autorização específica para release.
 

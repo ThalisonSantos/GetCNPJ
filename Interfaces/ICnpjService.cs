@@ -11,6 +11,7 @@ namespace GetCNPJ.Interfaces
     {
         /// <summary>
         /// Consulta dados de um CNPJ utilizando os provedores disponíveis
+        /// Timeouts/falhas permitem a próxima tentativa; cancelamento do consumidor encerra a operação.
         /// </summary>
         /// <param name="cnpj">CNPJ a ser consultado (pode conter formatação)</param>
         /// <param name="cancellationToken">Token de cancelamento</param>
@@ -19,6 +20,7 @@ namespace GetCNPJ.Interfaces
 
         /// <summary>
         /// Consulta dados de um CNPJ utilizando um provedor específico
+        /// Não faz fallback. Timeout retorna resultado de falha; cancelamento do consumidor é propagado.
         /// </summary>
         /// <param name="cnpj">CNPJ a ser consultado</param>
         /// <param name="providerName">Nome do provedor</param>

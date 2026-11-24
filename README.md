@@ -223,6 +223,18 @@ await limiter.AcquireAsync("MeuProvedor", cancellationToken);
 
 O contrato `IRateLimiter` mantém seus quatro membros. A nova interface opcional `IAtomicRateLimiter` permite que implementações externas ofereçam `AcquireAsync`. A base dos provedores usa essa capacidade quando disponível, sem registro adicional. Implementações antigas continuam sendo chamadas na ordem `WaitIfNeededAsync` e `RecordRequest`, uma vez cada; sua concorrência continua sob responsabilidade da implementação externa. O par legado de chamadas separadas não reserva atomicamente uma vaga; para concorrência com o limiter embutido, use `AcquireAsync`.
 
+## Timeout, fallback e cancelamento
+
+`GetAsync`/`GetCnpjAsync` consultam os provedores em ordem de prioridade: CNPJWS, ReceitaWS, BrasilAPI e CNPJA na configuração padrão. Falha, ausência de dados ou timeout permitem uma tentativa no próximo provedor. Cada provedor é consultado uma vez, sem retry, e a primeira resposta com dados encerra a consulta. Se todos falharem, `Success` será `false` e `Errors` preservará nomes, mensagens e exceções das tentativas, incluindo timeouts.
+
+`GetFromProviderAsync`/`GetCnpjFromProviderAsync` consultam somente o provedor escolhido. Um timeout retorna resultado de falha com o erro desse provedor; não ativa fallback para outros.
+
+O estado do `CancellationToken` recebido do consumidor determina o cancelamento da consulta. Quando cancelado, a operação propaga `OperationCanceledException` (inclusive sua subclasse `TaskCanceledException`) e não inicia novas tentativas. O token é verificado antes e depois das consultas e repassado ao HTTP e ao rate limiter. Cancelamento tem precedência mesmo se um provedor retornar dados ou outro erro depois do pedido. Provedores externos devem observar o token durante seu trabalho; o cancelamento é cooperativo.
+
+`OperationCanceledException`/`TaskCanceledException` sem cancelamento do token do consumidor são tratadas como falha do provedor, permitindo fallback. Elas podem representar timeout ou cancelamento interno; o tipo da exceção, isoladamente, não comprova a causa. Os tipos produzidos por timeout variam entre runtimes e handlers, conforme a [documentação de HttpClient.GetAsync](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.getasync?view=net-9.0). Não é necessário que a exceção tenha um token igual ao token do consumidor ou uma TimeoutException interna.
+
+`CnpjClientOptions.Timeout` configura o timeout HTTP por requisição do HttpClient criado pela biblioteca (30 segundos por padrão). Quando um HttpClient é fornecido, sua configuração de timeout é preservada. Esse limite não inclui a espera do rate limiter nem define um prazo global para a cadeia de fallback; o consumidor pode limitar a consulta inteira pelo seu token. A aquisição atômica continua sendo feita uma vez por tentativa; timeout após aquisição não desfaz o registro.
+
 ## 🛠️ Arquitetura
 
 ```
@@ -248,7 +260,8 @@ A biblioteca trata erros de forma elegante:
 - **CNPJ Inválido**: Lança `InvalidCnpjException`
 - **Provedor Indisponível**: Tenta o próximo provedor automaticamente
 - **Rate Limit Excedido**: Aguarda automaticamente antes de fazer nova requisição
-- **Timeout**: Configurável via `CnpjClientOptions`
+- **Timeout**: Falha do provedor; permite fallback em consulta automática e retorna erro em consulta direcionada
+- **Cancelamento do consumidor**: Propaga cancelamento e encerra novas tentativas, inclusive durante espera do rate limiter
 - **Todos Provedores Falharam**: Retorna `CnpjResult` com `Success = false` e lista de erros
 
 ## 📝 Requisitos

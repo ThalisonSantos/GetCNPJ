@@ -9,8 +9,8 @@
 - [x] Documentação adicionada e commitada pelo mantenedor em develop (bbc8a79).
 - [x] T01 — Infraestrutura de testes e CI sem publicação (validada local e remotamente).
 - [x] T02 — CNPJ alfanumérico (revisada e validada remotamente; suporte externo não confirmado).
-- [x] T03 — Rate limiter (concluída localmente).
-- [ ] T04 — Timeout e fallback.
+- [x] T03 — Rate limiter (revisada e validada remotamente).
+- [x] T04 — Timeout e fallback (concluída localmente).
 - [ ] T05 — Recursos HTTP.
 - [ ] T06 — Dependências e provedores.
 - [ ] T07 — Identidade e release.
@@ -80,7 +80,7 @@
 
 ## 2026-11-24 — Codex — T03
 - Branch / commit de referência: develop / e4863f10bbd4da2bcddfba59a54364607373b0ea; árvore limpa no início.
-- Estado: concluído localmente; sem validação remota desta alteração.
+- Estado: concluído; revisão pelo ChatGPT e validação remota posteriores informadas pelo mantenedor (45428236555, ver confirmação abaixo).
 - Escopo e aceite: aquisição e registro atômicos, filas protegidas, limites independentes por provedor, cancelamento, Reset/GetAvailableRequests concorrentes, validação do construtor, tempo monotônico e testes determinísticos. Preservar cinco frameworks, assinaturas e implementações externas de IRateLimiter.
 - Decisão de compatibilidade antes da implementação: acrescentar interface opcional IAtomicRateLimiter com AcquireAsync, sem novos membros em IRateLimiter. A base usará aquisição atômica quando disponível, sem RecordRequest adicional; implementações antigas continuarão no caminho WaitIfNeededAsync + RecordRequest. O par legado permanece não atômico por contrato; consumidores diretos do limiter embutido devem preferir AcquireAsync. Não é possível tornar duas chamadas públicas independentes atômicas sem mudar sua semântica.
 - Mudança de comportamento planejada: maxRequests <= 0 e timeWindow <= 0 passam a lançar ArgumentOutOfRangeException no construtor, em vez de travar/funcionar sem limites. Reset preservará o estado sincronizado do provedor e acordará esperas. Nenhuma dependência nova, commit, push ou publicação; T04 fora de escopo.
@@ -101,6 +101,38 @@
 - Limitações: protocolo legado separado sem atomicidade por contrato; implementação externa antiga responsável por sua concorrência. Runtime Framework 4.8.1 atende ambos os targets, sem máquina isolada com só 4.8; netstandard2.0 validado por compilação. Persistem aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0 e necessidade de host explícito para net9.0 nesta máquina. T03 sem CI remoto nesta etapa. Nenhuma API real consultada.
 - Handoff: código e diff revisados, git diff --check aprovado; LICENSE, autoria, contratos existentes, cinco targets e dependências preservados. T02 registrada como revisada e validada remotamente; T03 concluída localmente. Nenhum commit, push ou publicação. T04 não iniciada.
 - Próximo passo exato: mantenedor revisar T03 e autorizar envio quando desejar, conferir o CI e solicitar T04 separadamente.
+
+## 2026-11-24 — Confirmação remota da T03
+- Mantenedor informou revisão pelo ChatGPT e validação pelo GitHub Actions na execução [45428236555](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45428236555), commit 45d4a6476a7a661da96877295679849efdd32c8a.
+- T03 concluída local e remotamente; substitui a pendência remota do handoff histórico.
+
+## 2026-11-24 — Codex — T04
+- Branch / commit de referência: develop / 45d4a6476a7a661da96877295679849efdd32c8a; árvore limpa no início.
+- Estado: concluído localmente; sem validação remota desta alteração.
+- Escopo e aceite: reproduzir timeout com HTTP simulado antes de corrigir; distinguir token do consumidor de falha/timeout do provedor nos dois métodos do serviço; preservar prioridades, falhas, interfaces e aquisição atômica; consultas direcionadas sem fallback; nenhum retry. Testar os quatro targets executáveis e compilar os cinco targets da biblioteca.
+- Decisão antes da implementação: OperationCanceledException/TaskCanceledException só interrompem fallback como cancelamento do consumidor quando o token recebido está cancelado. Sem esse sinal, serão falhas do provedor, preservando a exceção original. Não inferir timeout apenas pelo nome da exceção ou por um token interno de HttpClient. Adicionar pontos de verificação do token antes/depois das tentativas para não depender de provedores que cooperem corretamente. Sem mudança de assinatura pública.
+- Fora de escopo: T05, APIs reais, dependências novas, commit, push e publicação.
+- Arquivos alterados: Services/CnpjService.cs, Providers/Base/CnpjProviderBase.cs, comentários em Interfaces/ICnpjService.cs; tests/GetCNPJ.Tests/TimeoutFallbackTests.cs, CnpjServiceFallbackTests.cs, HttpCancellationTests.cs e AsyncStubHttpMessageHandler.cs; README.md, tests/README.md, AUDIT.md, PROGRESS.md, ROADMAP.md e CHANGELOG.md.
+- Reprodução antes da correção: dois casos GetAsync_TimeoutOfFirstProvider_AllowsSecondToSucceed com CnpjClient padrão, handler HTTP local lançando OperationCanceledException/TaskCanceledException no CNPJWS e resposta de sucesso preparada no ReceitaWS. Ambos falharam em net8.0, pois a exceção escapou sem fallback. Comando de teste dirigido retornou 1 (2 falhas, 0 aprovados); log artifacts/t04-baseline-reproduction.log e TRX TestResults/T04/Baseline/. Código de produção ainda era o de 45d4a64 nessa execução.
+- Implementação: nos dois métodos, o filtro de cancelamento observa o token recebido do consumidor. Cancelamento interno/timeout sem esse sinal passa pelo caminho normal de falha, preservando mensagem e exceção. Pontos de verificação antes/depois de cada tentativa e antes do erro final impedem novas consultas e priorizam cancelamento mesmo se o provedor retornar dados/null ou erro não relacionado. Consulta direcionada continua sem fallback. Na base, token verificado após aquisição e entre espera/registro legado, sem aquisição duplicada ou mudança em AcquireAsync.
+- Inspeção: os quatro provedores já propagam token para HttpClient.GetAsync e não fazem retry; a base propaga OperationCanceledException. CnpjClient continua delegando ao serviço e usando o mesmo HttpClient/limiter compartilhados entre seus provedores. Nenhuma alteração nos adaptadores concretos, limiter, CnpjClient ou modelos; ordem CNPJWS/ReceitaWS/BrasilAPI/CNPJA preservada, inclusive ordem estável em empates de prioridade. A revisão de descarte de respostas fica em T05.
+- Comportamento público: timeout/falha do provedor permite fallback automático, mas só produz resultado de falha na consulta direcionada. Quando todos falham, preservados nomes, mensagens, exceções e ordem dos erros; sucesso continua encerrando a operação na primeira resposta com dados. Cancelamento explícito propaga OperationCanceledException/TaskCanceledException sem novas tentativas. Não é inferido timeout de todo cancelamento interno; não há retry nem novo timeout global. Interfaces/assinaturas e aquisição atômica preservadas.
+- Fontes oficiais: [HttpClient.GetAsync](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.getasync?view=net-9.0) e [tratamento de erros HTTP](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient), consultados em 2026-11-24. Tipos de timeout variam por runtime/handler; token do consumidor tem precedência, sem exigir igualdade com token interno da exceção.
+- Ambiente: Windows 10.0.26200 x64, SDK 11.0.100/MSBuild 18.12.2, runtime 8.0.34, .NET Framework 4.8.1 Release 533509 e runtime 9.0.23 local em artifacts/dotnet9; frameworks e dependências inalterados.
+- Comandos e resultados reais:
+  - Build antes da correção com os dois testes de reprodução: aprovado, 1290 avisos e 0 erros; artifacts/t04-baseline-build.log.
+  - `dotnet restore GetCNPJ.sln`: aprovado, sem novas dependências.
+  - Primeira compilação dos novos testes falhou com 8 erros por sintaxe de throw condicional; parênteses corrigidos. Build incremental seguinte aprovado com 0 avisos/erros. Validação final completa `dotnet build GetCNPJ.sln -c Release -t:Rebuild`: aprovada para os cinco targets, 1290 avisos de nulabilidade existentes e 0 erros; artifacts/t04-build.log.
+  - Teste dirigido das três classes novas em net8.0: 42 casos aprovados, antes dos dois casos complementares da base, depois incluídos na suíte completa.
+  - `dotnet test GetCNPJ.sln -c Release --no-build`: saída 1 pelo runtime 9 ausente na instalação global; 189 aprovados em cada um dos outros três targets. Não contado como aprovação global; artifacts/t04-test-solution.log.
+  - `dotnet test GetCNPJ.sln -c Release --no-build -f <target> --settings tests/test.runsettings --logger trx --results-directory TestResults/T04/Full`: aprovado para net48, net481 e net8.0.
+  - Para net9.0, mesmo comando com `-- RunConfiguration.DotNetHostPath="D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"`: aprovado com o runtime correto, sem roll-forward.
+- Suíte final: 189 aprovados por target (756 execuções), 0 falhas, 0 ignorados. Inclui os 145 casos anteriores (todos os 28 da T03) e 44 novos da T04. Evidência TRX em TestResults/T04/Full/.
+- Cobertura obrigatória: primeiro timeout seguido de sucesso; falhas múltiplas antes do sucesso; todas as falhas e todos os timeouts com detalhes preservados; cancelamento anterior, durante HTTP, durante espera do limiter e ao terminar uma tentativa; consulta direcionada com timeout/cancelamento; ordem de prioridade e empates; nenhuma chamada extra após sucesso/cancelamento. Cobertas formas OperationCanceledException, TaskCanceledException, TimeoutException interna, HttpRequestException e token interno cancelado com token do consumidor ativo. Base testada também com limiter externo que retorna depois de cancelar o token, impedindo HTTP/registro legado adicional.
+- Timer nativo de HttpClient: dois testes com timeout de 100 ms e handler local, sem rede ou asserção de duração exata. TRX mostram TaskCanceledException sem interna no Framework e com TimeoutException interna em net8/net9. Essa observação não pretende caracterizar todos os transportes; demais testes usam sinais explícitos/exceções simuladas/tempo manual.
+- Limitações: cancelamento cooperativo para provedores externos que ignoram o token durante o trabalho, mas fronteiras verificadas pelo serviço; sem novo prazo global. Runtime 9 requer host local nesta máquina, e persiste aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0. Framework 4.8/4.8.1 testados no runtime 4.8.1 instalado; netstandard2.0 verificado por compilação. T04 ainda sem CI remoto, sem confirmação de suporte das APIs externas.
+- Handoff: código/diff revisados e git diff --check aprovado; LICENSE, autoria, cinco targets, contratos e dependências preservados. T03 registrada como revisada e validada remotamente; T04 concluída localmente. Nenhuma API real consultada; nenhum commit, push ou pacote publicado. T05 não iniciada.
+- Próximo passo exato: mantenedor revisar a T04 e autorizar envio quando desejar; conferir CI remoto. Aguardar solicitação separada para T05.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.

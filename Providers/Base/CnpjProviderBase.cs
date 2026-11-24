@@ -51,9 +51,11 @@ namespace GetCNPJ.Providers.Base
                 {
                     // Compatibilidade com implementações externas do contrato original.
                     await _rateLimiter.WaitIfNeededAsync(ProviderName, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
                     _rateLimiter.RecordRequest(ProviderName);
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
                 // Faz a requisição
                 var data = await FetchDataAsync(cnpj, cancellationToken).ConfigureAwait(false);
 
