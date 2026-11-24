@@ -17,12 +17,12 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Dados do CNPJ (null se não houver sucesso)
         /// </summary>
-        public CnpjData Data { get; set; }
+        public CnpjData? Data { get; set; }
 
         /// <summary>
         /// Mensagem de erro (null se houver sucesso)
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         /// <summary>
         /// Lista de erros ocorridos durante as tentativas
@@ -34,7 +34,7 @@ namespace GetCNPJ.Models
         /// </summary>
         public List<string> FailedProviders
         {
-            get { return Errors?.Select(e => e.ProviderName).ToList() ?? new List<string>(); }
+            get { return Errors?.OfType<ProviderError>().Select(e => e.ProviderName).OfType<string>().ToList() ?? new List<string>(); }
         }
 
         public CnpjResult()
@@ -47,6 +47,7 @@ namespace GetCNPJ.Models
         /// </summary>
         public static CnpjResult CreateSuccess(CnpjData data)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
             return new CnpjResult
             {
                 Success = true,
@@ -57,7 +58,7 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Cria um resultado de erro
         /// </summary>
-        public static CnpjResult CreateError(string errorMessage, List<ProviderError> errors = null)
+        public static CnpjResult CreateError(string errorMessage, List<ProviderError>? errors = null)
         {
             return new CnpjResult
             {
@@ -76,17 +77,17 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Nome do provedor
         /// </summary>
-        public string ProviderName { get; set; }
+        public string? ProviderName { get; set; }
 
         /// <summary>
         /// Mensagem de erro
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         /// <summary>
         /// Exception que causou o erro
         /// </summary>
-        public Exception Exception { get; set; }
+        public Exception? Exception { get; set; }
 
         /// <summary>
         /// Timestamp do erro

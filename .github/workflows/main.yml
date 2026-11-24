@@ -1,27 +1,43 @@
-name: Build and deploy
+name: Build and test
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, develop, 'feature/**', 'fix/**']
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    
+  build-and-test:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
     steps:
-      - uses: actions/checkout@main
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+      - uses: actions/checkout@v7
         with:
-          dotnet-version: '9.0.x'
+          persist-credentials: false
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Set up .NET
+        id: dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
 
-      - name: Create the Package
-        run: dotnet pack --configuration Release
+      - name: Select installed .NET 9 SDK
+        shell: pwsh
+        run: |
+          '{"sdk":{"version":"${{ steps.dotnet.outputs.dotnet-version }}"}}' | Set-Content -Encoding utf8 global.json
 
-      - name: Publish
-        run: dotnet nuget push "bin/Release/*.nupkg" -k ${{ secrets.NUGET_SECRET }} -s https://api.nuget.org/v3/index.json 
+      - name: Restore
+        run: dotnet restore GetCNPJ.sln
+
+      - name: Build all library and test targets
+        run: dotnet build GetCNPJ.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test GetCNPJ.sln -c Release --no-build --logger trx --results-directory TestResults --settings tests/test.runsettings

@@ -7,15 +7,18 @@ namespace GetCNPJ.Models
     /// </summary>
     public class InscricaoEstadual
     {
+        /// <summary>Situação informada pelo provedor; null significa desconhecida. Ativo preserva false nesse caso.</summary>
+        public bool? AtivoInformado { get; set; }
+
         /// <summary>
         /// Número da inscrição estadual
         /// </summary>
-        public string Inscricao { get; set; }
+        public string? Inscricao { get; set; }
 
         /// <summary>
         /// Estado da inscrição (UF)
         /// </summary>
-        public string Estado { get; set; }
+        public string? Estado { get; set; }
 
         /// <summary>
         /// Indica se a inscrição está ativa

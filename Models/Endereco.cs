@@ -5,40 +5,43 @@ namespace GetCNPJ.Models
     /// </summary>
     public class Endereco
     {
+        /// <summary>Código IBGE do município, quando informado pelo provedor (não é código SIAFI).</summary>
+        public string? CodigoIbge { get; set; }
+
         /// <summary>
         /// CEP formatado (XXXXX-XXX)
         /// </summary>
-        public string Cep { get; set; }
+        public string? Cep { get; set; }
 
         /// <summary>
         /// Logradouro (rua, avenida, etc)
         /// </summary>
-        public string Logradouro { get; set; }
+        public string? Logradouro { get; set; }
 
         /// <summary>
         /// Número do endereço
         /// </summary>
-        public string Numero { get; set; }
+        public string? Numero { get; set; }
 
         /// <summary>
         /// Complemento (sala, andar, etc)
         /// </summary>
-        public string Complemento { get; set; }
+        public string? Complemento { get; set; }
 
         /// <summary>
         /// Bairro
         /// </summary>
-        public string Bairro { get; set; }
+        public string? Bairro { get; set; }
 
         /// <summary>
         /// Município
         /// </summary>
-        public string Municipio { get; set; }
+        public string? Municipio { get; set; }
 
         /// <summary>
         /// UF (estado)
         /// </summary>
-        public string Uf { get; set; }
+        public string? Uf { get; set; }
 
         /// <summary>
         /// Retorna o endereço formatado

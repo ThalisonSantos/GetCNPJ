@@ -22,6 +22,7 @@ namespace GetCNPJ
         private readonly ICnpjService _cnpjService;
         private readonly HttpClient _httpClient;
         private readonly bool _disposeHttpClient;
+        private int _disposed;
 
         /// <summary>
         /// Construtor com configuração padrão
@@ -33,62 +34,73 @@ namespace GetCNPJ
         /// <summary>
         /// Construtor com HttpClient customizado
         /// </summary>
-        /// <param name="httpClient">HttpClient customizado (opcional)</param>
+        /// <param name="httpClient">HttpClient emprestado (opcional), nunca descartado por este cliente</param>
         /// <param name="options">Opções de configuração (opcional)</param>
-        public CnpjClient(HttpClient httpClient = null, CnpjClientOptions options = null)
+        public CnpjClient(HttpClient? httpClient = null, CnpjClientOptions? options = null)
+            : this(httpClient, options, () => new HttpClient())
+        {
+        }
+
+        // Ponto de criação interno para verificar propriedade/limpeza sem abrir conexões nos testes.
+        internal CnpjClient(HttpClient? httpClient, CnpjClientOptions? options, Func<HttpClient> httpClientFactory)
         {
             options = options ?? new CnpjClientOptions();
 
-            // Configura HttpClient
-            if (httpClient != null)
-            {
-                _httpClient = httpClient;
-                _disposeHttpClient = false;
-            }
-            else
-            {
-                _httpClient = new HttpClient
-                {
-                    Timeout = options.Timeout
-                };
-                _disposeHttpClient = true;
-            }
-
-            // Configura Rate Limiter
+            // Valida os limites antes de criar um HttpClient de propriedade da biblioteca.
+            // A instância é compartilhada; o limiter mantém uma janela por nome de provedor.
             var rateLimiter = new SlidingWindowRateLimiter(
                 options.MaxRequestsPerMinute,
                 TimeSpan.FromMinutes(1)
             );
 
-            // Configura provedores
-            var providers = new List<ICnpjProvider>();
-
-            if (options.EnableCNPJWS)
+            _disposeHttpClient = httpClient == null;
+            _httpClient = httpClient ?? httpClientFactory();
+            try
             {
-                providers.Add(new CNPJWSProvider(_httpClient, rateLimiter));
-            }
+                // Configurar somente depois de guardar a instância, para limpá-la se o setter falhar.
+                if (_disposeHttpClient)
+                {
+                    _httpClient.Timeout = options.Timeout;
+                }
 
-            if (options.EnableReceitaWS)
+                // Todos os provedores reutilizam o mesmo HttpClient.
+                var providers = new List<ICnpjProvider>();
+
+                if (options.EnableCNPJWS)
+                {
+                    providers.Add(new CNPJWSProvider(_httpClient, rateLimiter));
+                }
+
+                if (options.EnableReceitaWS)
+                {
+                    providers.Add(new ReceitaWSProvider(_httpClient, rateLimiter));
+                }
+
+                if (options.EnableBrasilAPI)
+                {
+                    providers.Add(new BrasilAPIProvider(_httpClient, rateLimiter));
+                }
+
+                if (options.EnableCNPJA)
+                {
+                    providers.Add(new CNPJAProvider(_httpClient, rateLimiter));
+                }
+
+                if (providers.Count == 0)
+                {
+                    throw new InvalidOperationException("Pelo menos um provedor deve estar habilitado");
+                }
+
+                _cnpjService = new CnpjService(providers);
+            }
+            catch
             {
-                providers.Add(new ReceitaWSProvider(_httpClient, rateLimiter));
+                if (_disposeHttpClient)
+                {
+                    _httpClient.Dispose();
+                }
+                throw;
             }
-
-            if (options.EnableBrasilAPI)
-            {
-                providers.Add(new BrasilAPIProvider(_httpClient, rateLimiter));
-            }
-
-            if (options.EnableCNPJA)
-            {
-                providers.Add(new CNPJAProvider(_httpClient, rateLimiter));
-            }
-
-            if (providers.Count == 0)
-            {
-                throw new InvalidOperationException("Pelo menos um provedor deve estar habilitado");
-            }
-
-            _cnpjService = new CnpjService(providers);
         }
 
         /// <summary>
@@ -139,13 +151,13 @@ namespace GetCNPJ
         }
 
         /// <summary>
-        /// Libera os recursos utilizados
+        /// Libera somente o HttpClient próprio. Chamadas repetidas são seguras.
         /// </summary>
         public void Dispose()
         {
-            if (_disposeHttpClient)
+            if (_disposeHttpClient && Interlocked.Exchange(ref _disposed, 1) == 0)
             {
-                _httpClient?.Dispose();
+                _httpClient.Dispose();
             }
         }
     }

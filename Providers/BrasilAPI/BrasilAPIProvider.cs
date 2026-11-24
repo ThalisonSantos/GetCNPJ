@@ -25,10 +25,10 @@ namespace GetCNPJ.Providers.BrasilAPI
         {
         }
 
-        protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+        protected override async Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
-            var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -37,10 +37,7 @@ namespace GetCNPJ.Providers.BrasilAPI
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<BrasilAPIResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<BrasilAPIResponse>(content);
 
             if (data == null)
             {
@@ -58,16 +55,18 @@ namespace GetCNPJ.Providers.BrasilAPI
                 RazaoSocial = response.razao_social,
                 NomeFantasia = response.nome_fantasia,
                 DataAbertura = ParseDate(response.data_inicio_atividade),
-                Situacao = response.descricao_situacao_cadastral,
+                Situacao = response.descricao_situacao_cadastral ?? DescribeStatus(response.situacao_cadastral),
                 DataSituacao = ParseDate(response.data_situacao_cadastral),
-                Tipo = response.descricao_matriz_filial,
-                Porte = response.descricao_porte,
+                Tipo = response.descricao_identificador_matriz_filial ?? response.descricao_matriz_filial,
+                Porte = ReadSize(response.porte, response.descricao_porte),
                 NaturezaJuridica = response.natureza_juridica,
                 CapitalSocial = response.capital_social,
+                Email = response.email,
                 Endereco = new Endereco
                 {
                     Cep = FormatCep(response.cep),
-                    Logradouro = $"{response.descricao_tipo_logradouro} {response.logradouro}".Trim(),
+                    Logradouro = ProviderFormatting.Join(response.descricao_tipo_de_logradouro ?? response.descricao_tipo_logradouro, response.logradouro, " ")?.Trim(),
+                    CodigoIbge = response.codigo_municipio_ibge?.ToString(CultureInfo.InvariantCulture),
                     Numero = response.numero,
                     Complemento = response.complemento,
                     Bairro = response.bairro,
@@ -77,18 +76,18 @@ namespace GetCNPJ.Providers.BrasilAPI
             };
 
             // Telefones
-            if (!string.IsNullOrWhiteSpace(response.ddd_telefone_1))
-                cnpjData.Telefones.Add(FormatPhone(response.ddd_telefone_1));
+            if (response.ddd_telefone_1 is string phone1 && !string.IsNullOrWhiteSpace(phone1))
+                cnpjData.Telefones.Add(FormatPhone(phone1));
 
-            if (!string.IsNullOrWhiteSpace(response.ddd_telefone_2))
-                cnpjData.Telefones.Add(FormatPhone(response.ddd_telefone_2));
+            if (response.ddd_telefone_2 is string phone2 && !string.IsNullOrWhiteSpace(phone2))
+                cnpjData.Telefones.Add(FormatPhone(phone2));
 
             // Atividade principal
-            if (response.cnae_fiscal.HasValue)
+            if (response.cnae_fiscal is int mainCode)
             {
                 cnpjData.AtividadePrincipal = new AtividadeEconomica
                 {
-                    Codigo = FormatCnae(response.cnae_fiscal.Value),
+                    Codigo = FormatCnae(mainCode),
                     Descricao = response.cnae_fiscal_descricao
                 };
             }
@@ -96,20 +95,24 @@ namespace GetCNPJ.Providers.BrasilAPI
             // Atividades secundárias
             if (response.cnaes_secundarios != null)
             {
-                cnpjData.AtividadesSecundarias = response.cnaes_secundarios
-                    .Where(c => c.codigo.HasValue)
-                    .Select(c => new AtividadeEconomica
+                foreach (var activity in response.cnaes_secundarios.OfType<CnaeFiscalBrasil>())
+                {
+                    if (activity.codigo is int code)
                     {
-                        Codigo = FormatCnae(c.codigo.Value),
-                        Descricao = c.descricao
-                    })
-                    .ToList();
+                        cnpjData.AtividadesSecundarias.Add(new AtividadeEconomica
+                        {
+                            Codigo = FormatCnae(code),
+                            Descricao = activity.descricao
+                        });
+                    }
+                }
             }
 
             // Quadro societário
             if (response.qsa != null)
             {
                 cnpjData.QuadroSocietario = response.qsa
+                    .OfType<QsaBrasil>()
                     .Select(s => new Socio
                     {
                         Nome = s.nome_socio,
@@ -122,6 +125,8 @@ namespace GetCNPJ.Providers.BrasilAPI
             cnpjData.Simples = new SimplesNacional
             {
                 Optante = response.opcao_pelo_simples ?? false,
+                OptanteInformado = response.opcao_pelo_simples,
+                OptanteSimeiInformado = response.opcao_pelo_mei,
                 DataOpcao = ParseDate(response.data_opcao_pelo_simples),
                 DataExclusao = ParseDate(response.data_exclusao_do_simples),
                 OptanteSimei = response.opcao_pelo_mei ?? false
@@ -130,7 +135,7 @@ namespace GetCNPJ.Providers.BrasilAPI
             return cnpjData;
         }
 
-        private DateTime? ParseDate(string dateString)
+        private DateTime? ParseDate(string? dateString)
         {
             if (string.IsNullOrWhiteSpace(dateString))
                 return null;
@@ -138,15 +143,39 @@ namespace GetCNPJ.Providers.BrasilAPI
             if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 return date;
 
-            if (DateTime.TryParse(dateString, out date))
-                return date;
-
             return null;
         }
 
-        private string FormatCep(string cep)
+        private static string? DescribeStatus(int? code)
         {
-            if (string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
+            switch (code)
+            {
+                case 1: return "NULA";
+                case 2: return "ATIVA";
+                case 3: return "SUSPENSA";
+                case 4: return "INAPTA";
+                case 8: return "BAIXADA";
+                default: return null;
+            }
+        }
+
+        private static string? ReadSize(JsonElement value, string? legacyDescription)
+        {
+            switch (value.ValueKind)
+            {
+                case JsonValueKind.String: return value.GetString();
+                case JsonValueKind.Number:
+                    if (value.TryGetInt32(out _)) return legacyDescription;
+                    break;
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined: return legacyDescription;
+            }
+            throw new JsonException("O porte retornado deve ser textual ou um código inteiro legado.");
+        }
+
+        private string? FormatCep(string? cep)
+        {
+            if (cep == null || string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
                 return cep;
 
             return $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";

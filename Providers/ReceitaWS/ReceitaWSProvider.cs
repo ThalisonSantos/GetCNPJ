@@ -25,10 +25,10 @@ namespace GetCNPJ.Providers.ReceitaWS
         {
         }
 
-        protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+        protected override async Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
-            var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -37,12 +37,9 @@ namespace GetCNPJ.Providers.ReceitaWS
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<ReceitaWSResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<ReceitaWSResponse>(content);
 
-            if (data == null || data.status == "ERROR")
+            if (data == null)
             {
                 return null;
             }
@@ -79,18 +76,18 @@ namespace GetCNPJ.Providers.ReceitaWS
             };
 
             // Telefones
-            if (!string.IsNullOrWhiteSpace(response.telefone))
+            if (response.telefone is string phone && !string.IsNullOrWhiteSpace(phone))
             {
-                cnpjData.Telefones = response.telefone
+                cnpjData.Telefones = phone
                     .Split(new[] { '/', ',' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(t => t.Trim())
                     .ToList();
             }
 
             // Atividade principal
-            if (response.atividade_principal != null && response.atividade_principal.Any())
+            var atividade = response.atividade_principal?.OfType<AtividadeWS>().FirstOrDefault();
+            if (atividade != null)
             {
-                var atividade = response.atividade_principal.First();
                 cnpjData.AtividadePrincipal = new AtividadeEconomica
                 {
                     Codigo = atividade.code,
@@ -102,6 +99,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.atividades_secundarias != null)
             {
                 cnpjData.AtividadesSecundarias = response.atividades_secundarias
+                    .OfType<AtividadeWS>()
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = a.code,
@@ -114,6 +112,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.qsa != null)
             {
                 cnpjData.QuadroSocietario = response.qsa
+                    .OfType<SocioWS>()
                     .Select(s => new Socio
                     {
                         Nome = s.nome,
@@ -123,13 +122,15 @@ namespace GetCNPJ.Providers.ReceitaWS
             }
 
             // Simples Nacional
-            if (response.simples != null)
+            if (response.simples != null || response.simei != null)
             {
                 cnpjData.Simples = new SimplesNacional
                 {
-                    Optante = response.simples.optante,
-                    DataOpcao = ParseDate(response.simples.data_opcao),
-                    DataExclusao = ParseDate(response.simples.data_exclusao),
+                    Optante = response.simples?.optante ?? false,
+                    OptanteInformado = response.simples?.optante,
+                    OptanteSimeiInformado = response.simei?.optante,
+                    DataOpcao = ParseDate(response.simples?.data_opcao),
+                    DataExclusao = ParseDate(response.simples?.data_exclusao),
                     OptanteSimei = response.simei?.optante ?? false
                 };
             }
@@ -137,7 +138,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             return cnpjData;
         }
 
-        private DateTime? ParseDate(string dateString)
+        private DateTime? ParseDate(string? dateString)
         {
             if (string.IsNullOrWhiteSpace(dateString))
                 return null;
@@ -145,18 +146,18 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 return date;
 
-            if (DateTime.TryParse(dateString, out date))
+            if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                 return date;
 
             return null;
         }
 
-        private decimal? ParseDecimal(string value)
+        private decimal? ParseDecimal(string? value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;
 
-            if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
+            if (decimal.TryParse(value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
                 return result;
 
             return null;

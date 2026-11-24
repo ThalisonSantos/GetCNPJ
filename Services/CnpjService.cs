@@ -22,18 +22,21 @@ namespace GetCNPJ.Services
         /// <param name="providers">Lista de provedores disponíveis</param>
         public CnpjService(IEnumerable<ICnpjProvider> providers)
         {
-            _providers = providers?.OrderBy(p => p.Priority)
-                ?? throw new ArgumentNullException(nameof(providers));
-
-            if (!_providers.Any())
+            if (providers == null) throw new ArgumentNullException(nameof(providers));
+            var configuredProviders = providers.ToArray();
+            if (configuredProviders.Any(p => p == null))
+                throw new ArgumentException("A lista de provedores não pode conter itens nulos", nameof(providers));
+            if (configuredProviders.Length == 0)
             {
                 throw new ArgumentException("Pelo menos um provedor deve ser configurado", nameof(providers));
             }
+            _providers = configuredProviders.OrderBy(p => p.Priority).ToArray();
         }
 
         /// <inheritdoc/>
         public async Task<CnpjResult> GetCnpjAsync(string cnpj, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var errors = new List<ProviderError>();
 
             // Tenta cada provedor em ordem de prioridade
@@ -41,7 +44,9 @@ namespace GetCNPJ.Services
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var data = await provider.GetCnpjDataAsync(cnpj, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     if (data != null)
                     {
@@ -55,13 +60,15 @@ namespace GetCNPJ.Services
                         ErrorMessage = "CNPJ não encontrado"
                     });
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
                     // Operação cancelada pelo usuário, propaga a exceção
                     throw;
                 }
                 catch (Exception ex)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    // Timeout/cancelamento interno sem cancelamento do consumidor é falha do provedor.
                     // Registra o erro e tenta o próximo provedor
                     errors.Add(new ProviderError
                     {
@@ -73,6 +80,7 @@ namespace GetCNPJ.Services
             }
 
             // Todos os provedores falharam
+            cancellationToken.ThrowIfCancellationRequested();
             var errorMessage = $"Não foi possível consultar o CNPJ. Tentativas: {errors.Count}";
             return CnpjResult.CreateError(errorMessage, errors);
         }
@@ -83,8 +91,9 @@ namespace GetCNPJ.Services
             string providerName,
             CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var provider = _providers.FirstOrDefault(p =>
-                p.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+                string.Equals(p.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
 
             if (provider == null)
             {
@@ -95,7 +104,9 @@ namespace GetCNPJ.Services
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var data = await provider.GetCnpjDataAsync(cnpj, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (data != null)
                 {
@@ -104,12 +115,13 @@ namespace GetCNPJ.Services
 
                 return CnpjResult.CreateError("CNPJ não encontrado");
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
                 throw;
             }
             catch (Exception ex)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var error = new ProviderError
                 {
                     ProviderName = provider.ProviderName,

@@ -20,7 +20,7 @@ namespace GetCNPJ.Examples
 
             var result = await client.GetAsync("03.312.791/0001-83");
 
-            if (result.Success)
+            if (result.Success && result.Data != null)
             {
                 var data = result.Data;
 
@@ -32,7 +32,7 @@ namespace GetCNPJ.Examples
                 Console.WriteLine($"Tipo: {data.Tipo}");
                 Console.WriteLine($"Porte: {data.Porte}");
                 Console.WriteLine($"\nEndereço:");
-                Console.WriteLine($"  {data.Endereco.EnderecoCompleto}");
+                Console.WriteLine($"  {data.Endereco?.EnderecoCompleto}");
                 Console.WriteLine($"\nContato:");
                 Console.WriteLine($"  Email: {data.Email}");
                 Console.WriteLine($"  Telefones: {string.Join(", ", data.Telefones)}");
@@ -73,7 +73,7 @@ namespace GetCNPJ.Examples
                 Console.WriteLine($"\nTestando provedor: {provider}");
                 var result = await client.GetFromProviderAsync(cnpj, provider);
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
                     Console.WriteLine($"  ✓ {result.Data.RazaoSocial}");
                 }
@@ -104,7 +104,7 @@ namespace GetCNPJ.Examples
 
             var result = await client.GetAsync("03312791000183");
 
-            if (result.Success)
+            if (result.Success && result.Data != null)
             {
                 Console.WriteLine($"✓ Empresa: {result.Data.RazaoSocial}");
                 Console.WriteLine($"  Provedor: {result.Data.Provedor}");
@@ -171,7 +171,7 @@ namespace GetCNPJ.Examples
 
                 var elapsed = DateTime.Now - startTime;
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
                     Console.WriteLine($"  ✓ {result.Data.RazaoSocial}");
                     Console.WriteLine($"  Tempo: {elapsed.TotalSeconds:F2}s");
