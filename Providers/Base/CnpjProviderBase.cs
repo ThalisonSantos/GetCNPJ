@@ -42,11 +42,17 @@ namespace GetCNPJ.Providers.Base
                 // Valida e normaliza o CNPJ
                 cnpj = ValidateAndNormalizeCnpj(cnpj);
 
-                // Aguarda rate limiter
-                await _rateLimiter.WaitIfNeededAsync(ProviderName, cancellationToken).ConfigureAwait(false);
-
-                // Registra a requisição
-                _rateLimiter.RecordRequest(ProviderName);
+                if (_rateLimiter is IAtomicRateLimiter atomicRateLimiter)
+                {
+                    // A aquisição já registra a requisição; não registrar novamente.
+                    await atomicRateLimiter.AcquireAsync(ProviderName, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Compatibilidade com implementações externas do contrato original.
+                    await _rateLimiter.WaitIfNeededAsync(ProviderName, cancellationToken).ConfigureAwait(false);
+                    _rateLimiter.RecordRequest(ProviderName);
+                }
 
                 // Faz a requisição
                 var data = await FetchDataAsync(cnpj, cancellationToken).ConfigureAwait(false);

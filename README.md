@@ -209,9 +209,19 @@ public class CnpjData
 
 ## 🔒 Rate Limiting
 
-A biblioteca implementa rate limiting automático de 3 requisições por minuto por provedor, conforme solicitado. Cada provedor tem seu próprio contador independente.
+A biblioteca usa uma janela deslizante de até 3 aquisições por minuto por provedor, por padrão. Os provedores de uma instância de `CnpjClient` compartilham o limiter, com filas independentes por nome. Instâncias diferentes do cliente têm limiters independentes; não há coordenação entre processos.
 
-O algoritmo utilizado é o **Sliding Window**, que garante distribuição uniforme das requisições ao longo do tempo.
+`SlidingWindowRateLimiter.AcquireAsync` espera uma vaga e registra a aquisição atomicamente. Cada registro expira após o intervalo configurado, inclusive no instante exato do fim da janela; chamadas que disputam a mesma vaga reavaliam a fila antes de entrar. O tempo decorrido vem de `Stopwatch`, sem usar horário UTC para expiração. Nenhum bloqueio síncrono é mantido durante as esperas assíncronas.
+
+```csharp
+var limiter = new GetCNPJ.RateLimiter.SlidingWindowRateLimiter(3, TimeSpan.FromMinutes(1));
+await limiter.AcquireAsync("MeuProvedor", cancellationToken);
+// A vaga já foi registrada. Não chamar RecordRequest para a mesma aquisição.
+```
+
+`Reset` limpa os registros do provedor e acorda as esperas para disputar a capacidade reiniciada. `GetAvailableRequests` e os métodos legados compartilham a proteção da fila. Cancelamento durante a espera não registra uma aquisição; uma aquisição já concluída permanece contada mesmo se o consumidor cancelar depois. Limites e intervalos devem ser positivos; o construtor lança `ArgumentOutOfRangeException` caso contrário. Intervalos positivos longos são atendidos por esperas em partes, e esperas menores que 1 ms são arredondadas para cima.
+
+O contrato `IRateLimiter` mantém seus quatro membros. A nova interface opcional `IAtomicRateLimiter` permite que implementações externas ofereçam `AcquireAsync`. A base dos provedores usa essa capacidade quando disponível, sem registro adicional. Implementações antigas continuam sendo chamadas na ordem `WaitIfNeededAsync` e `RecordRequest`, uma vez cada; sua concorrência continua sob responsabilidade da implementação externa. O par legado de chamadas separadas não reserva atomicamente uma vaga; para concorrência com o limiter embutido, use `AcquireAsync`.
 
 ## 🛠️ Arquitetura
 

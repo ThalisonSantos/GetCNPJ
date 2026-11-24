@@ -39,6 +39,13 @@ namespace GetCNPJ
         {
             options = options ?? new CnpjClientOptions();
 
+            // Valida os limites antes de criar um HttpClient de propriedade da biblioteca.
+            // A instância é compartilhada; o limiter mantém uma janela por nome de provedor.
+            var rateLimiter = new SlidingWindowRateLimiter(
+                options.MaxRequestsPerMinute,
+                TimeSpan.FromMinutes(1)
+            );
+
             // Configura HttpClient
             if (httpClient != null)
             {
@@ -53,12 +60,6 @@ namespace GetCNPJ
                 };
                 _disposeHttpClient = true;
             }
-
-            // Configura Rate Limiter
-            var rateLimiter = new SlidingWindowRateLimiter(
-                options.MaxRequestsPerMinute,
-                TimeSpan.FromMinutes(1)
-            );
 
             // Configura provedores
             var providers = new List<ICnpjProvider>();

@@ -10,6 +10,7 @@ namespace GetCNPJ.Interfaces
     {
         /// <summary>
         /// Aguarda até que uma requisição possa ser feita
+        /// Esta operação legada não reserva a vaga. Para aquisição atômica, usar IAtomicRateLimiter.
         /// </summary>
         /// <param name="providerName">Nome do provedor</param>
         /// <param name="cancellationToken">Token de cancelamento</param>
@@ -17,6 +18,7 @@ namespace GetCNPJ.Interfaces
 
         /// <summary>
         /// Registra que uma requisição foi feita
+        /// Não chamar após IAtomicRateLimiter.AcquireAsync, que já registra a requisição.
         /// </summary>
         /// <param name="providerName">Nome do provedor</param>
         void RecordRequest(string providerName);

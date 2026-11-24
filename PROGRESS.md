@@ -8,8 +8,8 @@
 - [x] Documentação inicial preparada para inclusão local.
 - [x] Documentação adicionada e commitada pelo mantenedor em develop (bbc8a79).
 - [x] T01 — Infraestrutura de testes e CI sem publicação (validada local e remotamente).
-- [x] T02 — CNPJ alfanumérico (concluída localmente; suporte externo não confirmado).
-- [ ] T03 — Rate limiter.
+- [x] T02 — CNPJ alfanumérico (revisada e validada remotamente; suporte externo não confirmado).
+- [x] T03 — Rate limiter (concluída localmente).
 - [ ] T04 — Timeout e fallback.
 - [ ] T05 — Recursos HTTP.
 - [ ] T06 — Dependências e provedores.
@@ -54,7 +54,7 @@
 
 ## 2026-11-24 — Codex — T02
 - Branch / commit de referência: develop / 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475; árvore limpa no início.
-- Estado: concluído localmente.
+- Estado: concluído; revisão e validação remota posteriores informadas pelo mantenedor (45418466167, ver confirmação abaixo).
 - Escopo e aceite: centralizar validação/normalização/formatação em classe independente; preservar assinaturas existentes e CNPJ numérico; validar DV alfanumérico pela especificação oficial; testes unitários e HTTP simulado nos quatro provedores; preservar cinco targets e distinguir suporte local de suporte externo não confirmado.
 - Proposta comportamental antes da implementação: entradas com símbolos/letras Unicode, máscara incorreta ou letras nos DVs serão rejeitadas, em vez de remover caracteres arbitrários com Regex. CNPJs numéricos válidos, sem máscara ou com máscara padrão, continuam aceitos. Letras ASCII minúsculas serão convertidas para maiúsculas; espaços apenas nas extremidades serão tolerados como conveniência local. Não haverá alteração de assinatura pública ou validação de existência cadastral.
 - Fora de escopo: T03 e demais tarefas, consultas reais, commit, push e publicação.
@@ -73,6 +73,34 @@
 - Limitações: netstandard2.0 validado por compilação; os dois targets Framework rodam na instalação 4.8.1, sem uma máquina isolada com somente 4.8. Comando global depende do runtime 9 global, mas todos os testes foram aprovados por target. Persiste aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0, sem impedir testes. Suporte externo, existência cadastral e execução remota da T02 não confirmados.
 - Handoff: diff revisado e `git diff --check` aprovado; LICENSE, autoria, metadados, dependências e frameworks preservados. T01 registrada como concluída local e remotamente; T02 concluída localmente. Nenhum commit, push ou publicação. T03 não iniciada.
 - Próximo passo exato: mantenedor revisar o diff da T02 e, quando desejar, autorizar envio e conferir o CI. A tarefa T03 permanece pendente para solicitação separada.
+
+## 2026-11-24 — Confirmação remota da T02
+- Mantenedor informou revisão pelo ChatGPT e sucesso do GitHub Actions na execução [45418466167](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45418466167), commit e4863f10bbd4da2bcddfba59a54364607373b0ea.
+- T02 concluída local e remotamente; substitui a pendência remota do handoff histórico. Suporte alfanumérico externo continua não confirmado.
+
+## 2026-11-24 — Codex — T03
+- Branch / commit de referência: develop / e4863f10bbd4da2bcddfba59a54364607373b0ea; árvore limpa no início.
+- Estado: concluído localmente; sem validação remota desta alteração.
+- Escopo e aceite: aquisição e registro atômicos, filas protegidas, limites independentes por provedor, cancelamento, Reset/GetAvailableRequests concorrentes, validação do construtor, tempo monotônico e testes determinísticos. Preservar cinco frameworks, assinaturas e implementações externas de IRateLimiter.
+- Decisão de compatibilidade antes da implementação: acrescentar interface opcional IAtomicRateLimiter com AcquireAsync, sem novos membros em IRateLimiter. A base usará aquisição atômica quando disponível, sem RecordRequest adicional; implementações antigas continuarão no caminho WaitIfNeededAsync + RecordRequest. O par legado permanece não atômico por contrato; consumidores diretos do limiter embutido devem preferir AcquireAsync. Não é possível tornar duas chamadas públicas independentes atômicas sem mudar sua semântica.
+- Mudança de comportamento planejada: maxRequests <= 0 e timeWindow <= 0 passam a lançar ArgumentOutOfRangeException no construtor, em vez de travar/funcionar sem limites. Reset preservará o estado sincronizado do provedor e acordará esperas. Nenhuma dependência nova, commit, push ou publicação; T04 fora de escopo.
+- Arquivos alterados: RateLimiter/SlidingWindowRateLimiter.cs, RateLimiter/IRateLimiterTime.cs, Interfaces/IAtomicRateLimiter.cs, comentários em Interfaces/IRateLimiter.cs, Providers/Base/CnpjProviderBase.cs, CnpjClient.cs, Properties/AssemblyInfo.cs; tests/GetCNPJ.Tests/SlidingWindowRateLimiterTests.cs, RateLimiterIntegrationTests.cs, ManualRateLimiterTime.cs e AsyncTest.cs; README.md, tests/README.md e quatro documentos de acompanhamento.
+- Implementação: ConcurrentDictionary com um estado estável por nome de provedor. Cada fila tem um único lock para limpar, checar e registrar; todas as operações de fila usam esse lock, sem await dentro. AcquireAsync reserva a vaga e já registra a tentativa. Reset limpa a fila existente e sinaliza esperas por TaskCompletionSource com continuations assíncronas; concorrentes acordados disputam a capacidade sob o mesmo lock. Timers que perdem para Reset são cancelados. GetAvailableRequests retorna capacidade protegida e expira registros inclusive na fronteira exata.
+- Tempo e parâmetros: Stopwatch.Elapsed disponível nos cinco targets substitui DateTime.UtcNow, sem dependência de TimeProvider. IsHighResolution=True nesta máquina. Esperas positivas arredondadas para cima em ms, no mínimo 1 ms e no máximo Int32.MaxValue - 1 ms por trecho, suportando janelas até TimeSpan.MaxValue. Limites/intervalos não positivos rejeitados com ArgumentOutOfRangeException. CnpjClient constrói/valida o limiter antes de criar o HttpClient próprio; uma instância é compartilhada entre seus provedores, com contagem independente por nome.
+- Compatibilidade: nenhum membro novo obrigatório em IRateLimiter, nenhum método removido ou assinatura existente alterada; IAtomicRateLimiter é opcional. A base chama AcquireAsync quando disponível e não chama RecordRequest depois; caminho antigo mantém espera e registro uma vez cada. RecordRequest manual não limita requisições e o protocolo separado permanece não atômico. Consumidores concorrentes do limiter embutido devem migrar para AcquireAsync; implementações externas antigas mantêm sua responsabilidade de sincronização. Cancelamento antes da reserva não conta; cancelamento após aquisição concluída não desfaz uma tentativa. Reset reinicia explicitamente a capacidade.
+- Reprodução da falha: arquivos originais do commit e4863f1 copiados pelo git show para artifacts/T03Baseline; execução permitiu 100 esperas simultâneas concluídas antes do registro e 100 registros para limite 3. `dotnet run --project artifacts/T03Baseline/T03Baseline.csproj -c Release`: saída 0; evidência em artifacts/t03-baseline-reproduction.log. Reprodução e fontes temporárias ignoradas pelo Git.
+- Ambiente: Windows 10.0.26200 x64; SDK 11.0.100 / MSBuild 18.12.2, runtime 8.0.34 e Framework 4.8.1 (Release 533509), runtime 9.0.23 local em artifacts/dotnet9. Frameworks e dependências inalterados.
+- Comandos e resultados:
+  - `dotnet restore GetCNPJ.sln`: aprovado, projetos atualizados e sem dependências novas.
+  - `dotnet build GetCNPJ.sln -c Release`: aprovado em netstandard2.0, net48, net481, net8.0 e net9.0, 1290 avisos de nulabilidade existentes e 0 erros. Log artifacts/t03-build.log.
+  - Teste dirigido em net8.0, filtro SlidingWindowRateLimiterTests/RateLimiterIntegrationTests: 28 aprovados.
+  - `dotnet test GetCNPJ.sln -c Release --no-build`: saída 1 por falta do runtime 9 global; 145 aprovados em cada um dos outros três targets, sem contar como aprovação global. Log artifacts/t03-test-solution.log.
+  - `dotnet test GetCNPJ.sln -c Release --no-build -f <target> --settings tests/test.runsettings --logger trx --results-directory TestResults/T03/Full`: aprovado em net48, net481 e net8.0.
+  - Mesmo comando para net9.0 com `-- RunConfiguration.DotNetHostPath="D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"`: aprovado com runtime 9 correto, sem roll-forward. Suíte completa: 145 aprovados por target (580 execuções), 0 falhas e 0 ignorados; TRX em TestResults/T03/Full/.
+- Testes obrigatórios cobertos: 100 aquisições concorrentes/limite 7; ondas de concorrentes na expiração; janela deslizante com registros em instantes distintos e fronteira exata; expiração de registros; provedores independentes; cancelamento antes/durante a espera; Reset acordando oito concorrentes com apenas uma vaga e sem fila desconectada; 2400 operações concorrentes de Reset/Record/GetAvailable/Acquire; limites/intervalos inválidos, defaults e positivos extremos; intervalo submilissegundo sem busy loop; registro único nos quatro provedores reais com HTTP simulado; implementação externa que só possui os quatro métodos originais e implementação opcional atômica, incluindo token e ordem de chamadas.
+- Limitações: protocolo legado separado sem atomicidade por contrato; implementação externa antiga responsável por sua concorrência. Runtime Framework 4.8.1 atende ambos os targets, sem máquina isolada com só 4.8; netstandard2.0 validado por compilação. Persistem aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0 e necessidade de host explícito para net9.0 nesta máquina. T03 sem CI remoto nesta etapa. Nenhuma API real consultada.
+- Handoff: código e diff revisados, git diff --check aprovado; LICENSE, autoria, contratos existentes, cinco targets e dependências preservados. T02 registrada como revisada e validada remotamente; T03 concluída localmente. Nenhum commit, push ou publicação. T04 não iniciada.
+- Próximo passo exato: mantenedor revisar T03 e autorizar envio quando desejar, conferir o CI e solicitar T04 separadamente.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.
