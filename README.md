@@ -1,10 +1,12 @@
-# GetCNPJ
+# GetCNPJ Community
 
-[![NuGet](https://img.shields.io/nuget/v/GetCNPJ.svg)](https://www.nuget.org/packages/GetCNPJ/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<img width="374" height="373" alt="image" src="https://github.com/user-attachments/assets/a52c4ae9-fd76-48a6-af33-1dda1de6765d" />
+**Fork independente**, mantido por **Thalison Santos**, do [GetCNPJ original](https://github.com/azumamagus/GetCNPJ), desenvolvido por **Bruno da Cunha Felipe**. Repositório do fork: [ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ). Não é uma publicação do autor original nem possui afiliação oficial com a Receita Federal ou com os provedores.
 
+Identidade aprovada: **GetCNPJ.Community 1.1.0**. Pacote preparado e validado localmente, **ainda não publicado nesta etapa**. Namespace e assembly continuam **GetCNPJ**; não é necessário mudar os `using`. A licença MIT e o copyright original estão preservados integralmente em [LICENSE](LICENSE).
+
+**Não instale GetCNPJ e GetCNPJ.Community simultaneamente**, nem por dependências transitivas: ambos fornecem `GetCNPJ.dll` e os mesmos namespaces/tipos, causando conflitos de compilação ou carregamento. Ao migrar, remova a referência ao pacote original e valide também o grafo de dependências. AssemblyVersion permanece 1.0.0.0 por compatibilidade; versão do pacote/arquivo é 1.1.0.
 
 Biblioteca .NET para consulta de CNPJ em APIs públicas brasileiras, com suporte a múltiplos provedores e rate limiting integrado.
 
@@ -53,15 +55,26 @@ Os cinco frameworks foram preservados. System.Text.Json 8.0.6 é referência som
 
 ## 📦 Instalação
 
+Após publicação autorizada no NuGet.org (os comandos abaixo não indicam que ela já ocorreu):
+
 ```bash
-dotnet add package GetCNPJ
+dotnet add package GetCNPJ.Community --version 1.1.0
 ```
 
 Ou via NuGet Package Manager:
 
 ```
-Install-Package GetCNPJ
+Install-Package GetCNPJ.Community -Version 1.1.0
 ```
+
+Para avaliar o pacote gerado nesta preparação usando uma fonte local:
+
+```powershell
+dotnet add package GetCNPJ.Community --version 1.1.0 --no-restore
+dotnet restore --source "./artifacts/packages" --source "https://api.nuget.org/v3/index.json"
+```
+
+Execute no projeto consumidor e ajuste o caminho para a pasta do pacote; a segunda fonte resolve as dependências transitivas. Para garantir a origem local do pacote principal, use o mapeamento de fontes descrito no procedimento completo. Hashes, consumidores independentes, avisos e pendências em [docs/RELEASE.md no repositório](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md). CI permanece somente build/test, sem publicação automática.
 
 ## 🚀 Uso Básico
 
@@ -325,7 +338,7 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para d
 
 ## 📞 Suporte
 
-Para reportar bugs ou solicitar features, abra uma issue no GitHub.
+Para reportar bugs ou solicitar melhorias do fork, abra uma [issue em ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ/issues). Mantenedor: Thalison Santos. Autor original: Bruno da Cunha Felipe. Nenhum logotipo foi incluído nesta distribuição porque a autorização específica de reutilização não foi comprovada.
 
 ---
 

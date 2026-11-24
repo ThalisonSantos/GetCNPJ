@@ -1,6 +1,6 @@
 # Roadmap — GetCNPJ
 
-Versões propostas para planejamento interno; sujeitas à revisão de compatibilidade e à escolha da identidade do pacote. Nenhuma publicação autorizada nesta etapa.
+Versões para planejamento interno, sujeitas à revisão de compatibilidade. Mantenedor aprovou GetCNPJ.Community 1.1.0 como identidade inicial do fork; nenhuma publicação autorizada nesta etapa.
 
 ## 1.1.0 — Estabilização
 
@@ -22,8 +22,9 @@ Estado em 2026-11-24:
 - T03 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45428236555](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45428236555), commit 45d4a6476a7a661da96877295679849efdd32c8a, informados pelo mantenedor. Protocolo legado separado continua não atômico por compatibilidade.
 - T04 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45431741152](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45431741152), commit 7dd0a9db79bdc6c9a1b8276adac5d7e6d05a8aa1, informados pelo mantenedor.
 - T05 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45435902138](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45435902138), commit 038723f43c67f5527339a10cc5856625f555635b, informados pelo mantenedor. Evidências anteriores preservadas em AUDIT.md/PROGRESS.md.
-- T06 concluída localmente: dependências diretas/transitivas auditadas sem vulnerabilidades conhecidas reportadas; referências condicionais por framework; contratos/mapeamentos dos quatro provedores corrigidos e matriz em docs/PROVIDERS.md. BrasilAPI/ReceitaWS com suporte alfanumérico confirmado por documentação oficial; CNPJ.WS/CNPJá não confirmados. Nenhuma consulta real. Cinco targets compilados, 360 casos aprovados por target executável (1440 execuções). Validação remota da T06 pendente.
-- T07 não iniciada. Próximo passo é revisão da T06 e CI remoto pelo mantenedor. Nenhum commit, push ou publicação autorizado/executado nesta tarefa.
+- T06 validada remotamente conforme mantenedor: GitHub Actions [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão técnica ChatGPT parcial, sem bloqueios nos trechos revisados; não equivale a revisão integral ou teste real dos provedores. Limitações em docs/PROVIDERS.md e AUDIT.md preservadas.
+- T07 concluída como preparação local: GetCNPJ.Community 1.1.0, autoria/créditos/MIT preservados, logo excluído da distribuição sem prova de autorização específica. Nome sem pacote público nas consultas oficiais (404), sem garantia de reserva. Build dos cinco targets, 360 testes por target (1440 execuções), pack/inspeção e consumidores independentes net48/net8 aprovados. 1275 avisos de nulabilidade revisados e mantidos. Evidências/hash/pendências em docs/RELEASE.md. CI/revisão remotos da T07 e publicação continuam pendentes; não foi autorizada publicação.
+- Próximo passo: mantenedor revisar T07 e seu candidato local, conferir CI remoto quando houver envio autorizado e decidir separadamente sobre publicação. Nenhum commit/push/merge/tag/GitHub Release/publicação nesta tarefa. Tarefas 1.2.0 não iniciadas.
 
 Critério de saída: build e testes aprovados nos ambientes pertinentes, compatibilidade revisada, documentação atualizada e autorização específica para release.
 
@@ -39,6 +40,6 @@ Critério de saída: build e testes aprovados nos ambientes pertinentes, compati
 - T14: automatizar release autorizada, documentação e exemplos de uso.
 
 ## Decisões pendentes
-- Nome do pacote NuGet e estratégia de versionamento do fork.
+- Publicação futura de GetCNPJ.Community 1.1.0 depende de autorização específica, nova conferência de disponibilidade do nome e artefato aprovado; identidade já aprovada pelo mantenedor.
 - Suporte explícito a .NET 10/11 sem abandono do .NET Framework 4.8.
 - Políticas de cache e seleção de provedores.

@@ -8,16 +8,24 @@
         <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**</DefaultItemExcludes>
 
         <!-- Package Information -->
-        <PackageId>GetCNPJ</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Bruno da Cunha Felipe</Authors>
-        <Company>FeTx</Company>
-        <Description>Biblioteca para consulta de CNPJ em APIs públicas brasileiras (ReceitaWS, BrasilAPI, CNPJA). Suporta .NET Framework 4.5+, .NET 8, .NET 9 e .NET Standard 2.0 com rate limiting integrado.</Description>
-        <PackageTags>CNPJ;Brasil;ReceitaWS;BrasilAPI;CNPJA;API;Consulta</PackageTags>
-        <RepositoryUrl>https://github.com/azumamagus/GetCNPJ</RepositoryUrl>
+        <PackageId>GetCNPJ.Community</PackageId>
+        <Version>1.1.0</Version>
+        <Title>GetCNPJ Community</Title>
+        <Authors>Bruno da Cunha Felipe;Thalison Santos</Authors>
+        <Copyright>Copyright (c) 2025 Bruno da Cunha Felipe</Copyright>
+        <Description>Fork independente do GetCNPJ de Bruno da Cunha Felipe, mantido por Thalison Santos. Consulta CNPJ via CNPJ.WS, ReceitaWS, BrasilAPI e CNPJá; validação local numérica e alfanumérica, rate limiting e fallback. .NET Standard 2.0, .NET Framework 4.8/4.8.1, .NET 8 e .NET 9. Suporte operacional das APIs externas não comprovado por testes reais.</Description>
+        <PackageTags>CNPJ;Brasil;Community;CNPJWS;ReceitaWS;BrasilAPI;CNPJA;Validacao;Alfanumerico</PackageTags>
+        <PackageProjectUrl>https://github.com/ThalisonSantos/GetCNPJ</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ThalisonSantos/GetCNPJ</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageIcon>logo.png</PackageIcon>
+        <PackageReleaseNotes>Estabilização do fork independente: validação de CNPJ numérico/alfanumérico, concorrência, timeout/fallback, recursos HTTP e contratos de provedores. Consulte CHANGELOG.md e docs/PROVIDERS.md. APIs reais não testadas.</PackageReleaseNotes>
+        <AssemblyName>GetCNPJ</AssemblyName>
+        <RootNamespace>GetCNPJ</RootNamespace>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.1.0.0</FileVersion>
+        <IncludeSource>false</IncludeSource>
     </PropertyGroup>
 
     <!-- O projeto na raiz não deve compilar nem empacotar a infraestrutura de testes. -->
@@ -36,13 +44,13 @@
         <Reference Include="System.Net.Http" />
     </ItemGroup>
 
-    <!-- README para o pacote NuGet -->
+    <!-- Lista explícita: não distribuir fontes de testes, imagens sem autorização ou artefatos. -->
     <ItemGroup>
-        <None Include="README.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="logo.png" Pack="true" PackagePath="\" />
+        <Content Update="**/*" Pack="false" />
+        <None Update="**/*" Pack="false" />
+        <None Remove="README.md;LICENSE;CHANGELOG.md;docs/PROVIDERS.md;docs/DEPENDENCIES.md" />
+        <None Include="README.md;LICENSE;CHANGELOG.md" Pack="true" PackagePath="\" />
+        <None Include="docs/PROVIDERS.md;docs/DEPENDENCIES.md" Pack="true" PackagePath="docs/" />
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,10 @@
 Alterações relevantes do fork serão registradas aqui, seguindo categorias de adição, alteração, correção, remoção e segurança. Adotar SemVer após definição da identidade do pacote.
 
 ## [Não publicado]
+Identidade aprovada para a versão **1.1.0**: GetCNPJ.Community / GetCNPJ Community. Fork independente mantido por Thalison Santos, derivado de GetCNPJ de Bruno da Cunha Felipe. Esta seção registra preparação local, sem publicação/tag/release.
+
 ### Adicionado
+- Preparação de GetCNPJ.Community 1.1.0, documentação de geração/inspeção/instalação local e futura publicação manual em docs/RELEASE.md. Namespace e assembly GetCNPJ preservados; AssemblyVersion 1.0.0.0 mantida e FileVersion 1.1.0.0.
 - Matriz documental dos quatro provedores em docs/PROVIDERS.md e inventário/auditoria de todas as dependências em docs/DEPENDENCIES.md, verificados em 2026-11-24, sem consultas cadastrais reais.
 - Endereco.CodigoIbge e flags nullable SimplesNacional.OptanteInformado/OptanteSimeiInformado e InscricaoEstadual.AtivoInformado; distinguem informação desconhecida de negativa, preservando os bools e ToString existentes. Adições podem aparecer na serialização dos modelos pelo consumidor.
 - 79 casos sintéticos de contratos/mapeamento/identidade/erros JSON e fallback; suíte atual com 360 casos por target executável (1440 execuções aprovadas), preservados 281 anteriores com quatro expectativas corrigidas de listas [null]. NuGetAudit/all habilitado em restore/CI.
@@ -20,6 +23,8 @@ Alterações relevantes do fork serão registradas aqui, seguindo categorias de 
 - 92 casos de recursos HTTP, com respostas/conteúdos/streams/handlers/clientes rastreáveis, falhas e reutilização; suíte atual com 281 casos por target executável.
 
 ### Alterado
+- T06 validada remotamente conforme mantenedor: GitHub Actions 45443368700, commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão técnica ChatGPT apenas parcial, sem bloqueios nos trechos revisados; não equivale a revisão integral ou teste das APIs reais.
+- Metadados do fork, autoria original/mantenedor, URLs, descrição, tags e instalação atualizados. GetCNPJ e GetCNPJ.Community não devem coexistir no mesmo grafo por compartilharem GetCNPJ.dll/tipos.
 - T05 registrada como concluída local e remotamente conforme revisão ChatGPT/validação GitHub Actions informadas pelo mantenedor: execução 45435902138, commit 038723f43c67f5527339a10cc5856625f555635b.
 - System.Text.Json atualizado de 8.0.5 para patch estável 8.0.6 somente em netstandard2.0/net48/net481; net8/net9 usam componente do framework. Dependências de testes mantidas após auditoria direta/transitiva sem vulnerabilidades conhecidas reportadas. STJ 8.0.5 já corrigia CVE-2024-43485; atualização não atribui essa vulnerabilidade à versão anterior.
 - Evidência documental de suporte alfanumérico confirmada para BrasilAPI e ReceitaWS; CNPJ.WS/CNPJá permanecem não confirmados. Nenhum teste real de suporte ou disponibilidade executado.
@@ -44,11 +49,12 @@ Alterações relevantes do fork serão registradas aqui, seguindo categorias de 
 - HttpClient próprio limpo quando a configuração/construção de CnpjClient falha; Dispose repetido/concorrente libera a instância uma única vez. HttpClient externo nunca descartado pelo wrapper; compartilhamento/reutilização e buffering/timeout preservados.
 
 ### Removido
+- Referência comercial FeTx dos metadados e logotipo dos metadados/conteúdo NuGet e README, sem comprovação específica de autorização de reutilização da identidade visual. LICENSE/copyright/créditos originais preservados; logo.png permanece somente como arquivo histórico no repositório.
 - Pacote System.Net.Http 4.3.4 e transitivas exclusivas, substituídos por referência ao assembly da plataforma nos targets Framework (biblioteca e testes), sem criar/descartar HttpClient adicional.
 - Empacotamento e publicação NuGet do workflow, incluindo referência ao segredo de publicação.
 - Geração automática de pacote no build; projeto de testes não empacotável.
 
-T05 concluída remotamente conforme mantenedor. T06 concluída localmente com build dos cinco targets e 1440 execuções de testes aprovadas (net9 via host local); revisão/CI remoto pendentes. Chamadas legadas separadas WaitIfNeededAsync/RecordRequest continuam disponíveis e não constituem aquisição atômica; implementações externas antigas mantêm sua semântica. Validade de CNPJ não comprova cadastro ou operação externa. T07 não iniciada. Nenhum commit, push ou publicação realizado nesta tarefa.
+T06 validada remotamente pelo mantenedor; revisão técnica parcial não substitui revisão integral nem comprova operação das APIs. T07 corresponde à identidade/preparação do pacote 1.1.0, sem autorização de publicação; evidências de build/testes/empacotamento/consumidores e pendências constam em AUDIT.md, PROGRESS.md e docs/RELEASE.md. Chamadas legadas separadas WaitIfNeededAsync/RecordRequest continuam disponíveis e não constituem aquisição atômica; implementações externas antigas mantêm sua semântica. Validade de CNPJ não comprova cadastro ou operação externa. Nenhum commit, push, merge, tag, GitHub Release ou publicação nesta tarefa; versão 1.2.0 não iniciada.
 
 ## [1.0.0] — Versão original herdada
 - Código herdado do projeto GetCNPJ de azumamagus.
