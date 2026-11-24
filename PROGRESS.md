@@ -10,8 +10,8 @@
 - [x] T01 — Infraestrutura de testes e CI sem publicação (validada local e remotamente).
 - [x] T02 — CNPJ alfanumérico (revisada e validada remotamente; suporte externo não confirmado).
 - [x] T03 — Rate limiter (revisada e validada remotamente).
-- [x] T04 — Timeout e fallback (concluída localmente).
-- [ ] T05 — Recursos HTTP.
+- [x] T04 — Timeout e fallback (revisada e validada remotamente).
+- [x] T05 — Recursos HTTP (concluída localmente).
 - [ ] T06 — Dependências e provedores.
 - [ ] T07 — Identidade e release.
 
@@ -108,7 +108,7 @@
 
 ## 2026-11-24 — Codex — T04
 - Branch / commit de referência: develop / 45d4a6476a7a661da96877295679849efdd32c8a; árvore limpa no início.
-- Estado: concluído localmente; sem validação remota desta alteração.
+- Estado: concluído; revisão pelo ChatGPT e validação remota posteriores informadas pelo mantenedor (45431741152, ver confirmação abaixo).
 - Escopo e aceite: reproduzir timeout com HTTP simulado antes de corrigir; distinguir token do consumidor de falha/timeout do provedor nos dois métodos do serviço; preservar prioridades, falhas, interfaces e aquisição atômica; consultas direcionadas sem fallback; nenhum retry. Testar os quatro targets executáveis e compilar os cinco targets da biblioteca.
 - Decisão antes da implementação: OperationCanceledException/TaskCanceledException só interrompem fallback como cancelamento do consumidor quando o token recebido está cancelado. Sem esse sinal, serão falhas do provedor, preservando a exceção original. Não inferir timeout apenas pelo nome da exceção ou por um token interno de HttpClient. Adicionar pontos de verificação do token antes/depois das tentativas para não depender de provedores que cooperem corretamente. Sem mudança de assinatura pública.
 - Fora de escopo: T05, APIs reais, dependências novas, commit, push e publicação.
@@ -133,6 +133,38 @@
 - Limitações: cancelamento cooperativo para provedores externos que ignoram o token durante o trabalho, mas fronteiras verificadas pelo serviço; sem novo prazo global. Runtime 9 requer host local nesta máquina, e persiste aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0. Framework 4.8/4.8.1 testados no runtime 4.8.1 instalado; netstandard2.0 verificado por compilação. T04 ainda sem CI remoto, sem confirmação de suporte das APIs externas.
 - Handoff: código/diff revisados e git diff --check aprovado; LICENSE, autoria, cinco targets, contratos e dependências preservados. T03 registrada como revisada e validada remotamente; T04 concluída localmente. Nenhuma API real consultada; nenhum commit, push ou pacote publicado. T05 não iniciada.
 - Próximo passo exato: mantenedor revisar a T04 e autorizar envio quando desejar; conferir CI remoto. Aguardar solicitação separada para T05.
+
+## 2026-11-24 — Confirmação remota da T04
+- Mantenedor informou revisão pelo ChatGPT e validação pelo GitHub Actions na execução [45431741152](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45431741152), commit 7dd0a9db79bdc6c9a1b8276adac5d7e6d05a8aa1.
+- T04 concluída local e remotamente; substitui a pendência remota do handoff histórico.
+
+## 2026-11-24 — Codex — T05
+- Branch / commit de referência: develop / 7dd0a9db79bdc6c9a1b8276adac5d7e6d05a8aa1; árvore limpa no início.
+- Estado: concluído localmente; sem validação remota desta alteração.
+- Escopo e aceite: auditar propriedade e descarte de recursos HTTP; reproduzir ausência de descarte com respostas/conteúdos rastreáveis; corrigir quatro provedores e disponibilidade; testar sucesso, falhas HTTP/JSON/fallback e propriedade/reutilização/Dispose do HttpClient. Preservar API, cinco frameworks e T02–T04.
+- Decisão antes da implementação: manter GetAsync com buffering e timeout atuais e escopo using para a resposta; Dispose da resposta libera seu conteúdo/streams. Não mudar para ResponseHeadersRead (alteraria alcance do timeout da T04), nem descartar HttpClient emprestado. Proteger a configuração e construção do cliente próprio com limpeza em exceções, eliminando o inicializador que pode perder a instância quando Timeout lança exceção. Acrescentar somente ponto de criação interno para testar propriedade efetivamente, sem assinatura pública nova.
+- Fora de escopo: T06, refatoração global de nulabilidade, API real, dependências novas, commit, push e publicação.
+- Arquivos alterados: CnpjClient.cs; Providers/Base/CnpjProviderBase.cs; BrasilAPIProvider.cs, CNPJAProvider.cs, CNPJWSProvider.cs e ReceitaWSProvider.cs; tests/GetCNPJ.Tests/TrackedHttpResources.cs, HttpResourceDisposalTests.cs e HttpClientOwnershipTests.cs; README.md, tests/README.md, AUDIT.md, PROGRESS.md, ROADMAP.md e CHANGELOG.md.
+- Reprodução anterior à correção: oito casos de consulta bem-sucedida/disponibilidade dos quatro provedores falharam em net8.0 com DisposeCalls = 0. Asserções executadas antes da limpeza dos fixtures. `dotnet test GetCNPJ.sln -c Release --no-build -f net8.0 --filter FullyQualifiedName~HttpResourceDisposalTests --logger trx --results-directory TestResults/T05/Baseline`: saída 1, 8 falhas/0 aprovados. Produção ainda em 7dd0a9d; evidências artifacts/t05-baseline-reproduction.log e TestResults/T05/Baseline/.
+- Auditoria: cinco pontos de obtenção de HttpResponseMessage (quatro consultas e disponibilidade da base), agora com using. Conteúdo e streams pertencem à resposta e são descartados em cascata; falha de buffering antes de GetAsync retornar é limpa pelo HttpClient, verificado em todos os targets executáveis. Biblioteca não instancia/recebe HttpRequestMessage ou Stream diretamente; usa GET sem corpo e leitura para string. Não há JsonDocument/reader descartável; JsonSerializerOptions/DTOs/strings não são descartáveis. CTS do limiter já usa using e não foi alterado; exemplos já usam using para CnpjClient. Detalhes e matriz de propriedade em AUDIT.md.
+- Correção dos provedores: using cobre sucesso, falhas HTTP/JSON/leitura/mapeamento, retorno null, disponibilidade e saída para fallback. Resposta anterior já descartada antes de consultar o próximo provedor. Clientes HTTP não são criados ou descartados pelos provedores; DTOs permanecem independentes da resposta.
+- Correção de CnpjClient: uma única instância compartilhada entre provedores/consultas; instância própria guardada antes do setter Timeout e restante da construção sob try/catch com limpeza. Cliente externo e sua configuração preservados inclusive em erro de construção. Dispose usa Interlocked para evitar liberação repetida/concorrente. Ponto de criação interno, acessível aos testes pelo mecanismo já existente de InternalsVisibleTo, sem API pública nova. Argumentos opcionais anotados como nullable, pois já aceitavam null; 25 avisos locais removidos sem supressão/refatoração global.
+- Compatibilidade: mantidos os cinco targets, dependências, assinaturas públicas CLR, ordem dos provedores, normalização alfanumérica, aquisição atômica, timeouts e cancelamento/fallback. GetAsync mantém buffering/alcance de timeout da T04. Get/GetFromProvider continuam delegando aos métodos assíncronos com ConfigureAwait(false) interno; testes síncronos verificam descarte antes do retorno.
+- Fontes oficiais consultadas em 2026-11-24: [HttpResponseMessage.Dispose](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage.dispose?view=net-9.0) e [diretrizes de HttpClient](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines), além da referência HttpClient/HttpContent via Context7. Nenhuma dependência nova adicionada.
+- Ambiente: Windows 10.0.26200 x64; SDK 11.0.100/MSBuild 18.12.2; runtimes .NET 8.0.34, .NET Framework 4.8.1 (Release 533509), e 9.0.23 em artifacts/dotnet9. Netstandard2.0 validado por compilação; Framework 4.8/4.8.1 executados na instalação 4.8.1, sem máquina isolada com apenas 4.8.
+- Comandos e resultados reais:
+  - `dotnet build GetCNPJ.sln -c Release` antes da correção: aprovado, 1290 avisos/0 erros; artifacts/t05-baseline-build.log.
+  - `dotnet restore GetCNPJ.sln`: aprovado, sem dependências novas.
+  - `dotnet build GetCNPJ.sln -c Release` final: cinco targets compilados, 1265 avisos de nulabilidade remanescentes/0 erros; artifacts/t05-build.log.
+  - Testes dirigidos de HttpResourceDisposalTests/HttpClientOwnershipTests em net8.0 e net48: 90 aprovados por target antes dos dois testes síncronos complementares finais.
+  - `dotnet test GetCNPJ.sln -c Release --no-build`: saída 1 por runtime 9 ausente na instalação global, com 281 aprovados em cada um dos outros três targets; não contado como aprovação global. Log artifacts/t05-test-solution.log.
+  - `dotnet test GetCNPJ.sln -c Release --no-build -f <target> --settings tests/test.runsettings --logger trx --results-directory TestResults/T05/Full`: aprovado em net48, net481 e net8.0.
+  - Mesmo comando para net9.0 com `-- RunConfiguration.DotNetHostPath="D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"`: aprovado no runtime correto, sem roll-forward.
+- Suíte final: 281 aprovados por target (1124 execuções), 0 falhas/ignorados; todos os 189 anteriores preservados e 92 novos casos. Evidências finais em TestResults/T05/Full/.
+- Cobertura: 82 casos de resposta/conteúdo/stream (sucesso, Get/GetFromProvider síncronos, 400/404/429/500/503 nos quatro provedores, JSON inválido/tipo incorreto/null, falha de mapeamento/leitura/buffering, disponibilidade com e sem resposta, descarte antes do fallback e preservação dos erros quando todos falham); 10 casos de propriedade (cliente externo utilizável após Dispose, dois wrappers compartilhados, cliente próprio criado uma vez/reutilizado/descartado com handler, Dispose repetido/concorrente, falha de construção sem provedores ou timeout inválido, factory própria não usada para cliente externo). Contadores e flags verificados antes da limpeza dos fixtures, com cadeia real de StreamContent/MemoryStream.
+- Limitações: testes simulados não verificam sockets reais/handlers externos arbitrários; nenhuma API consultada. Persistem aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0 e necessidade de host explícito para net9.0 nesta máquina. T05 ainda sem CI remoto; suporte real dos provedores e auditoria de dependências aguardam T06.
+- Handoff: código/diff revisados, git diff --check aprovado, propriedade auditada e documentação atualizada; LICENSE, autoria e frameworks preservados. T04 registrada como revisada e validada remotamente; T05 concluída localmente. T06 não iniciada. Nenhum commit, push ou pacote publicado.
+- Próximo passo exato: mantenedor revisar T05 e autorizar envio quando desejar, conferir CI remoto e solicitar T06 separadamente.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.

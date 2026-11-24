@@ -1,6 +1,6 @@
 # Testes e CI
 
-O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 189 casos em `net48`, `net481`, `net8.0` e `net9.0` (756 execuções na T04). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
+O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 281 casos em `net48`, `net481`, `net8.0` e `net9.0` (1124 execuções na T05). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
 
@@ -17,6 +17,10 @@ A T04 adicionou 44 casos: falhas/timeouts em cadeia, preservação de todos os e
 Antes da correção, os dois casos GetAsync_TimeoutOfFirstProvider_AllowsSecondToSucceed falharam em net8.0: o timeout simulado escapou e impediu fallback. Evidência em TestResults/T04/Baseline/ e artifacts/t04-baseline-reproduction.log. Depois da correção, todos os casos foram aprovados; suíte completa em TestResults/T04/Full/.
 
 Dois casos complementares usam o timer real de HttpClient (100 ms) sobre AsyncStubHttpMessageHandler local, sem rede nem asserção de duração exata. Capturam nos TRX a forma nativa da exceção: TaskCanceledException sem interna em net48/net481 e com TimeoutException interna em net8/net9 nesta máquina. Isso caracteriza o pipeline com handler simulado, não todos os transportes HTTP possíveis. O restante usa sinais explícitos, exceções simuladas ou tempo manual.
+
+A T05 adicionou 92 casos: 82 de respostas/conteúdo/streams e 10 de propriedade do cliente. TrackedHttpResponse, TrackedContent (StreamContent), TrackedStream, TrackedHandler e TrackedHttpClient permitem observar o descarte real antes da limpeza do fixture. Cobrem sucesso e métodos síncronos; HTTP 400/404/429/500/503; JSON inválido/tipo incorreto/null; erro de mapeamento; falhas de buffering/leitura; disponibilidade; descarte antes da próxima tentativa de fallback; reutilização, propriedade, falha de construção e Dispose repetido/concorrente. O ponto de criação de cliente é interno, não uma nova API pública.
+
+Antes da correção, os oito casos iniciais de sucesso/disponibilidade falharam em net8.0 porque a resposta não era descartada (DisposeCalls = 0). Evidências em TestResults/T05/Baseline/ e artifacts/t05-baseline-reproduction.log. Noventa casos novos passaram dirigidos em net8.0 e net48, antes dos dois complementares síncronos. Todos os 281 casos finais passaram nos quatro targets; TRX em TestResults/T05/Full/. Testes de buffering confirmam também a limpeza efetuada pelo próprio HttpClient quando a resposta ainda não foi entregue ao provedor.
 
 Em Windows, usar SDK com suporte a .NET 9, runtimes .NET 8 e 9 e .NET Framework 4.8.1. Os reference assemblies de .NET Framework devem estar disponíveis pelos targeting packs ou pelo mecanismo de restauração do SDK. Como .NET Framework 4.8.1 substitui 4.8, os testes de ambos os targets usam o runtime instalado; não comprovam execução em uma máquina com apenas 4.8.
 

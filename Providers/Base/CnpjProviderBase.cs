@@ -85,7 +85,7 @@ namespace GetCNPJ.Providers.Base
         {
             try
             {
-                var response = await _httpClient.GetAsync(BaseUrl).ConfigureAwait(false);
+                using var response = await _httpClient.GetAsync(BaseUrl).ConfigureAwait(false);
                 return response.IsSuccessStatusCode;
             }
             catch

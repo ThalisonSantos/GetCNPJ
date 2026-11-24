@@ -29,7 +29,7 @@ namespace GetCNPJ.Providers.CNPJWS
         protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
-            var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {

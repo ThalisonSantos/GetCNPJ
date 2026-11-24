@@ -160,8 +160,8 @@ var result = await client.GetAsync("03312791000183");
 ### HttpClient Customizado
 
 ```csharp
-// Usar seu próprio HttpClient (recomendado em aplicações ASP.NET Core)
-var httpClient = new HttpClient
+// A aplicação cria e controla a vida deste HttpClient, reutilizado entre consultas.
+using var httpClient = new HttpClient
 {
     Timeout = TimeSpan.FromSeconds(30)
 };
@@ -169,6 +169,12 @@ var httpClient = new HttpClient
 using var client = new CnpjClient(httpClient);
 var result = await client.GetAsync("03312791000183");
 ```
+
+`CnpjClient` usa uma única instância de HttpClient, compartilhada por todos os seus provedores e consultas. Reutilize o cliente entre consultas; não crie um HttpClient para cada requisição. Quando você fornece o HttpClient, ele é emprestado: a aplicação continua responsável pelo seu descarte, inclusive se o construtor de CnpjClient falhar. Se ele vier de um serviço/factory da aplicação, siga o ciclo de vida definido por esse serviço.
+
+Sem HttpClient fornecido, CnpjClient cria e possui a instância. `Dispose` libera esse cliente e seu handler uma única vez; chamadas repetidas são seguras. Se a configuração ou a construção falhar depois da criação, a instância própria também será descartada. Use `using`/`Dispose` ao encerrar o ciclo de vida de CnpjClient.
+
+Os provedores descartam cada HttpResponseMessage após ler e mapear a resposta, inclusive em erros HTTP, JSON inválido e fallback. O descarte inclui conteúdo e streams associados; o resultado contém somente dados mapeados. `IsAvailableAsync`, herdado da base pelos quatro provedores, também descarta suas respostas e preserva o retorno booleano existente. O buffering/timeout de GetAsync continua igual ao da T04. Referências: [descarte de respostas](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage.dispose?view=net-9.0) e [reutilização de HttpClient](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines).
 
 ## 📊 Modelo de Dados Retornado
 

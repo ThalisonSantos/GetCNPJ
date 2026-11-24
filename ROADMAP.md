@@ -20,8 +20,9 @@ Estado em 2026-11-24:
 - T01 concluída local e remotamente. Mantenedor confirmou sucesso de todas as etapas do GitHub Actions na execução [45415710723](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45415710723), commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475.
 - T02 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45418466167](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45418466167), commit e4863f10bbd4da2bcddfba59a54364607373b0ea, informados pelo mantenedor. Suporte alfanumérico das APIs externas continua não confirmado.
 - T03 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45428236555](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45428236555), commit 45d4a6476a7a661da96877295679849efdd32c8a, informados pelo mantenedor. Protocolo legado separado continua não atômico por compatibilidade.
-- T04 concluída localmente: falha reproduzida antes da correção com HTTP simulado; timeout/falha permite fallback sem retry, e token cancelado interrompe novas tentativas. Consulta direcionada sem fallback. Prioridades, erros quando todos falham e aquisição atômica preservados. Cinco targets compilados e 189 casos aprovados por target executável (756 execuções). Sem validação remota desta alteração; detalhes e limitações em AUDIT.md/PROGRESS.md.
-- T05 permanece pendente, não iniciada. Nenhuma publicação autorizada.
+- T04 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45431741152](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45431741152), commit 7dd0a9db79bdc6c9a1b8276adac5d7e6d05a8aa1, informados pelo mantenedor.
+- T05 concluída localmente: falta de descarte reproduzida antes da correção; respostas/conteúdos/streams limpos em consultas, falhas, disponibilidade e fallback. Propriedade/reutilização do HttpClient preservadas, construção protegida e Dispose repetido seguro. Cinco targets compilados e 281 casos aprovados por target executável (1124 execuções). Sem validação remota desta alteração; detalhes em AUDIT.md/PROGRESS.md.
+- T06 permanece pendente, não iniciada. Nenhuma publicação autorizada.
 
 Critério de saída: build e testes aprovados nos ambientes pertinentes, compatibilidade revisada, documentação atualizada e autorização específica para release.
 
