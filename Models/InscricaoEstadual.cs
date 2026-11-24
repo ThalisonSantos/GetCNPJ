@@ -7,6 +7,9 @@ namespace GetCNPJ.Models
     /// </summary>
     public class InscricaoEstadual
     {
+        /// <summary>Situação informada pelo provedor; null significa desconhecida. Ativo preserva false nesse caso.</summary>
+        public bool? AtivoInformado { get; set; }
+
         /// <summary>
         /// Número da inscrição estadual
         /// </summary>

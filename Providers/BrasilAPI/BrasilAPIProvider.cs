@@ -37,10 +37,7 @@ namespace GetCNPJ.Providers.BrasilAPI
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<BrasilAPIResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<BrasilAPIResponse>(content);
 
             if (data == null)
             {
@@ -58,16 +55,18 @@ namespace GetCNPJ.Providers.BrasilAPI
                 RazaoSocial = response.razao_social,
                 NomeFantasia = response.nome_fantasia,
                 DataAbertura = ParseDate(response.data_inicio_atividade),
-                Situacao = response.descricao_situacao_cadastral,
+                Situacao = response.descricao_situacao_cadastral ?? DescribeStatus(response.situacao_cadastral),
                 DataSituacao = ParseDate(response.data_situacao_cadastral),
-                Tipo = response.descricao_matriz_filial,
-                Porte = response.descricao_porte,
+                Tipo = response.descricao_identificador_matriz_filial ?? response.descricao_matriz_filial,
+                Porte = response.porte.ValueKind == JsonValueKind.String ? response.porte.GetString() : response.descricao_porte,
                 NaturezaJuridica = response.natureza_juridica,
                 CapitalSocial = response.capital_social,
+                Email = response.email,
                 Endereco = new Endereco
                 {
                     Cep = FormatCep(response.cep),
-                    Logradouro = $"{response.descricao_tipo_logradouro} {response.logradouro}".Trim(),
+                    Logradouro = $"{response.descricao_tipo_de_logradouro ?? response.descricao_tipo_logradouro} {response.logradouro}".Trim(),
+                    CodigoIbge = response.codigo_municipio_ibge?.ToString(CultureInfo.InvariantCulture),
                     Numero = response.numero,
                     Complemento = response.complemento,
                     Bairro = response.bairro,
@@ -97,7 +96,7 @@ namespace GetCNPJ.Providers.BrasilAPI
             if (response.cnaes_secundarios != null)
             {
                 cnpjData.AtividadesSecundarias = response.cnaes_secundarios
-                    .Where(c => c.codigo.HasValue)
+                    .Where(c => c != null && c.codigo.HasValue)
                     .Select(c => new AtividadeEconomica
                     {
                         Codigo = FormatCnae(c.codigo.Value),
@@ -110,6 +109,7 @@ namespace GetCNPJ.Providers.BrasilAPI
             if (response.qsa != null)
             {
                 cnpjData.QuadroSocietario = response.qsa
+                    .Where(s => s != null)
                     .Select(s => new Socio
                     {
                         Nome = s.nome_socio,
@@ -122,6 +122,8 @@ namespace GetCNPJ.Providers.BrasilAPI
             cnpjData.Simples = new SimplesNacional
             {
                 Optante = response.opcao_pelo_simples ?? false,
+                OptanteInformado = response.opcao_pelo_simples,
+                OptanteSimeiInformado = response.opcao_pelo_mei,
                 DataOpcao = ParseDate(response.data_opcao_pelo_simples),
                 DataExclusao = ParseDate(response.data_exclusao_do_simples),
                 OptanteSimei = response.opcao_pelo_mei ?? false
@@ -138,10 +140,20 @@ namespace GetCNPJ.Providers.BrasilAPI
             if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 return date;
 
-            if (DateTime.TryParse(dateString, out date))
-                return date;
-
             return null;
+        }
+
+        private static string? DescribeStatus(int? code)
+        {
+            switch (code)
+            {
+                case 1: return "NULA";
+                case 2: return "ATIVA";
+                case 3: return "SUSPENSA";
+                case 4: return "INAPTA";
+                case 8: return "BAIXADA";
+                default: return null;
+            }
         }
 
         private string FormatCep(string cep)

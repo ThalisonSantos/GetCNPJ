@@ -19,4 +19,8 @@
     <ItemGroup>
         <ProjectReference Include="../../GetCNPJ.csproj" />
     </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net481'">
+        <Reference Include="System.Net.Http" />
+    </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace GetCNPJ.Providers.BrasilAPI
 {
@@ -8,9 +9,10 @@ namespace GetCNPJ.Providers.BrasilAPI
         public string cnpj { get; set; }
         public int? identificador_matriz_filial { get; set; }
         public string descricao_matriz_filial { get; set; }
+        public string descricao_identificador_matriz_filial { get; set; }
         public string razao_social { get; set; }
         public string nome_fantasia { get; set; }
-        public string situacao_cadastral { get; set; }
+        public int? situacao_cadastral { get; set; }
         public string descricao_situacao_cadastral { get; set; }
         public string data_situacao_cadastral { get; set; }
         public int? motivo_situacao_cadastral { get; set; }
@@ -20,6 +22,9 @@ namespace GetCNPJ.Providers.BrasilAPI
         public int? cnae_fiscal { get; set; }
         public string cnae_fiscal_descricao { get; set; }
         public string descricao_tipo_logradouro { get; set; }
+        public string descricao_tipo_de_logradouro { get; set; }
+        public string email { get; set; }
+        public int? codigo_municipio_ibge { get; set; }
         public string logradouro { get; set; }
         public string numero { get; set; }
         public string complemento { get; set; }
@@ -31,9 +36,10 @@ namespace GetCNPJ.Providers.BrasilAPI
         public string ddd_telefone_1 { get; set; }
         public string ddd_telefone_2 { get; set; }
         public string ddd_fax { get; set; }
-        public string qualificacao_do_responsavel { get; set; }
+        public int? qualificacao_do_responsavel { get; set; }
         public decimal? capital_social { get; set; }
-        public int? porte { get; set; }
+        public JsonElement porte { get; set; }
+        public int? codigo_porte { get; set; }
         public string descricao_porte { get; set; }
         public bool? opcao_pelo_simples { get; set; }
         public string data_opcao_pelo_simples { get; set; }
@@ -63,6 +69,6 @@ namespace GetCNPJ.Providers.BrasilAPI
         public string pais { get; set; }
         public string representante_legal { get; set; }
         public string nome_representante_legal { get; set; }
-        public string codigo_qualificacao_representante_legal { get; set; }
+        public int? codigo_qualificacao_representante_legal { get; set; }
     }
 }

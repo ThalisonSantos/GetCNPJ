@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -36,10 +37,7 @@ namespace GetCNPJ.Providers.CNPJA
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<CNPJAResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<CNPJAResponse>(content);
 
             if (data == null)
             {
@@ -59,7 +57,7 @@ namespace GetCNPJ.Providers.CNPJA
                 DataAbertura = response.founded,
                 Situacao = response.status?.text,
                 DataSituacao = response.statusDate,
-                Tipo = response.head ? "MATRIZ" : "FILIAL",
+                Tipo = response.head.HasValue ? (response.head.Value ? "MATRIZ" : "FILIAL") : null,
                 Porte = response.company?.size?.text,
                 NaturezaJuridica = response.company?.nature != null
                     ? $"{response.company.nature.id} - {response.company.nature.text}"
@@ -74,20 +72,22 @@ namespace GetCNPJ.Providers.CNPJA
                     Complemento = response.address?.details,
                     Bairro = response.address?.district,
                     Municipio = response.address?.city,
-                    Uf = response.address?.state
+                    Uf = response.address?.state,
+                    CodigoIbge = response.address?.municipality?.ToString(CultureInfo.InvariantCulture)
                 }
             };
 
             // Email
             if (response.emails != null && response.emails.Any())
             {
-                cnpjData.Email = response.emails.First().address;
+                cnpjData.Email = response.emails.FirstOrDefault(e => e != null && !string.IsNullOrWhiteSpace(e.address))?.address;
             }
 
             // Telefones
             if (response.phones != null)
             {
                 cnpjData.Telefones = response.phones
+                    .Where(p => p != null && !string.IsNullOrWhiteSpace(p.number))
                     .Select(p => FormatPhone(p.area, p.number))
                     .ToList();
             }
@@ -106,6 +106,7 @@ namespace GetCNPJ.Providers.CNPJA
             if (response.sideActivities != null)
             {
                 cnpjData.AtividadesSecundarias = response.sideActivities
+                    .Where(a => a != null)
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = FormatCnaeId(a.id),
@@ -118,6 +119,7 @@ namespace GetCNPJ.Providers.CNPJA
             if (response.company?.members != null)
             {
                 cnpjData.QuadroSocietario = response.company.members
+                    .Where(m => m != null)
                     .Select(m => new Socio
                     {
                         Nome = m.person?.name,
@@ -130,6 +132,8 @@ namespace GetCNPJ.Providers.CNPJA
             cnpjData.Simples = new SimplesNacional
             {
                 Optante = response.company?.simples?.optant ?? false,
+                OptanteInformado = response.company?.simples?.optant,
+                OptanteSimeiInformado = response.company?.simei?.optant,
                 DataOpcao = response.company?.simples?.since,
                 OptanteSimei = response.company?.simei?.optant ?? false
             };

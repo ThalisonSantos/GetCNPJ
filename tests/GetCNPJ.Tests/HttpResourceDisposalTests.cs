@@ -117,18 +117,18 @@ namespace GetCNPJ.Tests
         [InlineData("CNPJA", "sideActivities")]
         [InlineData("CNPJWS", "atividades_secundarias")]
         [InlineData("ReceitaWS", "atividades_secundarias")]
-        public async Task MappingException_DisposesResponseContentAndStream(string name, string property)
+        public async Task NullListMember_DisposesResponseContentAndStream(string name, string property)
         {
             var payload = name == "CNPJWS"
-                ? "{\"estabelecimento\":{\"" + property + "\":[null]}}"
-                : "{\"" + property + "\":[null]}";
+                ? "{\"estabelecimento\":{\"cnpj\":\"12345678000195\",\"" + property + "\":[null]}}"
+                : "{\"" + (name == "CNPJA" ? "taxId" : "cnpj") + "\":\"12345678000195\",\"" + property + "\":[null]}";
             using var response = new TrackedHttpResponse(HttpStatusCode.OK, payload);
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
 
-            var error = await Assert.ThrowsAsync<ProviderException>(() => CreateProvider(name, http).GetCnpjDataAsync("12345678000195"));
+            var data = await CreateProvider(name, http).GetCnpjDataAsync("12345678000195");
 
-            Assert.IsType<NullReferenceException>(error.InnerException);
+            Assert.Empty(data.AtividadesSecundarias);
             AssertDisposed(response);
         }
 

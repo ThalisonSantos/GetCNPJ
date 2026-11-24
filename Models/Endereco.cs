@@ -5,6 +5,9 @@ namespace GetCNPJ.Models
     /// </summary>
     public class Endereco
     {
+        /// <summary>Código IBGE do município, quando informado pelo provedor (não é código SIAFI).</summary>
+        public string? CodigoIbge { get; set; }
+
         /// <summary>
         /// CEP formatado (XXXXX-XXX)
         /// </summary>

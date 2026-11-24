@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace GetCNPJ.Providers.CNPJA
 {
@@ -9,7 +10,7 @@ namespace GetCNPJ.Providers.CNPJA
         public string taxId { get; set; }
         public string alias { get; set; }
         public DateTime? founded { get; set; }
-        public bool head { get; set; }
+        public bool? head { get; set; }
         public CompanyCNPJA company { get; set; }
         public DateTime? statusDate { get; set; }
         public StatusCNPJA status { get; set; }
@@ -23,7 +24,8 @@ namespace GetCNPJ.Providers.CNPJA
     internal class CompanyCNPJA
     {
         public List<MemberCNPJA> members { get; set; }
-        public int id { get; set; }
+        // O contrato atual usa string; tolera o número legado neste campo não exposto.
+        public JsonElement id { get; set; }
         public string name { get; set; }
         public decimal? equity { get; set; }
         public NatureCNPJA nature { get; set; }
@@ -69,7 +71,7 @@ namespace GetCNPJ.Providers.CNPJA
 
     internal class SimplesCNPJA
     {
-        public bool optant { get; set; }
+        public bool? optant { get; set; }
         public DateTime? since { get; set; }
     }
 
@@ -81,7 +83,7 @@ namespace GetCNPJ.Providers.CNPJA
 
     internal class AddressCNPJA
     {
-        public int municipality { get; set; }
+        public int? municipality { get; set; }
         public string street { get; set; }
         public string number { get; set; }
         public string district { get; set; }

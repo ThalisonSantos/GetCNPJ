@@ -61,6 +61,10 @@ namespace GetCNPJ.Providers.Base
 
                 if (data != null)
                 {
+                    if (!CnpjValidator.IsValid(data.Cnpj) ||
+                        !string.Equals(CnpjValidator.ValidateAndNormalize(data.Cnpj), cnpj, StringComparison.Ordinal))
+                        throw new InvalidOperationException("O provedor retornou CNPJ ausente, inválido ou diferente do solicitado.");
+
                     data.Provedor = ProviderName;
                 }
 

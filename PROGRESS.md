@@ -8,11 +8,11 @@
 - [x] Documentação inicial preparada para inclusão local.
 - [x] Documentação adicionada e commitada pelo mantenedor em develop (bbc8a79).
 - [x] T01 — Infraestrutura de testes e CI sem publicação (validada local e remotamente).
-- [x] T02 — CNPJ alfanumérico (revisada e validada remotamente; suporte externo não confirmado).
+- [x] T02 — CNPJ alfanumérico (revisada e validada remotamente; evidência documental externa atualizada na T06).
 - [x] T03 — Rate limiter (revisada e validada remotamente).
 - [x] T04 — Timeout e fallback (revisada e validada remotamente).
-- [x] T05 — Recursos HTTP (concluída localmente).
-- [ ] T06 — Dependências e provedores.
+- [x] T05 — Recursos HTTP (revisada e validada remotamente).
+- [x] T06 — Dependências e provedores (concluída localmente; revisão/CI remoto pendentes).
 - [ ] T07 — Identidade e release.
 
 ## Handoff inicial
@@ -165,6 +165,30 @@
 - Limitações: testes simulados não verificam sockets reais/handlers externos arbitrários; nenhuma API consultada. Persistem aviso VSTEST_ARTIFACTS_DIRECTORY do SDK 11/Test SDK 17.12.0 e necessidade de host explícito para net9.0 nesta máquina. T05 ainda sem CI remoto; suporte real dos provedores e auditoria de dependências aguardam T06.
 - Handoff: código/diff revisados, git diff --check aprovado, propriedade auditada e documentação atualizada; LICENSE, autoria e frameworks preservados. T04 registrada como revisada e validada remotamente; T05 concluída localmente. T06 não iniciada. Nenhum commit, push ou pacote publicado.
 - Próximo passo exato: mantenedor revisar T05 e autorizar envio quando desejar, conferir CI remoto e solicitar T06 separadamente.
+
+## 2026-11-24 — Confirmação remota da T05
+- Revisão pelo ChatGPT e validação GitHub Actions informadas pelo mantenedor: [45435902138](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45435902138), commit 038723f43c67f5527339a10cc5856625f555635b.
+- T05 concluída local e remotamente; encerra a pendência remota histórica.
+
+## 2026-11-24 — Codex — T06
+- Base: develop / 038723f43c67f5527339a10cc5856625f555635b; árvore limpa no início.
+- Estado: concluída localmente, aguardando revisão e CI remoto pelo mantenedor.
+- Escopo/aceite: inventário e auditoria NuGet direta/transitiva, versões estáveis compatíveis nos cinco targets; fontes oficiais dos quatro provedores; matriz docs/PROVIDERS.md; correções comprovadas de contratos/mapeamento e testes sintéticos, preservando os 281 casos anteriores e documentando ajustes justificados.
+- Nenhuma consulta cadastral real autorizada: acessar somente documentação, fontes oficiais e metadados de pacotes. Não iniciar T07, cache/novos provedores/prioridades configuráveis, commit/push ou publicação.
+- Decisões antes da implementação: corrigir tipos/nomes documentados da BrasilAPI, rejeitar envelopes de erro HTTP 200 e identidade ausente/inválida/divergente (dados parciais com identidade válida continuam aceitos). Elementos nulos em listas serão ignorados, sem converter ausência de IE em não contribuinte. Preservar representação histórica dos CNAEs e máscara da ReceitaWS.
+- Extensões aditivas propostas: Endereco.CodigoIbge (string nullable); SimplesNacional.OptanteInformado/OptanteSimeiInformado e InscricaoEstadual.AtivoInformado (bool nullable). Os bools existentes mantêm false quando desconhecidos por compatibilidade; campos novos distinguem desconhecido de negativo. Nenhuma assinatura/tipo público existente será substituído; ToString legado preservado.
+- Dependências: atualizar System.Text.Json 8.0.5 para patch estável 8.0.6 somente nos targets legados; net8/net9 usarão a implementação do framework. Remover pacote HTTP 4.3.4 nos Framework em favor do assembly de referência da plataforma. Auditoria inicial NuGet completa não reportou vulnerabilidades conhecidas; não atribuir vulnerabilidade a 8.0.5 (já corrige CVE-2024-43485).
+- Evidência nova: OpenAPI oficial ReceitaWS descreve explicitamente 12 caracteres alfanuméricos + 2 DVs; suporte documental confirmado, assim como BrasilAPI. Isso não confirma operação real, disponibilidade ou cadastro. Demais provedores ainda não confirmados.
+- Implementação: DTOs/tipos/aliases BrasilAPI corrigidos, company.id textual CNPJá tolerado com número legado no DTO interno, IBGE/e-mail mapeados, ausência de head não vira FILIAL, opções fiscais preservam desconhecido nos campos aditivos. Listas ignoram itens null; SIMEI isolado mantido. Capital textual usa decimal invariante sem separador de milhar; datas documentadas não dependem da cultura local. Campos adicionais não expostos integralmente continuam documentados como limitação, sem ampliar operações comerciais.
+- Identidade e erros: base verifica CNPJ retornado válido/equivalente ao solicitado sem modificar apresentação antiga; afeta também subclasses que usam a base. Helper interno descarta JsonDocument e rejeita envelopes explícitos de erro HTTP 200; JsonException pública preservada em JSON inválido. ReceitaWS ERROR em consulta direta agora gera ProviderException, em vez de null (no cliente continua falha); decisão/correção documentada. Fallback, cancelamento, aquisição atômica, descarte e prioridade mantidos.
+- Dependências/arquivos: System.Text.Json 8.0.6 condicional aos legados; HTTP do Framework por referência explícita também nos testes. Directory.Build.props habilita NuGetAudit/Mode=all. Inventário completo/justificativas em docs/DEPENDENCIES.md; comparação de serviços/contratos/fontes em docs/PROVIDERS.md. Atualizados AUDIT.md, ROADMAP.md, CHANGELOG.md, README.md e tests/README.md. Nenhuma dependência nova ou target novo.
+- Reprodução: cinco casos novos falharam antes da correção em net8.0 (um contrato BrasilAPI incompatível, quatro CNPJs divergentes aceitos). Evidência artifacts/t06-before.log e TestResults/T06/Before/. A suíte final preserva 281 casos e acrescenta 79. Quatro expectativas antigas de NullReferenceException em listas [null] foram corrigidas para lista vazia/descarte, sem excluir casos ou relaxar validação HTTP/JSON.
+- Ambiente: Windows 10.0.26200 x64, SDK 11.0.100/MSBuild 18.12.2, runtime 8.0.34, Framework 4.8.1 Release 533509, host 9.0.23 local em artifacts/dotnet9. SDK local não acrescenta suporte a net10/net11.
+- Validação real: restore aprovado (também --force-evaluate --no-http-cache com auditoria all). Inventário e `dotnet list GetCNPJ.sln package --vulnerable --include-transitive --format json` antes/depois: saída 0 e nenhum pacote vulnerável reportado para os dois projetos. Primeira consulta falhou por TLS no sandbox, repetida com rede autorizada. Relatórios artifacts/t06-*-before.json / t06-*-after.json.
+- Compilação: primeira tentativa após remover HTTP NuGet falhou pela referência HTTP ausente nos testes Framework, corrigida explicitamente. Rebuild Release completo dos cinco targets aprovado, 1275 avisos de nulabilidade e zero erros (artifacts/t06-build.log). Aumento líquido de dez avisos em relação à T05 resulta dos novos DTOs e tratamentos de ausência; sem supressão/refatoração global. Primeiro teste pós-correção identificou JsonReaderException interna específica da inspeção JSON; helper preserva JsonException pública anterior e os oito casos antigos continuam com a expectativa original.
+- Testes: comando global --no-build saiu 1 por runtime 9 ausente globalmente; três targets passaram. Execuções finais por target: net48/net481/net8/net9, cada uma 360 aprovados, zero falhas/ignorados; 1440 execuções, TRX TestResults/T06/Final/ e artifacts/t06-test-<target>.log. net9 usou RunConfiguration.DotNetHostPath local, conforme tests/README.md. netstandard2.0 compilado; Frameworks executados no runtime 4.8.1, sem comprovar ambiente isolado 4.8.
+- Limitações: nenhum endpoint cadastral real consultado; referência Open CNPJá depende de JS e acesso direto retornou 429, sem tentativas de contornar limite; guia/termos/SDK oficial usados como evidência complementar. Sem comprovação operacional de suporte alfanumérico. Nenhum pacote vulnerável conhecido reportado não equivale a segurança absoluta ou auditoria do runtime/Windows.
+- Handoff: revisar diff da T06 e executar CI remoto. Não iniciar T07 nesta sessão. Branch develop mantida, sem commit/push/pack/publicação; LICENSE/créditos e membros públicos anteriores preservados, com extensões aditivas e correções de comportamento documentadas.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.

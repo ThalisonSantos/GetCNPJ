@@ -1,6 +1,6 @@
 # Testes e CI
 
-O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 281 casos em `net48`, `net481`, `net8.0` e `net9.0` (1124 execuções na T05). `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
+O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 360 casos em `net48`, `net481`, `net8.0` e `net9.0` (1440 execuções aprovadas na T06). Preservados os 281 casos da T05, com quatro expectativas de listas nulas ajustadas pela correção descrita abaixo. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
 
@@ -33,6 +33,24 @@ dotnet test GetCNPJ.sln -c Release --no-build --settings tests/test.runsettings 
 O arquivo `test.runsettings` faz a execução falhar quando nenhum teste é encontrado. Os resultados TRX ficam em `TestResults/`, ignorado pelo Git. O `NuGet.Config` da raiz limita a restauração à fonte pública NuGet.org, evitando dependência de fontes privadas da máquina.
 
 O workflow `.github/workflows/main.yml` executa restore, build de todos os targets e testes em Windows, nos pushes das branches configuradas, em pull requests para `main`/`develop` e por acionamento manual. Não contém empacotamento, publicação ou uso de segredo NuGet. A biblioteca não gera pacote automaticamente no build, e o projeto de testes não é empacotável.
+
+## Auditoria T06 e contratos dos provedores
+
+A T06 adicionou 79 casos em `ProviderContractTests`. Os fixtures são strings JSON sintéticas nos testes, construídas a partir dos schemas oficiais descritos em [docs/PROVIDERS.md](../docs/PROVIDERS.md), sem respostas reais nem dados de pessoas. Exercitam os quatro mapeamentos, respostas completas/parciais, null e objeto vazio, tipos/códigos atuais, listas nulas/com membros null, IBGE versus SIAFI, CNAEs com zero inicial, CEP/telefone, capital decimal, datas/cultura, desconhecido versus negativo, SIMEI independente, CNPJ inválido/divergente e erros no JSON mesmo com HTTP 200. Dois casos verificam fallback e descarte quando o primeiro provedor retorna erro/identidade divergente. Casos de HTTP 400/404/429/500/503 e demais garantias anteriores continuam na suíte.
+
+Antes da correção, os cinco primeiros casos novos falharam em net8.0 (1 incompatibilidade de tipos BrasilAPI e 4 divergências de identificador aceitas); evidências em `artifacts/t06-before.log` e `TestResults/T06/Before/`. Quatro casos antigos `MappingException...` esperavam NullReferenceException em `[null]`; foram renomeados para `NullListMember...` e agora verificam lista vazia e descarte, pois a falha foi corrigida. Nenhum dos 281 casos foi removido ou ignorado. O tipo público JsonException continua preservado para JSON inválido, inclusive após inspeção do envelope com JsonDocument.
+
+Suíte final: 360 aprovados/zero falhas/zero ignorados por target (1440 execuções), TRX em `TestResults/T06/Final/`. Cinco targets compilados em Release, rebuild completo com 1275 avisos de nulabilidade e zero erros. O comando global encontrou ausência do runtime 9 global; execução net9 com host local aprovada. Frameworks net48/net481 usam o mesmo runtime 4.8.1, sem ambiente isolado 4.8.
+
+System.Net.Http é referência explícita do Framework também no projeto de testes; System.Text.Json nos testes modernos vem do framework. Pacotes de testes mantidos após auditoria sem vulnerabilidade conhecida reportada; detalhes completos em [docs/DEPENDENCIES.md](../docs/DEPENDENCIES.md). `Directory.Build.props` habilita NuGetAudit para diretas e transitivas em restore/CI. Para repetir o inventário e auditoria:
+
+```powershell
+dotnet restore GetCNPJ.sln --force-evaluate --no-http-cache -p:NuGetAuditMode=all
+dotnet list GetCNPJ.sln package --include-transitive --format json
+dotnet list GetCNPJ.sln package --vulnerable --include-transitive --format json
+```
+
+Esses comandos acessam metadados NuGet, não APIs de cadastro. Todos os testes continuam locais; consultas reais exigem autorização específica. Evidência documental de suporte alfanumérico (BrasilAPI/ReceitaWS) não equivale a teste de operação real.
 
 ## Runtime .NET 9 local nesta validação
 

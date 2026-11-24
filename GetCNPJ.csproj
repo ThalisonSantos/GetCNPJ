@@ -27,13 +27,13 @@
         <None Remove="tests/**/*" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net481'">
+        <PackageReference Include="System.Text.Json" Version="8.0.6" />
     </ItemGroup>
 
-    <!-- Adiciona System.Net.Http para .NET Framework -->
+    <!-- Usa o assembly fornecido pelo .NET Framework, sem o pacote legado. -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net481'">
-        <PackageReference Include="System.Net.Http" Version="4.3.4" />
+        <Reference Include="System.Net.Http" />
     </ItemGroup>
 
     <!-- README para o pacote NuGet -->

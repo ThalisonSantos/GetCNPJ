@@ -47,7 +47,7 @@ namespace GetCNPJ.Providers.ReceitaWS
 
     internal class SimplesWS
     {
-        public bool optante { get; set; }
+        public bool? optante { get; set; }
         public string data_opcao { get; set; }
         public string data_exclusao { get; set; }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace GetCNPJ.Providers.CNPJWS
 {
@@ -48,7 +49,7 @@ namespace GetCNPJ.Providers.CNPJWS
         public DateTime? atualizado_em { get; set; }
         public string pais_id { get; set; }
         public QualificacaoSocioWS qualificacao_socio { get; set; }
-        public QualificacaoSocioWS qualificacao_representante { get; set; }
+        public JsonElement qualificacao_representante { get; set; }
         public PaisWS pais { get; set; }
     }
 
@@ -111,7 +112,7 @@ namespace GetCNPJ.Providers.CNPJWS
         public PaisWS pais { get; set; }
         public EstadoWS estado { get; set; }
         public CidadeWS cidade { get; set; }
-        public MotivoSituacaoWS motivo_situacao_cadastral { get; set; }
+        public JsonElement motivo_situacao_cadastral { get; set; }
         public List<InscricaoEstadualWS> inscricoes_estaduais { get; set; }
     }
 
@@ -138,7 +139,7 @@ namespace GetCNPJ.Providers.CNPJWS
     {
         public int id { get; set; }
         public string nome { get; set; }
-        public int ibge_id { get; set; }
+        public int? ibge_id { get; set; }
         public string siafi_id { get; set; }
     }
 
@@ -151,7 +152,7 @@ namespace GetCNPJ.Providers.CNPJWS
     internal class InscricaoEstadualWS
     {
         public string inscricao_estadual { get; set; }
-        public bool ativo { get; set; }
+        public bool? ativo { get; set; }
         public DateTime? atualizado_em { get; set; }
         public EstadoWS estado { get; set; }
     }

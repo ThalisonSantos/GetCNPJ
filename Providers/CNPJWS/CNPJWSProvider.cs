@@ -38,10 +38,7 @@ namespace GetCNPJ.Providers.CNPJWS
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<CNPJWSResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<CNPJWSResponse>(content);
 
             if (data == null || data.estabelecimento == null)
             {
@@ -79,7 +76,8 @@ namespace GetCNPJ.Providers.CNPJWS
                     Complemento = estab.complemento,
                     Bairro = estab.bairro,
                     Municipio = estab.cidade?.nome,
-                    Uf = estab.estado?.sigla
+                    Uf = estab.estado?.sigla,
+                    CodigoIbge = estab.cidade?.ibge_id?.ToString(CultureInfo.InvariantCulture)
                 }
             };
 
@@ -108,6 +106,7 @@ namespace GetCNPJ.Providers.CNPJWS
             if (estab.atividades_secundarias != null)
             {
                 cnpjData.AtividadesSecundarias = estab.atividades_secundarias
+                    .Where(a => a != null)
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = FormatCnae(a.subclasse),
@@ -120,6 +119,7 @@ namespace GetCNPJ.Providers.CNPJWS
             if (response.socios != null)
             {
                 cnpjData.QuadroSocietario = response.socios
+                    .Where(s => s != null)
                     .Select(s => new Socio
                     {
                         Nome = s.nome,
@@ -132,11 +132,13 @@ namespace GetCNPJ.Providers.CNPJWS
             if (estab.inscricoes_estaduais != null)
             {
                 cnpjData.InscricoesEstaduais = estab.inscricoes_estaduais
+                    .Where(ie => ie != null && !string.IsNullOrWhiteSpace(ie.inscricao_estadual))
                     .Select(ie => new InscricaoEstadual
                     {
                         Inscricao = ie.inscricao_estadual,
                         Estado = ie.estado?.sigla,
-                        Ativo = ie.ativo,
+                        Ativo = ie.ativo ?? false,
+                        AtivoInformado = ie.ativo,
                         DataAtualizacao = ie.atualizado_em
                     })
                     .ToList();
@@ -148,6 +150,8 @@ namespace GetCNPJ.Providers.CNPJWS
                 cnpjData.Simples = new SimplesNacional
                 {
                     Optante = response.simples.simples?.Equals("Sim", StringComparison.OrdinalIgnoreCase) ?? false,
+                    OptanteInformado = ParseOption(response.simples.simples),
+                    OptanteSimeiInformado = ParseOption(response.simples.mei),
                     DataOpcao = ParseDate(response.simples.data_opcao_simples),
                     DataExclusao = ParseDate(response.simples.data_exclusao_simples),
                     OptanteSimei = response.simples.mei?.Equals("Sim", StringComparison.OrdinalIgnoreCase) ?? false
@@ -162,12 +166,7 @@ namespace GetCNPJ.Providers.CNPJWS
             if (string.IsNullOrWhiteSpace(dateString))
                 return null;
 
-            // Tenta formato ISO 8601
-            if (DateTime.TryParse(dateString, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-                return date;
-
-            // Tenta formato yyyy-MM-dd
-            if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+            if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 return date;
 
             return null;
@@ -178,9 +177,16 @@ namespace GetCNPJ.Providers.CNPJWS
             if (string.IsNullOrWhiteSpace(value))
                 return null;
 
-            if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
+            if (decimal.TryParse(value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
                 return result;
 
+            return null;
+        }
+
+        private static bool? ParseOption(string? value)
+        {
+            if (string.Equals(value, "Sim", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(value, "Não", StringComparison.OrdinalIgnoreCase) || string.Equals(value, "Nao", StringComparison.OrdinalIgnoreCase)) return false;
             return null;
         }
 

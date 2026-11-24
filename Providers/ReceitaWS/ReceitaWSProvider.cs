@@ -37,12 +37,9 @@ namespace GetCNPJ.Providers.ReceitaWS
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = JsonSerializer.Deserialize<ReceitaWSResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var data = ProviderJson.Deserialize<ReceitaWSResponse>(content);
 
-            if (data == null || data.status == "ERROR")
+            if (data == null)
             {
                 return null;
             }
@@ -88,9 +85,9 @@ namespace GetCNPJ.Providers.ReceitaWS
             }
 
             // Atividade principal
-            if (response.atividade_principal != null && response.atividade_principal.Any())
+            if (response.atividade_principal != null && response.atividade_principal.Any(a => a != null))
             {
-                var atividade = response.atividade_principal.First();
+                var atividade = response.atividade_principal.First(a => a != null);
                 cnpjData.AtividadePrincipal = new AtividadeEconomica
                 {
                     Codigo = atividade.code,
@@ -102,6 +99,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.atividades_secundarias != null)
             {
                 cnpjData.AtividadesSecundarias = response.atividades_secundarias
+                    .Where(a => a != null)
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = a.code,
@@ -114,6 +112,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.qsa != null)
             {
                 cnpjData.QuadroSocietario = response.qsa
+                    .Where(s => s != null)
                     .Select(s => new Socio
                     {
                         Nome = s.nome,
@@ -123,13 +122,15 @@ namespace GetCNPJ.Providers.ReceitaWS
             }
 
             // Simples Nacional
-            if (response.simples != null)
+            if (response.simples != null || response.simei != null)
             {
                 cnpjData.Simples = new SimplesNacional
                 {
-                    Optante = response.simples.optante,
-                    DataOpcao = ParseDate(response.simples.data_opcao),
-                    DataExclusao = ParseDate(response.simples.data_exclusao),
+                    Optante = response.simples?.optante ?? false,
+                    OptanteInformado = response.simples?.optante,
+                    OptanteSimeiInformado = response.simei?.optante,
+                    DataOpcao = ParseDate(response.simples?.data_opcao),
+                    DataExclusao = ParseDate(response.simples?.data_exclusao),
                     OptanteSimei = response.simei?.optante ?? false
                 };
             }
@@ -137,7 +138,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             return cnpjData;
         }
 
-        private DateTime? ParseDate(string dateString)
+        private DateTime? ParseDate(string? dateString)
         {
             if (string.IsNullOrWhiteSpace(dateString))
                 return null;
@@ -145,7 +146,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 return date;
 
-            if (DateTime.TryParse(dateString, out date))
+            if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                 return date;
 
             return null;
@@ -156,7 +157,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (string.IsNullOrWhiteSpace(value))
                 return null;
 
-            if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
+            if (decimal.TryParse(value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
                 return result;
 
             return null;

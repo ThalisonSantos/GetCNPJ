@@ -12,11 +12,11 @@ Biblioteca .NET para consulta de CNPJ em APIs públicas brasileiras, com suporte
 
 - ✅ **Multi-Target**: Suporta .NET Framework 4.8, 4.8.1, .NET 8, .NET 9 e .NET Standard 2.0
 - 🔄 **Chain of Responsibility**: Tenta automaticamente outros provedores em caso de falha
-- ⏱️ **Rate Limiting**: Controle automático de 3 requisições por minuto por provedor
-- 🎯 **Retorno Padronizado**: Dados consistentes independente do provedor utilizado
-- 📋 **Inscrição Estadual**: Suporte completo a inscrições estaduais (via CNPJ.WS)
+- ⏱️ **Rate Limiting**: Padrão local de 3 aquisições por minuto por provedor; cotas externas variam por serviço/IP
+- 🎯 **Retorno Padronizado**: Modelo comum, com disponibilidade/preenchimento variáveis por provedor
+- 📋 **Inscrição Estadual**: Mapeamento dos dados disponibilizados pelo CNPJ.WS; ausência não comprova não contribuinte
 - 🔌 **Múltiplos Provedores**:
-  - **CNPJ.WS** (https://publica.cnpj.ws) - **Provedor padrão** ⭐ *Único que retorna inscrição estadual*
+  - **CNPJ.WS** (https://publica.cnpj.ws) - **Provedor padrão** ⭐ *IE documentada no endpoint público integrado*
   - ReceitaWS (https://receitaws.com.br)
   - BrasilAPI (https://brasilapi.com.br)
   - CNPJA (https://open.cnpja.com)
@@ -41,7 +41,15 @@ Como conveniência de entrada, letras ASCII minúsculas são convertidas para ma
 
 `Format` aplica apenas a máscara a strings de 14 posições e preserva os caracteres; não valida DVs nem comprova cadastro. Outros valores são mantidos para preservar o comportamento de apresentação existente.
 
-Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam as letras na URL e nos dados retornados, conforme testes com HTTP simulado. **O suporte a CNPJ alfanumérico nas APIs externas permanece não confirmado.** Validade local não comprova cadastro existente ou disponibilidade no provedor. Nenhuma consulta real foi usada nesses testes.
+Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam letras nas URLs e respostas. Em 2026-11-24, **BrasilAPI e ReceitaWS têm suporte alfanumérico confirmado por documentação oficial**; **CNPJ.WS e CNPJá permanecem não confirmados**. Não houve teste real autorizado. Validade local não comprova cadastro ou disponibilidade. Consulte a [matriz de provedores, contratos, fontes e termos](docs/PROVIDERS.md).
+
+## Dados disponíveis e dependências
+
+Respostas parciais com CNPJ válido e correspondente ao solicitado podem ser aceitas; sucesso não garante preenchimento completo. Identidade ausente/inválida/divergente, JSON inválido e envelopes explícitos de erro em HTTP 200 não são sucesso. No cliente, falhas permitem fallback conforme as regras existentes; consultas direcionadas continuam sem fallback.
+
+`Endereco.CodigoIbge` preserva o código municipal quando documentado, sem confundi-lo com SIAFI. Para distinguir informação fiscal desconhecida de negativa, use os novos campos nullable `SimplesNacional.OptanteInformado`, `OptanteSimeiInformado` e `InscricaoEstadual.AtivoInformado`: null = desconhecido, false = negativo informado, true = positivo informado. Os bools antigos continuam false quando desconhecidos por compatibilidade, e o `ToString()` de IE mantém o comportamento anterior. Lista de IE vazia nunca prova não contribuinte. Propriedades novas são independentes e podem aparecer ao serializar os modelos.
+
+Os cinco frameworks foram preservados. System.Text.Json 8.0.6 é referência somente em netstandard2.0/net48/net481; net8/net9 usam o componente do framework. HTTP usa referências da plataforma, com HttpClient compartilhado. A [auditoria de dependências diretas e transitivas](docs/DEPENDENCIES.md) registra versões, justificativas e comandos; não houve vulnerabilidade conhecida reportada pelo NuGet na verificação de 2026-11-24. Consumidores devem manter runtimes atualizados.
 
 ## 📦 Instalação
 
@@ -292,12 +300,12 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para d
 
 ## 🔗 APIs Utilizadas
 
-- [**CNPJ.WS**](https://publica.cnpj.ws) - **API padrão** ⭐ Único provedor que retorna inscrição estadual
+- [**CNPJ.WS**](https://publica.cnpj.ws) - **API padrão** ⭐ IE documentada no endpoint público integrado
 - [ReceitaWS](https://receitaws.com.br) - API gratuita de consulta de CNPJ
 - [BrasilAPI](https://brasilapi.com.br) - API pública brasileira
 - [CNPJA](https://open.cnpja.com) - API aberta de CNPJ
 
-**Nota**: Por padrão, a biblioteca usa o provedor CNPJ.WS como primeira opção (prioridade 1) pois é o único que fornece dados de inscrição estadual. Os demais provedores são utilizados como fallback em caso de falha.
+**Nota**: CNPJ.WS continua como primeira opção (prioridade 1), seguido por ReceitaWS, BrasilAPI e CNPJá. Entre os endpoints públicos integrados, o CNPJ.WS documenta IE. Operações comerciais de IE oferecidas por outros serviços não estão integradas. Limites, recursos e condições constam em [docs/PROVIDERS.md](docs/PROVIDERS.md); a biblioteca não concede autorização de uso comercial dos serviços.
 
 ## ⚠️ Avisos Importantes
 
