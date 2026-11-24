@@ -59,6 +59,7 @@ namespace GetCNPJ.Tests
             var result = await client.GetAsync("12345678000195");
 
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             Assert.Equal("CNPJA", result.Data.Provedor);
             Assert.Equal(new[] { "publica.cnpj.ws", "receitaws.com.br", "brasilapi.com.br", "open.cnpja.com" }, hosts);
             Assert.Equal(4, handler.RequestCount);
@@ -157,6 +158,7 @@ namespace GetCNPJ.Tests
             var result = await client.GetAsync("12345678000195", CancellationToken.None);
 
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             Assert.Equal("ReceitaWS", result.Data.Provedor);
             Assert.Equal(new[] { "publica.cnpj.ws", "receitaws.com.br" }, hosts);
             Assert.Equal(2, handler.RequestCount);

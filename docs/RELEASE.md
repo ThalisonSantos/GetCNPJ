@@ -1,6 +1,37 @@
 # GetCNPJ Community — preparação de release 1.1.0
 
-Verificação: **2026-11-24**. T07 concluída como preparação/validação **local**. **Nenhuma publicação, tag, GitHub Release, commit, push ou merge foi realizada.** Versão 1.2.0 não iniciada. Este procedimento não autoriza publicação; ela depende de autorização específica do mantenedor.
+Atualização **H01 — 2026-11-24**: T07 validada remotamente conforme mantenedor na execução [45450063413](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45450063413), commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Revisão ChatGPT delimitada a metadados, licença, empacotamento documentado e CI. H01 concluída **localmente**, com rebuild sem avisos/erros e 450 testes aprovados por target; aguarda homologação/CI remoto.
+
+**O nupkg descrito abaixo é registro histórico da T07 e não contém H01.** Não foi regenerado nesta tarefa. Após homologação, gerar novamente a partir de commit aprovado e repetir inspeção/consumo/hash. O hash anterior não identifica a implementação atual. As seções de build/avisos/empacotamento da T07 abaixo são históricas, com resultado H01 atualizado na próxima seção.
+
+Nenhuma publicação, tag, GitHub Release, commit, push ou merge nesta tarefa; versão mantida em **1.1.0**. H02/H03 e 1.2.0 não iniciadas. Publicação continua dependendo de autorização específica.
+
+## Resultado H01 e compatibilidade de nulabilidade
+
+- Base b06d48c, develop inicialmente limpa. Restore aprovado sem mudança de dependências; `dotnet build GetCNPJ.sln -c Release -t:Rebuild` compilou os cinco targets com **zero avisos e zero erros**, sem desativar Nullable/NoWarn/pragma ou suprimir diagnósticos. Os 255 diagnósticos por target/1275 avisos iniciais foram reproduzidos e resolvidos por modelagem e fluxo, não por valores artificiais.
+- **450 testes por target** net48/net481/net8/net9: **1800 execuções aprovadas**, zero falhas/ignorados. Os 360 casos anteriores foram preservados, com assertivas adicionais e anotações dos fakes; 90 novos cobrem DTOs/modelos/serviços/mapeamentos. Setenta combinações percorrem todos os 35 DTOs internos, com propriedades ausentes e explicitamente null. Os 89 primeiros casos, executados em cópia isolada da base, reproduziram 36 falhas/53 aprovações; os mesmos casos passaram depois. O 90º verifica CreateSuccess(null).
+- Resultados: artifacts/h01-before-build.log, h01-baseline-reproduction.log, h01-build.log, h01-test-*.log; TRX TestResults/H01/Before, Focused, FinalSolution e FinalNet9. A execução global terminou em 1 pelo runtime9 global ausente; os outros três targets passaram e net9 passou com DotNetHostPath local9.0.23. O aviso de execução VSTEST_ARTIFACTS_DIRECTORY permanece, não é aviso de compilação e não foi suprimido.
+- Mesmo ambiente da T07: Framework4.8.1 instalado executa net48/net481; não foi testada instalação isolada4.8. netstandard foi compilado. Nenhuma API real consultada, nenhum pacote gerado/consumido novamente nesta tarefa. Evidência operacional alfanumérica continua não comprovada.
+
+| Área pública | Anotação/contrato após H01 | Compatibilidade e semântica |
+|---|---|---|
+| CnpjData | Cnpj, RazaoSocial, NomeFantasia, Situacao, Tipo, Porte, NaturezaJuridica, Email, Provedor: string?; Endereco/AtividadePrincipal/Simples: objeto? | Já podiam ser null; não recebem objetos/strings fabricados para satisfazer análise. As quatro listas continuam inicializadas, não nullable no contrato; lista vazia não prova condição fiscal. |
+| Endereco / AtividadeEconomica / Socio / InscricaoEstadual | Strings opcionais passam a string?; CodigoIbge e flags nullable existentes preservados | Dados desconhecidos permanecem null. ToString/EnderecoCompleto mantêm apresentação legada; flags bool antigas continuam projeções de compatibilidade, sem substituir os campos nullable informados. |
+| CnpjResult / ProviderError | Data, ErrorMessage, ProviderName e Exception opcionais nullable; errors opcional em CreateError é List<ProviderError>? | CreateSuccess continua exigindo dados não null e agora rejeita esse argumento inválido com ArgumentNullException. FailedProviders tolera null em JSON e omite nomes desconhecidos, sem NRE. Errors continua lista inicializada. |
+| ICnpjProvider / CnpjProviderBase / quatro FetchDataAsync | Task<CnpjData?> | Declara ausência que já era retornada. Por Task<T> ser invariante, implementações/overrides externos podem receber novos avisos de análise estática ao recompilar e devem alinhar suas anotações. Não há membro obrigatório novo nem mudança de tipo CLR. |
+| CnpjValidator.Format / base.FormatCnpj | string? → string? | Null de apresentação preservado; não valida cadastro/DV. ValidateAndNormalize continua retornando string não null ou lançando exceção; IsValid continua bool. O normalizador usa guarda explícita em vez de null-forgiving. |
+
+Reflexão comparou **307 entradas públicas CLR** antes/depois (tipos/herança/membros/assinaturas), sem diferenças: artifacts/h01-api-before.txt e h01-api-after.txt. Nome/versão/namespace/assembly/dependências/frameworks/LICENÇA/workflow preservados. Nulabilidade é metadado de análise estática: consumidores que antes confiavam em campos possivelmente ausentes devem verificar null ao recompilar. Como os modelos são mutáveis, Success sozinho não garante Data não null; os exemplos checam ambos. Sem novos atributos que prometam uma invariável inexistente.
+
+### Achados e revisão técnica T06 concluída localmente
+
+DTOs internos usam referências/listas/itens nullable e int? para campos opcionais. Não foi usado required/default vazio/zero para esconder ausência. Null de JSON não causa falha por tipo numérico obrigatório interno. JsonElement mantém Undefined para ausência e Null para null explícito nos campos auxiliares flexíveis.
+
+Mapeamentos não criam logradouro vazio, CNAE zero ou descrições como `0 - ` a partir de objetos sem dados. Composição preserva apenas as partes conhecidas; listas filtram itens null antes de acessá-los. CNAE Brasil é capturado por pattern antes de formatar, sem Nullable.Value inseguro. Porte Brasil admite string, inteiro legado e ausência; objeto/lista/bool gera falha de JSON em vez de ser ignorado. Datas, capital, IBGE versus SIAFI, máscaras, flags fiscais, identidade retornada, erros em HTTP200, descarte, prioridade, cancelamento e fallback anteriores continuam cobertos pelos testes.
+
+No serviço, provedores null geram ArgumentException de configuração; a sequência é capturada/ordenada uma vez, sem ficar dependente de mutações da coleção externa. A lista usada na construção deixa de ser configuração dinâmica. FailedProviders filtra entradas/nome null e CreateSuccess rejeita dado obrigatório null, preservando usos válidos. Esses são endurecimentos documentados, não mudanças silenciosas de anotações.
+
+A revisão técnica local das alterações T06 foi concluída no escopo do código da biblioteca e dos contratos/documentos disponíveis: dependências/configuração, modelos aditivos/flags legadas, quatro DTOs/mapeamentos, validação de identidade/JSON, testes e tratamento de ausência. Não equivale a nova revisão integral externa pelo ChatGPT ou a verificação do servidor em operação. Fontes e limitações de PROVIDERS.md/DEPENDENCIES.md permanecem; não houve revalidação operacional dos serviços.
 
 ## Identidade e atribuição
 
@@ -89,7 +120,7 @@ Dependências declaradas no nuspec: System.Text.Json >= 8.0.6 somente em netstan
 
 Nenhum arquivo de teste, fonte C#, PDB, log, TRX, credencial, NuGet.Config, bin/obj temporário, script de validação ou logo incluído. Itens de conteúdo e None são excluídos por padrão de empacotamento e somente os documentos acima são explicitamente incluídos; assemblies vêm dos outputs padrão. `IncludeSource=false`; `GeneratePackageOnBuild=false`. **Este RELEASE.md não é empacotado**, pois contém hash/evidências do próprio nupkg; isso evita referência circular. Documentos de acompanhamento/release permanecem no repositório.
 
-### Artefato final inspecionado e consumido
+### Artefato histórico T07 inspecionado e consumido — não contém H01
 
 - Caminho relativo: `artifacts/packages/GetCNPJ.Community.1.1.0.nupkg`
 - Caminho absoluto: `D:\Meus Projetos\GetCNPJ\artifacts\packages\GetCNPJ.Community.1.1.0.nupkg`
@@ -197,9 +228,9 @@ Ambos retornaram saída 0 e validações aprovadas, incluindo rejeição dos DVs
 
 ## Limitações e pendências antes de publicar
 
-- T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT **parcial**, sem bloqueios nos trechos vistos; não anunciar revisão integral. T07 ainda sem validação remota/revisão do mantenedor nesta sessão.
+- T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT da T06 foi parcial; revisão técnica local complementar foi concluída na H01 conforme seção atual. T07 recebeu validação/revisão delimitada informada acima. H01 ainda aguarda homologação/CI remoto.
 - Nenhum provedor real foi consultado. BrasilAPI/ReceitaWS possuem confirmação documental alfanumérica; CNPJ.WS/CNPJá não confirmados. **Não há suporte operacional alfanumérico comprovado por teste real autorizado em nenhum dos quatro.** Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis.
-- Persistem os 1275 avisos descritos; modelos não nullable podem conter null. API pública/namespace/assembly e 360 casos por target preservados; testes não demonstram ausência de toda regressão possível.
+- Os 1275 avisos históricos foram resolvidos na H01; modelos agora anotam ausência corretamente. API CLR/namespace/assembly preservados; 450 casos por target, incluindo os 360 anteriores. Zero avisos/testes aprovados não demonstram ausência de toda regressão possível ou validam dados de APIs reais.
 - Auditoria NuGet não reportou vulnerabilidades conhecidas nessa data, sem garantir ausência de falhas não catalogadas ou segurança do Windows/runtime. Manter runtimes corrigidos; não estender suporte oficial dos frameworks por inferência.
 - Logotipo permanece fora do pacote. Nome do pacote não reservado nem upload testado. Revalidar disponibilidade/permissões da conta na ocasião autorizada.
 - Candidato gerado a partir de árvore com alterações locais não commitadas; hash/proveniência documentados. Quando houver autorização para versionamento/release, gerar novamente a partir da revisão aprovada e registrar o novo hash, repetindo validação/consumo. Não alterar silenciosamente o artefato aprovado.

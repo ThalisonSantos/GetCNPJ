@@ -11,17 +11,17 @@ namespace GetCNPJ.Models
         /// <summary>
         /// CNPJ numérico ou alfanumérico formatado (XX.XXX.XXX/XXXX-XX), com dois DVs numéricos
         /// </summary>
-        public string Cnpj { get; set; }
+        public string? Cnpj { get; set; }
 
         /// <summary>
         /// Razão Social da empresa
         /// </summary>
-        public string RazaoSocial { get; set; }
+        public string? RazaoSocial { get; set; }
 
         /// <summary>
         /// Nome Fantasia da empresa
         /// </summary>
-        public string NomeFantasia { get; set; }
+        public string? NomeFantasia { get; set; }
 
         /// <summary>
         /// Data de abertura da empresa
@@ -31,7 +31,7 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Situação cadastral da empresa
         /// </summary>
-        public string Situacao { get; set; }
+        public string? Situacao { get; set; }
 
         /// <summary>
         /// Data da situação cadastral
@@ -41,17 +41,17 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Tipo de estabelecimento (Matriz/Filial)
         /// </summary>
-        public string Tipo { get; set; }
+        public string? Tipo { get; set; }
 
         /// <summary>
         /// Porte da empresa
         /// </summary>
-        public string Porte { get; set; }
+        public string? Porte { get; set; }
 
         /// <summary>
         /// Natureza jurídica
         /// </summary>
-        public string NaturezaJuridica { get; set; }
+        public string? NaturezaJuridica { get; set; }
 
         /// <summary>
         /// Capital social da empresa
@@ -61,12 +61,12 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Endereço completo da empresa
         /// </summary>
-        public Endereco Endereco { get; set; }
+        public Endereco? Endereco { get; set; }
 
         /// <summary>
         /// Atividade principal da empresa
         /// </summary>
-        public AtividadeEconomica AtividadePrincipal { get; set; }
+        public AtividadeEconomica? AtividadePrincipal { get; set; }
 
         /// <summary>
         /// Atividades secundárias da empresa
@@ -86,7 +86,7 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Email da empresa
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Inscrições estaduais da empresa
@@ -96,7 +96,7 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Informações sobre Simples Nacional
         /// </summary>
-        public SimplesNacional Simples { get; set; }
+        public SimplesNacional? Simples { get; set; }
 
         /// <summary>
         /// Data da última atualização dos dados
@@ -106,7 +106,7 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Provedor que forneceu os dados (ReceitaWS, BrasilAPI, CNPJA)
         /// </summary>
-        public string Provedor { get; set; }
+        public string? Provedor { get; set; }
 
         public CnpjData()
         {

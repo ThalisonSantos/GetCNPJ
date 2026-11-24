@@ -6,10 +6,11 @@ Alterações relevantes do fork serão registradas aqui, seguindo categorias de 
 Identidade aprovada para a versão **1.1.0**: GetCNPJ.Community / GetCNPJ Community. Fork independente mantido por Thalison Santos, derivado de GetCNPJ de Bruno da Cunha Felipe. Esta seção registra preparação local, sem publicação/tag/release.
 
 ### Adicionado
+- H01: 90 casos de nulabilidade/ausência, incluindo todos os 35 DTOs com propriedades ausentes e null, modelos públicos, serviços e respostas incompletas. Suíte atual com 450 casos por target (1800 execuções aprovadas), preservados os 360 casos anteriores.
 - Preparação de GetCNPJ.Community 1.1.0, documentação de geração/inspeção/instalação local e futura publicação manual em docs/RELEASE.md. Namespace e assembly GetCNPJ preservados; AssemblyVersion 1.0.0.0 mantida e FileVersion 1.1.0.0.
 - Matriz documental dos quatro provedores em docs/PROVIDERS.md e inventário/auditoria de todas as dependências em docs/DEPENDENCIES.md, verificados em 2026-11-24, sem consultas cadastrais reais.
 - Endereco.CodigoIbge e flags nullable SimplesNacional.OptanteInformado/OptanteSimeiInformado e InscricaoEstadual.AtivoInformado; distinguem informação desconhecida de negativa, preservando os bools e ToString existentes. Adições podem aparecer na serialização dos modelos pelo consumidor.
-- 79 casos sintéticos de contratos/mapeamento/identidade/erros JSON e fallback; suíte atual com 360 casos por target executável (1440 execuções aprovadas), preservados 281 anteriores com quatro expectativas corrigidas de listas [null]. NuGetAudit/all habilitado em restore/CI.
+- Na T06, 79 casos sintéticos de contratos/mapeamento/identidade/erros JSON e fallback ampliaram a suíte para 360 casos por target (1440 execuções aprovadas), preservados 281 anteriores com quatro expectativas corrigidas de listas [null]. NuGetAudit/all habilitado em restore/CI.
 - Diretrizes de manutenção e colaboração entre agentes de IA.
 - Auditoria técnica inicial, roadmap e controle de progresso.
 - Projeto xUnit integrado à solução, com HTTP simulado e três testes iniciais executados em net48, net481, net8.0 e net9.0.
@@ -20,9 +21,11 @@ Identidade aprovada para a versão **1.1.0**: GetCNPJ.Community / GetCNPJ Commun
 - Interface opcional IAtomicRateLimiter e SlidingWindowRateLimiter.AcquireAsync para aquisição e registro atômicos, preservando os quatro membros de IRateLimiter.
 - 28 casos de testes de concorrência, expiração, limites por provedor, cancelamento, Reset, parâmetros, registro único e compatibilidade; suíte ampliada para 145 casos por target executável na T03.
 - 44 casos de timeout/fallback e cancelamento em provedores falsos/HTTP simulado, incluindo timer nativo de HttpClient sem rede; suíte ampliada para 189 casos por target executável na T04.
-- 92 casos de recursos HTTP, com respostas/conteúdos/streams/handlers/clientes rastreáveis, falhas e reutilização; suíte atual com 281 casos por target executável.
+- Na T05, 92 casos de recursos HTTP, com respostas/conteúdos/streams/handlers/clientes rastreáveis, falhas e reutilização, ampliaram a suíte para 281 casos por target executável.
 
 ### Alterado
+- T07 registrada como revisada pelo ChatGPT nos metadados/licença/empacotamento documentado/CI e validada remotamente conforme mantenedor: execução 45450063413, commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Candidato anterior não contém H01 e deve ser regenerado após homologação a partir de commit aprovado.
+- H01: anotações nullable corretas em propriedades opcionais dos modelos públicos, retornos dos provedores e Format/FormatCnpj, preservando assinaturas CLR. DTOs internos representam ausência com null, inclusive IDs numéricos e itens de listas. Recompilação de consumidores/overrides pode exigir novas checagens e anotações; matriz em docs/RELEASE.md. Sem versão/dependência/framework novo e sem supressão de diagnósticos.
 - T06 validada remotamente conforme mantenedor: GitHub Actions 45443368700, commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão técnica ChatGPT apenas parcial, sem bloqueios nos trechos revisados; não equivale a revisão integral ou teste das APIs reais.
 - Metadados do fork, autoria original/mantenedor, URLs, descrição, tags e instalação atualizados. GetCNPJ e GetCNPJ.Community não devem coexistir no mesmo grafo por compartilharem GetCNPJ.dll/tipos.
 - T05 registrada como concluída local e remotamente conforme revisão ChatGPT/validação GitHub Actions informadas pelo mantenedor: execução 45435902138, commit 038723f43c67f5527339a10cc5856625f555635b.
@@ -39,6 +42,8 @@ Identidade aprovada para a versão **1.1.0**: GetCNPJ.Community / GetCNPJ Commun
 - Expiração do limiter usa tempo decorrido de Stopwatch, com esperas fora dos locks e compatibilidade com intervalos positivos longos. Limites e intervalos não positivos passam a ser rejeitados no construtor; CnpjClient valida antes de criar seu HttpClient.
 
 ### Corrigido
+- H01: NullReferenceException em FailedProviders com itens null e validação de provedores null; coleção de provedores capturada uma vez para evitar mutações externas. CreateSuccess rejeita dado obrigatório null. Mapeamentos não fabricam logradouro vazio, códigos zero ou descrições com separadores quando as partes estão ausentes; CNAE nullable lido após pattern seguro. Porte BrasilAPI com tipo objeto/lista/bool rejeitado como JSON inválido.
+- H01: 255 diagnósticos por target (1275 avisos) resolvidos por modelagem e fluxo corretos, com rebuild dos cinco targets sem avisos/erros. Nenhum NoWarn/pragma/desativação de Nullable nem preenchimento genérico de dados ausentes. Revisão técnica local das alterações T06 concluída, sem comprovar operação das APIs externas.
 - Contratos BrasilAPI: códigos numéricos, porte textual, nomes atuais de matriz/filial e logradouro, e-mail/IBGE. CNPJá: company.id textual tolerado no DTO interno, head ausente não vira FILIAL, IBGE e e-mail preenchido mapeados. CNPJ.WS tolera campos auxiliares string/objeto/null inconsistentes no schema/exemplos; listas ignoram itens null.
 - CNPJ retornado ausente/inválido/divergente rejeitado na base (incluindo subclasses que a utilizam). Erros explícitos dentro de HTTP 200 deixam de ser sucesso; ReceitaWS ERROR gera ProviderException na consulta direta em vez de null, mantendo falha/fallback no cliente. Dados parciais com identidade válida continuam aceitos. JsonException preservada para JSON inválido; documentos/respostas descartados nas falhas.
 - SIMEI isolado preservado; flags fiscais ausentes permanecem desconhecidas nas propriedades nullable. Capital textual não interpreta vírgula malformada como milhar; datas usam formatos documentados invariantes. Sem alterar máscara histórica de CNAE, apresentação de CNPJ ReceitaWS ou inferir situação tributária de lista IE vazia.

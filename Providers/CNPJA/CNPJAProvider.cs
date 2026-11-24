@@ -25,7 +25,7 @@ namespace GetCNPJ.Providers.CNPJA
         {
         }
 
-        protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+        protected override async Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
             using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -57,11 +57,9 @@ namespace GetCNPJ.Providers.CNPJA
                 DataAbertura = response.founded,
                 Situacao = response.status?.text,
                 DataSituacao = response.statusDate,
-                Tipo = response.head.HasValue ? (response.head.Value ? "MATRIZ" : "FILIAL") : null,
+                Tipo = response.head is bool head ? (head ? "MATRIZ" : "FILIAL") : null,
                 Porte = response.company?.size?.text,
-                NaturezaJuridica = response.company?.nature != null
-                    ? $"{response.company.nature.id} - {response.company.nature.text}"
-                    : null,
+                NaturezaJuridica = ProviderFormatting.Join(response.company?.nature?.id?.ToString(CultureInfo.InvariantCulture), response.company?.nature?.text, " - "),
                 CapitalSocial = response.company?.equity,
                 UltimaAtualizacao = response.updated,
                 Endereco = new Endereco
@@ -87,8 +85,10 @@ namespace GetCNPJ.Providers.CNPJA
             if (response.phones != null)
             {
                 cnpjData.Telefones = response.phones
-                    .Where(p => p != null && !string.IsNullOrWhiteSpace(p.number))
+                    .OfType<PhoneCNPJA>()
+                    .Where(p => !string.IsNullOrWhiteSpace(p.number))
                     .Select(p => FormatPhone(p.area, p.number))
+                    .OfType<string>()
                     .ToList();
             }
 
@@ -106,7 +106,7 @@ namespace GetCNPJ.Providers.CNPJA
             if (response.sideActivities != null)
             {
                 cnpjData.AtividadesSecundarias = response.sideActivities
-                    .Where(a => a != null)
+                    .OfType<ActivityCNPJA>()
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = FormatCnaeId(a.id),
@@ -119,11 +119,11 @@ namespace GetCNPJ.Providers.CNPJA
             if (response.company?.members != null)
             {
                 cnpjData.QuadroSocietario = response.company.members
-                    .Where(m => m != null)
+                    .OfType<MemberCNPJA>()
                     .Select(m => new Socio
                     {
                         Nome = m.person?.name,
-                        Qualificacao = m.role != null ? $"{m.role.id}-{m.role.text}" : null
+                        Qualificacao = ProviderFormatting.Join(m.role?.id?.ToString(CultureInfo.InvariantCulture), m.role?.text, "-")
                     })
                     .ToList();
             }
@@ -141,16 +141,17 @@ namespace GetCNPJ.Providers.CNPJA
             return cnpjData;
         }
 
-        private string FormatCep(string cep)
+        private string? FormatCep(string? cep)
         {
-            if (string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
+            if (cep == null || string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
                 return cep;
 
             return $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
         }
 
-        private string FormatPhone(string area, string number)
+        private string? FormatPhone(string? area, string? number)
         {
+            if (number == null) return null;
             if (string.IsNullOrWhiteSpace(area) || string.IsNullOrWhiteSpace(number))
                 return $"{area}{number}";
 
@@ -163,10 +164,12 @@ namespace GetCNPJ.Providers.CNPJA
             return $"({area}) {number}";
         }
 
-        private string FormatCnaeId(int cnaeId)
+        private string? FormatCnaeId(int? cnaeId)
         {
-            var cnaeStr = cnaeId.ToString("D7");
+            if (cnaeId is not int code) return null;
+            var cnaeStr = code.ToString("D7", CultureInfo.InvariantCulture);
             return $"{cnaeStr.Substring(0, 2)}.{cnaeStr.Substring(2, 2)}-{cnaeStr.Substring(4, 1)}-{cnaeStr.Substring(5, 2)}";
         }
+
     }
 }

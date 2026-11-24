@@ -13,12 +13,12 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Número da inscrição estadual
         /// </summary>
-        public string Inscricao { get; set; }
+        public string? Inscricao { get; set; }
 
         /// <summary>
         /// Estado da inscrição (UF)
         /// </summary>
-        public string Estado { get; set; }
+        public string? Estado { get; set; }
 
         /// <summary>
         /// Indica se a inscrição está ativa

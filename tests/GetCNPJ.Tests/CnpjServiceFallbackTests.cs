@@ -27,6 +27,7 @@ namespace GetCNPJ.Tests
             var result = await service.GetCnpjAsync("12345678000195");
 
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             Assert.Same(expected, result.Data);
             Assert.Equal(new[] { "A", "B", "C" }, calls);
             Assert.Equal(0, unused.CallCount);
@@ -205,11 +206,11 @@ namespace GetCNPJ.Tests
                 _get = get;
             }
 
-            public Task<CnpjData> GetCnpjDataAsync(string cnpj, CancellationToken cancellationToken = default)
+            public async Task<CnpjData?> GetCnpjDataAsync(string cnpj, CancellationToken cancellationToken = default)
             {
                 CallCount++;
                 _calls.Add(ProviderName);
-                return _get(cancellationToken);
+                return await _get(cancellationToken);
             }
 
             public Task<bool> IsAvailableAsync() => Task.FromResult(true);

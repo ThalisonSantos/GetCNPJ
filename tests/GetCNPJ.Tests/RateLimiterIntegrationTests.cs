@@ -180,10 +180,10 @@ namespace GetCNPJ.Tests
 
             public ProbeProvider(HttpClient http, IRateLimiter limiter) : base(http, limiter) { }
 
-            protected override Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+            protected override Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
             {
                 FetchCalls++;
-                return Task.FromResult(new CnpjData { Cnpj = cnpj });
+                return Task.FromResult<CnpjData?>(new CnpjData { Cnpj = cnpj });
             }
         }
     }

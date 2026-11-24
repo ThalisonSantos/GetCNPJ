@@ -21,7 +21,7 @@ namespace GetCNPJ.Examples
 
             var result = client.Get("03.312.791/0001-83");
 
-            if (result.Success)
+            if (result.Success && result.Data != null)
             {
                 var data = result.Data;
 
@@ -33,7 +33,7 @@ namespace GetCNPJ.Examples
                 Console.WriteLine($"Tipo: {data.Tipo}");
                 Console.WriteLine($"Porte: {data.Porte}");
                 Console.WriteLine($"\nEndereço:");
-                Console.WriteLine($"  {data.Endereco.EnderecoCompleto}");
+                Console.WriteLine($"  {data.Endereco?.EnderecoCompleto}");
                 Console.WriteLine($"\nContato:");
                 Console.WriteLine($"  Email: {data.Email}");
 
@@ -71,7 +71,7 @@ namespace GetCNPJ.Examples
 
             var result2 = client.GetFromProvider("03312791000183", "BrasilAPI");
 
-            if (result2.Success)
+            if (result2.Success && result2.Data != null)
             {
                 Console.WriteLine($"✓ Empresa: {result2.Data.RazaoSocial}");
                 Console.WriteLine($"  Provedor: {result2.Data.Provedor}");
@@ -97,12 +97,12 @@ namespace GetCNPJ.Examples
                 // Método síncrono - não bloqueia UI se chamado de forma apropriada
                 var result = client.Get("03312791000183");
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
                     // Atualizar UI com os dados
                     string mensagem = $"Empresa: {result.Data.RazaoSocial}\n" +
                                     $"CNPJ: {result.Data.Cnpj}\n" +
-                                    $"Endereço: {result.Data.Endereco.EnderecoCompleto}";
+                                    $"Endereço: {result.Data.Endereco?.EnderecoCompleto}";
 
                     Console.WriteLine(mensagem);
                     // MessageBox.Show(mensagem, "Dados da Empresa");
@@ -141,7 +141,7 @@ namespace GetCNPJ.Examples
 
                 var result = client.Get(cnpj);
 
-                if (result.Success)
+                if (result.Success && result.Data != null)
                 {
                     Console.WriteLine($"  ✓ {result.Data.RazaoSocial}");
                 }

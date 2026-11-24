@@ -4,7 +4,7 @@
 
 **Fork independente**, mantido por **Thalison Santos**, do [GetCNPJ original](https://github.com/azumamagus/GetCNPJ), desenvolvido por **Bruno da Cunha Felipe**. Repositório do fork: [ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ). Não é uma publicação do autor original nem possui afiliação oficial com a Receita Federal ou com os provedores.
 
-Identidade aprovada: **GetCNPJ.Community 1.1.0**. Pacote preparado e validado localmente, **ainda não publicado nesta etapa**. Namespace e assembly continuam **GetCNPJ**; não é necessário mudar os `using`. A licença MIT e o copyright original estão preservados integralmente em [LICENSE](LICENSE).
+Identidade aprovada: **GetCNPJ.Community 1.1.0**, **ainda não publicado nesta etapa**. O pacote gerado na T07 é candidato histórico e não contém as correções H01; deverá ser regenerado após homologação, a partir de commit aprovado. Namespace e assembly continuam **GetCNPJ**; não é necessário mudar os `using`. A licença MIT e o copyright original estão preservados integralmente em [LICENSE](LICENSE).
 
 **Não instale GetCNPJ e GetCNPJ.Community simultaneamente**, nem por dependências transitivas: ambos fornecem `GetCNPJ.dll` e os mesmos namespaces/tipos, causando conflitos de compilação ou carregamento. Ao migrar, remova a referência ao pacote original e valide também o grafo de dependências. AssemblyVersion permanece 1.0.0.0 por compatibilidade; versão do pacote/arquivo é 1.1.0.
 
@@ -49,6 +49,8 @@ Os adaptadores locais BrasilAPI, CNPJA, CNPJWS e ReceitaWS preservam letras nas 
 
 Respostas parciais com CNPJ válido e correspondente ao solicitado podem ser aceitas; sucesso não garante preenchimento completo. Identidade ausente/inválida/divergente, JSON inválido e envelopes explícitos de erro em HTTP 200 não são sucesso. No cliente, falhas permitem fallback conforme as regras existentes; consultas direcionadas continuam sem fallback.
 
+Na H01, campos opcionais dos modelos e retornos dos provedores passaram a ter anotações nullable coerentes com a ausência já possível. As assinaturas CLR foram preservadas, mas consumidores/overrides podem precisar de checagens e anotações ao recompilar. Confira `result.Success` e `result.Data != null` antes de usar dados; endereço e outros campos continuam opcionais. Matriz e endurecimentos documentados em [docs/RELEASE.md](docs/RELEASE.md).
+
 `Endereco.CodigoIbge` preserva o código municipal quando documentado, sem confundi-lo com SIAFI. Para distinguir informação fiscal desconhecida de negativa, use os novos campos nullable `SimplesNacional.OptanteInformado`, `OptanteSimeiInformado` e `InscricaoEstadual.AtivoInformado`: null = desconhecido, false = negativo informado, true = positivo informado. Os bools antigos continuam false quando desconhecidos por compatibilidade, e o `ToString()` de IE mantém o comportamento anterior. Lista de IE vazia nunca prova não contribuinte. Propriedades novas são independentes e podem aparecer ao serializar os modelos.
 
 Os cinco frameworks foram preservados. System.Text.Json 8.0.6 é referência somente em netstandard2.0/net48/net481; net8/net9 usam o componente do framework. HTTP usa referências da plataforma, com HttpClient compartilhado. A [auditoria de dependências diretas e transitivas](docs/DEPENDENCIES.md) registra versões, justificativas e comandos; não houve vulnerabilidade conhecida reportada pelo NuGet na verificação de 2026-11-24. Consumidores devem manter runtimes atualizados.
@@ -90,7 +92,7 @@ using var client = new CnpjClient();
 // Consultar CNPJ (numérico ou alfanumérico, com ou sem máscara; suporte externo depende da API)
 var result = await client.GetAsync("03.312.791/0001-83");
 
-if (result.Success)
+if (result.Success && result.Data != null)
 {
     var data = result.Data;
 
@@ -98,7 +100,7 @@ if (result.Success)
     Console.WriteLine($"Nome Fantasia: {data.NomeFantasia}");
     Console.WriteLine($"CNPJ: {data.Cnpj}");
     Console.WriteLine($"Situação: {data.Situacao}");
-    Console.WriteLine($"Endereço: {data.Endereco.EnderecoCompleto}");
+    Console.WriteLine($"Endereço: {data.Endereco?.EnderecoCompleto}");
     Console.WriteLine($"Email: {data.Email}");
     Console.WriteLine($"Telefones: {string.Join(", ", data.Telefones)}");
 

@@ -25,7 +25,7 @@ namespace GetCNPJ.Providers.ReceitaWS
         {
         }
 
-        protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+        protected override async Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
             using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -76,18 +76,18 @@ namespace GetCNPJ.Providers.ReceitaWS
             };
 
             // Telefones
-            if (!string.IsNullOrWhiteSpace(response.telefone))
+            if (response.telefone is string phone && !string.IsNullOrWhiteSpace(phone))
             {
-                cnpjData.Telefones = response.telefone
+                cnpjData.Telefones = phone
                     .Split(new[] { '/', ',' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(t => t.Trim())
                     .ToList();
             }
 
             // Atividade principal
-            if (response.atividade_principal != null && response.atividade_principal.Any(a => a != null))
+            var atividade = response.atividade_principal?.OfType<AtividadeWS>().FirstOrDefault();
+            if (atividade != null)
             {
-                var atividade = response.atividade_principal.First(a => a != null);
                 cnpjData.AtividadePrincipal = new AtividadeEconomica
                 {
                     Codigo = atividade.code,
@@ -99,7 +99,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.atividades_secundarias != null)
             {
                 cnpjData.AtividadesSecundarias = response.atividades_secundarias
-                    .Where(a => a != null)
+                    .OfType<AtividadeWS>()
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = a.code,
@@ -112,7 +112,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             if (response.qsa != null)
             {
                 cnpjData.QuadroSocietario = response.qsa
-                    .Where(s => s != null)
+                    .OfType<SocioWS>()
                     .Select(s => new Socio
                     {
                         Nome = s.nome,
@@ -152,7 +152,7 @@ namespace GetCNPJ.Providers.ReceitaWS
             return null;
         }
 
-        private decimal? ParseDecimal(string value)
+        private decimal? ParseDecimal(string? value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;

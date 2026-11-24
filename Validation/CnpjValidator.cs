@@ -36,9 +36,9 @@ namespace GetCNPJ.Validation
         /// Mantém outros valores inalterados, para compatibilidade com retornos dos provedores.
         /// Esta operação de apresentação não valida os DVs.
         /// </summary>
-        public static string Format(string cnpj)
+        public static string? Format(string? cnpj)
         {
-            if (string.IsNullOrWhiteSpace(cnpj) || cnpj.Length != 14)
+            if (cnpj == null || string.IsNullOrWhiteSpace(cnpj) || cnpj.Length != 14)
                 return cnpj;
 
             return $"{cnpj.Substring(0, 2)}.{cnpj.Substring(2, 3)}.{cnpj.Substring(5, 3)}/{cnpj.Substring(8, 4)}-{cnpj.Substring(12, 2)}";
@@ -47,10 +47,10 @@ namespace GetCNPJ.Validation
         private static bool TryNormalize(string? cnpj, out string normalized)
         {
             normalized = string.Empty;
-            if (string.IsNullOrWhiteSpace(cnpj))
+            if (cnpj == null || string.IsNullOrWhiteSpace(cnpj))
                 return false;
 
-            var value = cnpj!.Trim();
+            var value = cnpj.Trim();
             if (value.Length == 18)
             {
                 if (value[2] != '.' || value[6] != '.' || value[10] != '/' || value[15] != '-')

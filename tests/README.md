@@ -1,6 +1,6 @@
 # Testes e CI
 
-O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 360 casos em `net48`, `net481`, `net8.0` e `net9.0` (1440 execuções aprovadas na T06). Preservados os 281 casos da T05, com quatro expectativas de listas nulas ajustadas pela correção descrita abaixo. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
+O projeto `GetCNPJ.Tests` usa xUnit v2 e VSTest, com referência ao projeto da biblioteca. Executa os mesmos 450 casos em `net48`, `net481`, `net8.0` e `net9.0` (1800 execuções aprovadas na H01). Preservados os 360 casos anteriores, incluindo os 281 da T05, com quatro expectativas de listas nulas ajustadas na T06 conforme histórico abaixo. `netstandard2.0` é validado por compilação: é um contrato de APIs, sem runtime próprio.
 
 Os testes exercitam o cliente público com apenas BrasilAPI habilitada: resposta HTTP de sucesso e mapeamento básico, HTTP 503 registrado como falha do provedor e seleção de provedor inexistente sem requisição HTTP. `StubHttpMessageHandler` intercepta todo HTTP; não há consulta real, credenciais ou dados de clientes. O CNPJ e a razão social são sintéticos e não representam evidência de cadastro existente.
 
@@ -51,6 +51,12 @@ dotnet list GetCNPJ.sln package --vulnerable --include-transitive --format json
 ```
 
 Esses comandos acessam metadados NuGet, não APIs de cadastro. Todos os testes continuam locais; consultas reais exigem autorização específica. Evidência documental de suporte alfanumérico (BrasilAPI/ReceitaWS) não equivale a teste de operação real.
+
+## H01 — nulabilidade
+
+`NullabilityTests` acrescenta 90 casos: 35 DTOs internos × propriedades ausentes/null (70 combinações), modelos públicos sem dados inventados, FailedProviders com itens null, guard de CreateSuccess, configuração de provedores/coleção mutável, respostas incompletas e porte BrasilAPI com tipos inválidos. Os 89 primeiros testes na cópia isolada da base b06d48c tiveram 36 falhas/53 aprovações; após correção passaram. O 90º verifica rejeição de dados obrigatórios null na fábrica de sucesso.
+
+Todos os 360 casos anteriores continuam descobertos e aprovados; adicionadas assertivas de não null e alinhadas anotações dos fakes, sem remoção de expectativas. Rebuild Release dos cinco targets: zero avisos/erros, sem supressões. Final: 450 aprovados por target, zero falhas/ignorados, TRX TestResults/H01/FinalSolution e FinalNet9. Comando global ainda requer runtime9 global; o target passou com host local. Limitação Framework4.8/4.8.1 e aviso VSTEST_ARTIFACTS_DIRECTORY do runner permanecem. Sem APIs reais, pack ou mudança de versão.
 
 ## Runtime .NET 9 local nesta validação
 

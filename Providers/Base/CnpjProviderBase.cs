@@ -35,7 +35,7 @@ namespace GetCNPJ.Providers.Base
         }
 
         /// <inheritdoc/>
-        public async Task<CnpjData> GetCnpjDataAsync(string cnpj, CancellationToken cancellationToken = default)
+        public async Task<CnpjData?> GetCnpjDataAsync(string cnpj, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace GetCNPJ.Providers.Base
         /// <summary>
         /// Método abstrato para buscar dados do provedor específico
         /// </summary>
-        protected abstract Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken);
+        protected abstract Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken);
 
         /// <summary>
         /// Valida e normaliza um CNPJ numérico ou alfanumérico (remove a máscara padrão).
@@ -122,7 +122,7 @@ namespace GetCNPJ.Providers.Base
         /// <summary>
         /// Formata um CNPJ com pontuação, preservando os caracteres retornados pelo provedor.
         /// </summary>
-        protected string FormatCnpj(string cnpj)
+        protected string? FormatCnpj(string? cnpj)
         {
             return CnpjValidator.Format(cnpj);
         }

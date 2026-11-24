@@ -34,6 +34,7 @@ namespace GetCNPJ.Tests
             var result = directed ? client.GetFromProvider("12345678000195", "BrasilAPI") : client.Get("12345678000195");
 
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             AssertDisposed(response);
             Assert.Equal(1, handler.Requests);
         }
@@ -127,6 +128,7 @@ namespace GetCNPJ.Tests
             using var http = new HttpClient(handler);
 
             var data = await CreateProvider(name, http).GetCnpjDataAsync("12345678000195");
+            Assert.NotNull(data);
 
             Assert.Empty(data.AtividadesSecundarias);
             AssertDisposed(response);
@@ -201,6 +203,7 @@ namespace GetCNPJ.Tests
             var result = await client.GetAsync("12345678000195");
 
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             Assert.Equal("ReceitaWS", result.Data.Provedor);
             AssertDisposed(second);
             Assert.Equal(2, handler.Requests);

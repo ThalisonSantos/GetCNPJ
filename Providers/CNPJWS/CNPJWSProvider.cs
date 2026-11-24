@@ -26,7 +26,7 @@ namespace GetCNPJ.Providers.CNPJWS
         {
         }
 
-        protected override async Task<CnpjData> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
+        protected override async Task<CnpjData?> FetchDataAsync(string cnpj, CancellationToken cancellationToken)
         {
             var url = $"{BaseUrl}{cnpj}";
             using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -45,13 +45,11 @@ namespace GetCNPJ.Providers.CNPJWS
                 return null;
             }
 
-            return MapToCnpjData(data);
+            return MapToCnpjData(data, data.estabelecimento);
         }
 
-        private CnpjData MapToCnpjData(CNPJWSResponse response)
+        private CnpjData MapToCnpjData(CNPJWSResponse response, EstabelecimentoWS estab)
         {
-            var estab = response.estabelecimento;
-
             var cnpjData = new CnpjData
             {
                 Cnpj = FormatCnpj(estab.cnpj),
@@ -62,16 +60,14 @@ namespace GetCNPJ.Providers.CNPJWS
                 DataSituacao = ParseDate(estab.data_situacao_cadastral),
                 Tipo = estab.tipo,
                 Porte = response.porte?.descricao,
-                NaturezaJuridica = response.natureza_juridica != null
-                    ? $"{response.natureza_juridica.id} - {response.natureza_juridica.descricao}"
-                    : null,
+                NaturezaJuridica = ProviderFormatting.Join(response.natureza_juridica?.id, response.natureza_juridica?.descricao, " - "),
                 CapitalSocial = ParseDecimal(response.capital_social),
                 Email = estab.email,
                 UltimaAtualizacao = response.atualizado_em,
                 Endereco = new Endereco
                 {
                     Cep = FormatCep(estab.cep),
-                    Logradouro = $"{estab.tipo_logradouro} {estab.logradouro}".Trim(),
+                    Logradouro = ProviderFormatting.Join(estab.tipo_logradouro, estab.logradouro, " ")?.Trim(),
                     Numero = estab.numero,
                     Complemento = estab.complemento,
                     Bairro = estab.bairro,
@@ -82,14 +78,14 @@ namespace GetCNPJ.Providers.CNPJWS
             };
 
             // Telefones
-            if (!string.IsNullOrWhiteSpace(estab.ddd1) && !string.IsNullOrWhiteSpace(estab.telefone1))
+            if (estab.ddd1 is string ddd1 && estab.telefone1 is string phone1 && !string.IsNullOrWhiteSpace(ddd1) && !string.IsNullOrWhiteSpace(phone1))
             {
-                cnpjData.Telefones.Add(FormatPhone(estab.ddd1, estab.telefone1));
+                cnpjData.Telefones.Add(FormatPhone(ddd1, phone1));
             }
 
-            if (!string.IsNullOrWhiteSpace(estab.ddd2) && !string.IsNullOrWhiteSpace(estab.telefone2))
+            if (estab.ddd2 is string ddd2 && estab.telefone2 is string phone2 && !string.IsNullOrWhiteSpace(ddd2) && !string.IsNullOrWhiteSpace(phone2))
             {
-                cnpjData.Telefones.Add(FormatPhone(estab.ddd2, estab.telefone2));
+                cnpjData.Telefones.Add(FormatPhone(ddd2, phone2));
             }
 
             // Atividade principal
@@ -106,7 +102,7 @@ namespace GetCNPJ.Providers.CNPJWS
             if (estab.atividades_secundarias != null)
             {
                 cnpjData.AtividadesSecundarias = estab.atividades_secundarias
-                    .Where(a => a != null)
+                    .OfType<AtividadeWS>()
                     .Select(a => new AtividadeEconomica
                     {
                         Codigo = FormatCnae(a.subclasse),
@@ -119,7 +115,7 @@ namespace GetCNPJ.Providers.CNPJWS
             if (response.socios != null)
             {
                 cnpjData.QuadroSocietario = response.socios
-                    .Where(s => s != null)
+                    .OfType<SocioWS>()
                     .Select(s => new Socio
                     {
                         Nome = s.nome,
@@ -132,7 +128,8 @@ namespace GetCNPJ.Providers.CNPJWS
             if (estab.inscricoes_estaduais != null)
             {
                 cnpjData.InscricoesEstaduais = estab.inscricoes_estaduais
-                    .Where(ie => ie != null && !string.IsNullOrWhiteSpace(ie.inscricao_estadual))
+                    .OfType<InscricaoEstadualWS>()
+                    .Where(ie => !string.IsNullOrWhiteSpace(ie.inscricao_estadual))
                     .Select(ie => new InscricaoEstadual
                     {
                         Inscricao = ie.inscricao_estadual,
@@ -161,7 +158,7 @@ namespace GetCNPJ.Providers.CNPJWS
             return cnpjData;
         }
 
-        private DateTime? ParseDate(string dateString)
+        private DateTime? ParseDate(string? dateString)
         {
             if (string.IsNullOrWhiteSpace(dateString))
                 return null;
@@ -172,7 +169,7 @@ namespace GetCNPJ.Providers.CNPJWS
             return null;
         }
 
-        private decimal? ParseDecimal(string value)
+        private decimal? ParseDecimal(string? value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;
@@ -190,9 +187,9 @@ namespace GetCNPJ.Providers.CNPJWS
             return null;
         }
 
-        private string FormatCep(string cep)
+        private string? FormatCep(string? cep)
         {
-            if (string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
+            if (cep == null || string.IsNullOrWhiteSpace(cep) || cep.Length != 8)
                 return cep;
 
             return $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
@@ -212,9 +209,9 @@ namespace GetCNPJ.Providers.CNPJWS
             return $"({ddd}) {number}";
         }
 
-        private string FormatCnae(string cnae)
+        private string? FormatCnae(string? cnae)
         {
-            if (string.IsNullOrWhiteSpace(cnae))
+            if (cnae == null || string.IsNullOrWhiteSpace(cnae))
                 return cnae;
 
             // Remove caracteres não numéricos e barras

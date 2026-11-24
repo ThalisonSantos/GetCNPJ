@@ -8,12 +8,12 @@ namespace GetCNPJ.Models
         /// <summary>
         /// Nome do sócio
         /// </summary>
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         /// <summary>
         /// Qualificação do sócio
         /// </summary>
-        public string Qualificacao { get; set; }
+        public string? Qualificacao { get; set; }
 
         public override string ToString()
         {

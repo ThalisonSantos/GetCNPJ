@@ -22,13 +22,15 @@ namespace GetCNPJ.Services
         /// <param name="providers">Lista de provedores disponíveis</param>
         public CnpjService(IEnumerable<ICnpjProvider> providers)
         {
-            _providers = providers?.OrderBy(p => p.Priority)
-                ?? throw new ArgumentNullException(nameof(providers));
-
-            if (!_providers.Any())
+            if (providers == null) throw new ArgumentNullException(nameof(providers));
+            var configuredProviders = providers.ToArray();
+            if (configuredProviders.Any(p => p == null))
+                throw new ArgumentException("A lista de provedores não pode conter itens nulos", nameof(providers));
+            if (configuredProviders.Length == 0)
             {
                 throw new ArgumentException("Pelo menos um provedor deve ser configurado", nameof(providers));
             }
+            _providers = configuredProviders.OrderBy(p => p.Priority).ToArray();
         }
 
         /// <inheritdoc/>
@@ -91,7 +93,7 @@ namespace GetCNPJ.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
             var provider = _providers.FirstOrDefault(p =>
-                p.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+                string.Equals(p.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
 
             if (provider == null)
             {

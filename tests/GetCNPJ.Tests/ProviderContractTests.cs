@@ -52,6 +52,7 @@ namespace GetCNPJ.Tests
                 using var handler = new TrackedHandler(_ => response);
                 using var http = new HttpClient(handler);
                 var data = await HttpResourceDisposalTests.CreateProvider(name, http).GetCnpjDataAsync(Cnpj);
+                Assert.NotNull(data);
                 Assert.Null(data.DataAbertura);
             }
             finally { System.Globalization.CultureInfo.CurrentCulture = previous; }
@@ -77,6 +78,7 @@ namespace GetCNPJ.Tests
             using var client = new CnpjClient(http);
             var result = await client.GetAsync(Cnpj);
             Assert.True(result.Success);
+            Assert.NotNull(result.Data);
             Assert.Equal("ReceitaWS", result.Data.Provedor);
             Assert.Equal(2, handler.Requests);
             HttpResourceDisposalTests.AssertDisposed(second);
@@ -146,6 +148,7 @@ namespace GetCNPJ.Tests
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
             var data = await HttpResourceDisposalTests.CreateProvider(name, http).GetCnpjDataAsync(Cnpj);
+            Assert.NotNull(data);
             Assert.Equal("EMPRESA FICTICIA", data.RazaoSocial);
             Assert.Equal("TESTE", data.NomeFantasia);
             Assert.Equal("MATRIZ", data.Tipo);
@@ -155,14 +158,17 @@ namespace GetCNPJ.Tests
             Assert.Equal(1234.56m, data.CapitalSocial);
             Assert.Equal(new DateTime(2020, 1, 2), data.DataAbertura);
             Assert.Equal(new DateTime(2020, 2, 3), data.DataSituacao);
+            Assert.NotNull(data.Endereco);
             Assert.Equal("RUA TESTE", data.Endereco.Logradouro);
             Assert.Equal("00123-000", data.Endereco.Cep);
             Assert.Equal(name == "ReceitaWS" ? null : "3550308", data.Endereco.CodigoIbge);
             Assert.Equal("teste@example.invalid", data.Email);
             Assert.Contains("(11) 0000-0000", data.Telefones);
+            Assert.NotNull(data.AtividadePrincipal);
             Assert.Equal("01.11-3-01", data.AtividadePrincipal.Codigo);
             Assert.Equal("01.11-3-02", Assert.Single(data.AtividadesSecundarias).Codigo);
             Assert.Equal("SOCIO FICTICIO", Assert.Single(data.QuadroSocietario).Nome);
+            Assert.NotNull(data.Simples);
             Assert.True(data.Simples.Optante);
             Assert.True(data.Simples.OptanteInformado);
             Assert.False(data.Simples.OptanteSimei);
@@ -208,6 +214,7 @@ namespace GetCNPJ.Tests
             Assert.Null(data.CapitalSocial);
             Assert.Null(data.DataAbertura);
             Assert.Null(data.Situacao);
+            Assert.NotNull(data.Endereco);
             Assert.Null(data.Endereco.CodigoIbge);
             Assert.Null(data.Tipo);
             Assert.Empty(data.Telefones);
@@ -261,6 +268,8 @@ namespace GetCNPJ.Tests
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
             var data = await HttpResourceDisposalTests.CreateProvider(name, http).GetCnpjDataAsync(Cnpj);
+            Assert.NotNull(data);
+            Assert.NotNull(data.Simples);
             Assert.Null(data.Simples.OptanteInformado);
             Assert.False(data.Simples.Optante);
             Assert.True(data.Simples.OptanteSimeiInformado);
@@ -277,6 +286,7 @@ namespace GetCNPJ.Tests
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
             var data = await HttpResourceDisposalTests.CreateProvider(name, http).GetCnpjDataAsync(Cnpj);
+            Assert.NotNull(data);
             Assert.Null(data.CapitalSocial);
         }
 
@@ -292,6 +302,7 @@ namespace GetCNPJ.Tests
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
             var data = await HttpResourceDisposalTests.CreateProvider("CNPJWS", http).GetCnpjDataAsync(Cnpj);
+            Assert.NotNull(data);
             var ie = Assert.Single(data.InscricoesEstaduais);
             Assert.Equal(active, ie.AtivoInformado);
             Assert.Equal(active ?? false, ie.Ativo);
@@ -307,9 +318,11 @@ namespace GetCNPJ.Tests
             using var handler = new TrackedHandler(_ => response);
             using var http = new HttpClient(handler);
             var data = await HttpResourceDisposalTests.CreateProvider("BrasilAPI", http).GetCnpjDataAsync(Cnpj);
+            Assert.NotNull(data);
             Assert.Equal("MICRO EMPRESA", data.Porte);
             Assert.Equal("MATRIZ", data.Tipo);
             Assert.Equal("ATIVA", data.Situacao);
+            Assert.NotNull(data.Endereco);
             Assert.Equal("RUA TESTE", data.Endereco.Logradouro);
             HttpResourceDisposalTests.AssertDisposed(response);
         }

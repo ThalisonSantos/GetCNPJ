@@ -93,6 +93,7 @@ namespace GetCNPJ.Tests
             else
             {
                 Assert.True(result.Success);
+                Assert.NotNull(result.Data);
                 Assert.Equal("ReceitaWS", result.Data.Provedor);
                 Assert.Equal(new[] { "publica.cnpj.ws", "receitaws.com.br" }, hosts);
             }
