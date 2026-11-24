@@ -1,5 +1,17 @@
 # GetCNPJ Community — preparação de release 1.1.0
 
+## Estado atual — H02.1 concluída localmente em 2026-11-24
+
+Mantenedor informou revisão ChatGPT dos principais trechos da H02 e validação remota [45467304721](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45467304721), commit `5e07ff467fa8d917586c3c32f990b54686547836`. Revisão delimitada, não integral; não é validação remota das alterações locais H02.1.
+
+Complemento H02.1 especificamente autorizado executado com ferramenta existente: quatro dirigidas alfanuméricas sync, automática numérica async e automática alfanumérica sync. **Seis GETs de até12 permitidos**, todos HTTP200/identidade correspondente e mapeamento bem-sucedido, respeitando intervalo21s e execução sequencial. **Operação alfanumérica confirmada por teste real autorizado nos quatro provedores**, limitada à amostra/data/endpoint. Nas automáticas CNPJWS respondeu primeiro, sem chamar os demais; transição real após falha não observada, continua coberta apenas por simulação. Sem bloqueios/retries/redirecionamentos ou defeito comprovado de adaptador. Evidências/tempos/campos/ausências em [HOMOLOGATION.md](HOMOLOGATION.md), classificações em [PROVIDERS.md](PROVIDERS.md).
+
+Restore aprovado, rebuild Release dos cinco targets e console **zero avisos/erros**; **450 testes por framework executável/1800 execuções**, zero falhas/ignorados, mais20 cenários offline do console. Host net9 local9.0.23, Framework4.8 sobre4.8.1, netstandard compilado; aviso VSTest preexistente mantido sem supressão. Logs artifacts/h021-*.log/TRX TestResults/H021/Final. Biblioteca funcional/ferramenta/contratos/versão/dependências/targets/CI/licença intactos; somente documentação e descrição/notas dos metadados ajustadas para evidência pontual. Nenhuma resposta completa ou dado pessoal persistido.
+
+H02/H02.1 concluídas no plano autorizado, revisão/CI do complemento ainda pendentes. Homologação pontual não certifica todos os cadastros, atualização, correção fiscal ou disponibilidade futura. **O candidato T07 abaixo permanece histórico e não foi regenerado.** Futuro pack deve partir de commit aprovado após homologação e repetir inspeção/consumidores/hash/proveniência; não reutilizar o hash antigo para implementação atual. Nenhuma autorização implícita de publicação; H03 não iniciada, sem alteração de versão/commit/push/merge/tag/pack/publicação nesta etapa.
+
+## Histórico da preparação T07/H01/H02 anterior ao complemento
+
 Atualização **H01/H02 — 2026-11-24**: T07 validada remotamente conforme mantenedor na execução [45450063413](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45450063413), commit b06d48c28a05f5310fc6b61bb211cd478f5efc62. Revisão ChatGPT delimitada a metadados, licença, empacotamento documentado e CI. H01 validada remotamente na execução [45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433), commit 9fcb8b893fc30b18371aff9faf44d153f1de0557, com revisão dos principais trechos pelo ChatGPT informada pelo mantenedor. Rebuild sem avisos/erros e 450 testes aprovados por target. H02 em andamento, evidências em docs/HOMOLOGATION.md.
 
 **O nupkg descrito abaixo é registro histórico da T07 e não contém H01.** Não foi regenerado nesta tarefa. Após homologação, gerar novamente a partir de commit aprovado e repetir inspeção/consumo/hash. O hash anterior não identifica a implementação atual. As seções de build/avisos/empacotamento da T07 abaixo são históricas, com resultado H01 atualizado na próxima seção.
@@ -229,13 +241,13 @@ Ambos retornaram saída 0 e validações aprovadas, incluindo rejeição dos DVs
 ## Limitações e pendências antes de publicar
 
 - T06 foi validada remotamente pelo mantenedor na execução [45443368700](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45443368700), commit 8652242894604cf28c96121ea2bee67b51fa0a7a. Revisão ChatGPT da T06 foi parcial; revisão técnica local complementar foi concluída na H01 conforme seção atual. T07 e H01 receberam validação/revisão delimitada informada acima; isso não conclui a homologação operacional H02.
-- H02 executou somente quatro consultas numéricas dirigidas/async autorizadas, com HTTP 200 e identidade correspondente nos quatro provedores; sem incompatibilidade comprovada. Não certifica operação geral. BrasilAPI/ReceitaWS possuem confirmação documental alfanumérica; CNPJ.WS/CNPJá não confirmados. **Não há suporte operacional alfanumérico comprovado por teste real autorizado em nenhum dos quatro.** Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis.
+- H02 original executou quatro numéricas dirigidas/async; H02.1 complementou quatro alfanuméricas dirigidas/sync e duas automáticas autorizadas, todos HTTP200/identidade correspondente, sem incompatibilidade comprovada. Suporte operacional alfanumérico confirmado por teste real autorizado nos quatro para a amostra/data/endpoint; documentação explícita confirmada apenas BrasilAPI/ReceitaWS, sem inventar evidência documental para CNPJ.WS/CNPJá. Não certifica operação geral/cobertura integral/fiscalidade. Termos, cotas, defasagem, cobertura e restrições comerciais em PROVIDERS.md continuam aplicáveis; transição real de fallback após falha não observada.
 - Os 1275 avisos históricos foram resolvidos na H01; modelos agora anotam ausência corretamente. API CLR/namespace/assembly preservados; 450 casos por target, incluindo os 360 anteriores. Zero avisos/testes aprovados não demonstram ausência de toda regressão possível ou validam dados de APIs reais.
 - Auditoria NuGet não reportou vulnerabilidades conhecidas nessa data, sem garantir ausência de falhas não catalogadas ou segurança do Windows/runtime. Manter runtimes corrigidos; não estender suporte oficial dos frameworks por inferência.
 - Logotipo permanece fora do pacote. Nome do pacote não reservado nem upload testado. Revalidar disponibilidade/permissões da conta na ocasião autorizada.
 - Candidato gerado a partir de árvore com alterações locais não commitadas; hash/proveniência documentados. Quando houver autorização para versionamento/release, gerar novamente a partir da revisão aprovada e registrar o novo hash, repetindo validação/consumo. Não alterar silenciosamente o artefato aprovado.
 
-## H01 validada e H02 parcialmente homologada — 2026-11-24
+## Registro histórico H01/H02 antes da H02.1 — 2026-11-24
 
 Conforme mantenedor, revisão ChatGPT dos principais trechos da H01 e [GitHub Actions 45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433) aprovados no commit `9fcb8b893fc30b18371aff9faf44d153f1de0557`. Não equivale a revisão integral nem a teste real das APIs. O candidato T07 permanece histórico; hash/tamanho anteriores não foram substituídos.
 

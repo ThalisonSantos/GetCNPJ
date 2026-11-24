@@ -13,14 +13,14 @@
         <Title>GetCNPJ Community</Title>
         <Authors>Bruno da Cunha Felipe;Thalison Santos</Authors>
         <Copyright>Copyright (c) 2025 Bruno da Cunha Felipe</Copyright>
-        <Description>Fork independente do GetCNPJ de Bruno da Cunha Felipe, mantido por Thalison Santos. Consulta CNPJ via CNPJ.WS, ReceitaWS, BrasilAPI e CNPJá; validação local numérica e alfanumérica, rate limiting e fallback. .NET Standard 2.0, .NET Framework 4.8/4.8.1, .NET 8 e .NET 9. Homologação real parcial de consultas numéricas; suporte operacional alfanumérico externo não comprovado.</Description>
+        <Description>Fork independente do GetCNPJ de Bruno da Cunha Felipe, mantido por Thalison Santos. Consulta CNPJ via CNPJ.WS, ReceitaWS, BrasilAPI e CNPJá; validação local numérica e alfanumérica, rate limiting e fallback. .NET Standard 2.0, .NET Framework 4.8/4.8.1, .NET 8 e .NET 9. Homologação real pontual numérica e alfanumérica dos quatro provedores; cobertura e limitações em docs/PROVIDERS.md.</Description>
         <PackageTags>CNPJ;Brasil;Community;CNPJWS;ReceitaWS;BrasilAPI;CNPJA;Validacao;Alfanumerico</PackageTags>
         <PackageProjectUrl>https://github.com/ThalisonSantos/GetCNPJ</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ThalisonSantos/GetCNPJ</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReleaseNotes>Estabilização do fork independente: validação de CNPJ numérico/alfanumérico, concorrência, timeout/fallback, recursos HTTP e contratos de provedores. Consulte CHANGELOG.md e docs/PROVIDERS.md. Homologação real parcial numérica; APIs alfanuméricas não testadas.</PackageReleaseNotes>
+        <PackageReleaseNotes>Estabilização do fork independente: validação de CNPJ numérico/alfanumérico, concorrência, timeout/fallback, recursos HTTP e contratos de provedores. Homologação real pontual numérica e alfanumérica; sem garantia de disponibilidade futura ou cobertura integral. Consulte CHANGELOG.md e docs/PROVIDERS.md.</PackageReleaseNotes>
         <AssemblyName>GetCNPJ</AssemblyName>
         <RootNamespace>GetCNPJ</RootNamespace>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>

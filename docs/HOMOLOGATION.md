@@ -2,6 +2,12 @@
 
 ## Estado em 2026-11-24
 
+**H02.1 concluída no escopo autorizado: seis consultas lógicas, seis GETs, todos HTTP 200 com identidade correspondente e mapeamento bem-sucedido. Suporte operacional alfanumérico confirmado por teste real autorizado para os quatro provedores, limitado à amostra/data/endpoint usados.** Nas duas consultas automáticas, CNPJWS teve sucesso e os demais não foram chamados. Não houve falha real que exercitasse passagem ao próximo provedor; esse caminho permanece validado somente com HTTP simulado. Resultados complementares ao final deste documento.
+
+Mantenedor informou revisão ChatGPT dos principais trechos da H02 e validação remota [45467304721](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45467304721), commit `5e07ff467fa8d917586c3c32f990b54686547836`. Revisão delimitada, não integral; refere-se à H02 original, não às alterações locais H02.1. Autorizou expressamente o complemento: quatro dirigidas alfanuméricas sync, automática numérica async e automática alfanumérica sync, somente os dois CNPJs abaixo, teto12 GETs incluindo fallback e intervalo mínimo21s entre consultas lógicas. Registros originais abaixo preservados como históricos.
+
+### Registro histórico da H02 original
+
 **Homologação parcial executada no escopo autorizado: quatro consultas numéricas dirigidas, assíncronas, com HTTP 200 e identidade correspondente nos quatro provedores.** O mantenedor autorizou expressamente somente essas quatro consultas. As consultas alfanuméricas, síncronas e com fallback do plano original não foram autorizadas nem executadas. Suporte operacional alfanumérico permanece inconclusivo. A leitura de páginas institucionais/documentação não constitui consulta aos endpoints cadastrais.
 
 Base: `develop`, commit `9fcb8b893fc30b18371aff9faf44d153f1de0557`. Conforme informação do mantenedor, a H01 teve revisão técnica dos principais trechos pelo ChatGPT e [GitHub Actions 45461414433](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45461414433) aprovado nessa revisão. Isso não equivale a revisão integral ou homologação dos serviços externos.
@@ -111,4 +117,65 @@ Consultas reais sync e fallback também não autorizadas/não executadas. Seus c
 
 HTTP404, erro genérico ou ausência de registro alfanumérico não provariam falta de suporte. Somente resposta alfanumérica real autorizada, mapeada corretamente e com identidade correspondente permitiria classificar aquele provedor como **Confirmado por teste real autorizado** para esse formato. O sucesso numérico aqui não altera essa classificação. Não suportado exige evidência explícita.
 
-Handoff: escopo autorizado concluído, **H02 parcialmente homologada**, demais cenários dependem de nova autorização específica. Não repetir as quatro consultas para ampliar o relatório sem autorização. H03 não iniciada; nenhum pacote regenerado; candidato anterior histórico e futura geração exige commit aprovado e homologação.
+Handoff histórico da H02 original: escopo então autorizado concluído, **H02 parcialmente homologada**. Os cenários restantes foram posteriormente autorizados e executados na H02.1 abaixo. Não repetir consultas sem autorização. H03 não iniciada; nenhum pacote regenerado; candidato anterior histórico e futura geração exige commit aprovado e homologação.
+
+## H02.1 — complemento autorizado executado em 2026-11-24
+
+Base `develop` / `5e07ff467fa8d917586c3c32f990b54686547836`, árvore inicialmente limpa. Usada a ferramenta existente, sem alterar seu código, adaptadores, contratos, versão, dependências, cinco frameworks, licença ou CI. Mesmo ambiente H02: Windows10.0.26200 x64, SDK11.0.100/MSBuild18.12.2, runtime8.0.34, Framework4.8.1 e host9.0.23 local. O console utiliza o projeto atual, não o nupkg histórico.
+
+### Autorização, execução e orçamento
+
+Autorização específica recebida no pedido H02.1: uma dirigida alfanumérica síncrona por provedor; uma automática numérica assíncrona; uma automática alfanumérica síncrona. Somente `00000000000191` e `00000000E08G12`, endpoints exatos já listados acima. Teto **12 GETs** nesta etapa, somando tentativas do fallback. Não se repetiram as quatro numéricas dirigidas da H02.
+
+Executadas sequencialmente **seis consultas lógicas / seis tentativas de envio / seis GETs com resposta HTTP**. Distribuição: CNPJWS3, ReceitaWS1, BrasilAPI1, CNPJA1. Todos retornaram HTTP200. Intervalo superior a21s entre o término de cada consulta lógica e o início da próxima; sem execução paralela. Não foram feitas chamadas de disponibilidade, retries, buscas de outros CNPJs ou consultas complementares estaduais/fiscais. As seis requisições restantes do teto não foram utilizadas.
+
+Acesso de rede fora do sandbox autorizado para cada comando, devido à limitação TLS já documentada na H02; sem tentativa inicial dentro do sandbox nesta etapa, sem desligar validação de certificado. Não houve falha TLS/HTTP, timeout, bloqueio401/403/429, redirecionamento ou cancelamento. Nenhum corpo HTTP, mensagem externa, contato ou dado de sócio foi persistido. Evidências abaixo transcritas da saída mínima do console.
+
+| Consulta / CNPJ | Seleção / modo | Término em America/Sao_Paulo (UTC−03), 2026-11-24 | GETs / HTTP | Transporte + leitura (ms) | Consulta total (ms) | Mapeamento / identidade |
+|---|---|---|---|---|---|---|
+| A / `00000000E08G12` | CNPJWS / sync | 16:15:37.877 | 1 / 200 | 584,2 | 647,6 | Sucesso / confere |
+| A / `00000000E08G12` | ReceitaWS / sync | 16:16:49.020 | 1 / 200 | 474,9 | 511,6 | Sucesso / confere |
+| A / `00000000E08G12` | BrasilAPI / sync | 16:17:32.086 | 1 / 200 | 334,5 | 387,6 | Sucesso / confere |
+| A / `00000000E08G12` | CNPJA / sync | 16:18:04.463 | 1 / 200 | 514,7 | 555,2 | Sucesso / confere |
+| N / `00000000000191` | auto / async → CNPJWS | 16:18:52.150 | 1 / 200 | 581,1 | 635,1 | Sucesso / confere |
+| A / `00000000E08G12` | auto / sync → CNPJWS | 16:21:53.911 | 1 / 200 | 511,5 | 566,3 | Sucesso / confere |
+
+O console imprime UTC; os horários acima foram convertidos para America/Sao_Paulo. Tempos medidos por Stopwatch: transporte inclui leitura/inspeção em memória, total inclui a operação da biblioteca. Não são benchmark ou promessa de latência.
+
+### Campos disponíveis e consistência da filial alfanumérica
+
+Nos quatro testes dirigidos, CNPJ retornado válido/equivalente ao solicitado, razão social compatível com Banco do Brasil S.A., situação ativa, endereço/logradouro e CEP presentes. CEP equivalente entre os serviços após retirar máscara, IBGE presente/coerente nos três contratos que o oferecem; ReceitaWS não o documenta nesse endpoint. CNAE principal com sete dígitos e um secundário em cada retorno. Capital social presente/coerente; abertura e data de situação coincidentes em2026-07-31, sem datas futuras. Simples e MEI expressamente negativos, preservados nos campos informados. Sem alerta de identidade, consistência ou fonte preenchida/modelo ausente nos campos inspecionados.
+
+| Campo / ausência | CNPJ.WS | ReceitaWS | BrasilAPI | CNPJá Open |
+|---|---|---|---|---|
+| CNPJ, razão social, situação, endereço, CEP | Presentes | Presentes | Presentes | Presentes |
+| Nome fantasia | Fonte null → modelo null | Fonte vazia → modelo vazio | Fonte vazia → modelo vazio | Fonte null → modelo null |
+| IBGE municipal | Presente | Não documentado/ausente no modelo | Presente | Presente |
+| CNAE principal / secundários | Presente / 1 item | Presente / 1 item | Presente / 1 item | Presente / 1 item |
+| IE | Lista vazia na fonte/modelo | Lista vazia no modelo; fora do contrato público | Lista vazia no modelo; fora do contrato documentado | Lista vazia no modelo; recurso comercial, fora do Open |
+| Simples / MEI | Negativo explícito / negativo explícito | Negativo explícito / negativo explícito | Negativo explícito / negativo explícito | Negativo explícito / negativo explícito |
+| Capital, abertura, data de situação | Presentes | Presentes | Presentes | Presentes |
+| Última atualização | 2026-11-14 | 2026-11-18 | Ausente, conforme contrato | 2026-11-24 |
+
+Fantasia null/vazia é informação ausente, sem sinal de falha de mapeamento. IE vazia não prova não contribuinte; ausência do recurso em outro contrato não é situação fiscal negativa. A filial tem CEP/datas distintos da matriz; não se copiam dados entre estabelecimentos. A consulta automática numérica reproduziu a cobertura CNPJWS da matriz (incluindo uma IE/UF DF/situação positiva informada); a automática alfanumérica reproduziu a cobertura CNPJWS da filial (fantasia null e IE vazia). Somente presença/formato/consistência nos campos observados foram conferidos, sem transcrever endereço completo, contatos, números de IE ou quadro societário. Sem certidão fiscal, validação externa dos códigos/descrições CNAE ou comparação postal/estadual integral.
+
+### Classificação de suporte e fallback
+
+| Provedor / endpoint público | Evidência documental anterior | Evidência H02.1 | Classificação operacional atual |
+|---|---|---|---|
+| CNPJ.WS | Não confirmado documentalmente | Dirigida sync HTTP200, CNPJ alfanumérico correspondente; auto sync também sucesso | **Confirmado por teste real autorizado** |
+| ReceitaWS | Confirmado por documentação oficial | Dirigida sync HTTP200, CNPJ alfanumérico correspondente | **Confirmado por teste real autorizado** |
+| BrasilAPI | Confirmado por documentação oficial | Dirigida sync HTTP200, CNPJ alfanumérico correspondente | **Confirmado por teste real autorizado** |
+| CNPJá Open | Não confirmado documentalmente | Dirigida sync HTTP200, CNPJ alfanumérico correspondente | **Confirmado por teste real autorizado** |
+
+Confirmação limitada ao identificador público, data e endpoint testados, não a todos os cadastros ou disponibilidade futura. A evidência documental anterior permanece separada; não se inventa documentação para CNPJ.WS/CNPJá. HTTP404/falha genérica, se ocorressem, não provariam incompatibilidade; nenhum deles foi recebido nesta etapa.
+
+Fallback automático preservou prioridade CNPJWS → ReceitaWS → BrasilAPI → CNPJA. Nas duas consultas, **CNPJWS retornou sucesso e só um GET foi enviado**; não houve HTTP aos demais, após sucesso. Portanto as consultas no modo automático foram homologadas com encerramento correto, mas **a transição real após falha não foi observada**, pois não ocorreu falha. Não se alterou prioridade, desabilitou provedor, induziu erro ou fez consulta extra para forçá-la. Transição após falha, cancelamentos, bloqueios, timeout e esgotamento continuam cobertos apenas pelos testes determinísticos existentes.
+
+### Validação e handoff H02.1
+
+Restore com auditoria configurada aprovado (`artifacts/h021-restore.log`). Rebuild Release completo dos cinco targets, build do console e seus20 cenários offline aprovados, **zero avisos e zero erros de compilação**. Sem supressões ou novas dependências. Os **450 casos existentes por framework** foram preservados e aprovados em net48/net481/net8.0/net9.0 (1800 execuções, zero falhas/ignorados). Logs `artifacts/h021-build.log`, `h021-console-build.log`, `h021-console-selftest.log`, `h021-test-<target>.log`; TRX `TestResults/H021/Final` (artefatos ignorados, sem respostas reais).
+
+Comandos: `dotnet restore GetCNPJ.sln`; `dotnet build GetCNPJ.sln -c Release --no-restore -t:Rebuild`; build do console Release e `--self-test`; `dotnet test tests/GetCNPJ.Tests/GetCNPJ.Tests.csproj -c Release -f <target> --no-build --settings tests/test.runsettings --results-directory TestResults/H021/Final --logger trx`, com `-- "RunConfiguration.DotNetHostPath=D:/Meus Projetos/GetCNPJ/artifacts/dotnet9/dotnet.exe"` em net9. Runtime9 global continua ausente; não se repetiu o comando global conhecido por abortar esse target. Framework4.8 executado sobre4.8.1; netstandard compilado. Aviso VSTest preexistente de VSTEST_ARTIFACTS_DIRECTORY permanece sem supressão, sem ser aviso de compilação.
+
+Nenhuma incompatibilidade de adaptador comprovada: não foi necessário alterar implementação, criar regressão sintética de defeito inexistente ou ajustar expectativas. Metadados/README atualizados para registrar evidência pontual alfanumérica, com limitações. H02/H02.1 concluídas no plano autorizado; revisão/CI remotos desta etapa complementar ainda pendentes. H03 não iniciada; versão inalterada, candidato histórico não regenerado, sem commit/push/merge/tag/publicação. Nova consulta/repetição exige autorização específica; saldo não utilizado do teto não autoriza outros testes. Após homologação/revisão de commit aprovado, regenerar candidato e repetir validações de empacotamento em etapa própria.
