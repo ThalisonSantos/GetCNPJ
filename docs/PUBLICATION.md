@@ -1,5 +1,9 @@
 # Checklist definitivo e sequência de publicação — 1.1.0
 
+**Estado em 2026-11-25: 1.1.0 publicada e concluída.** [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e [GitHub Release estável](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0), tag `v1.1.0`, commit `abaf152d756aa8283a43bf178cdc31dc7c724fd4`. Geração definitiva, inspeção, consumidores e validação pós-publicação concluídos; hashes e evidências em [RELEASE.md](RELEASE.md). **Não repetir este roteiro para gerar/publicar outro pacote1.1.0 ou mover/recriar a tag.** O restante deste arquivo é o procedimento histórico preparado antes da publicação; suas pendências e comandos não representam o estado atual ou nova autorização. O procedimento autorizado ao mantenedor previa Upload do NuGet.org, sem API key; nenhum comando de publicação foi executado neste encerramento.
+
+## Registro histórico — preparação anterior à publicação
+
 Preparado em **2026-11-24**. Este é um roteiro para execução futura, **não uma autorização**. Nesta preparação não houve commit, push, merge, tag, geração do pacote definitivo, GitHub Release ou upload NuGet. O workflow continua apenas restore/build/test. Cada operação externa depende da autorização separada do mantenedor.
 
 ## Evidências disponíveis e limites
