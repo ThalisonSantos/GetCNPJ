@@ -1,8 +1,8 @@
 # Progresso do desenvolvimento
 
-## Estado atual da preparação — 2026-11-24
+## Estado atual — 2026-11-25 — 1.1.0 publicada e concluída
 
-Preparação local1.1.0 concluída; publicação e pacote definitivo pendentes de autorizações/commit final/CI. Os registros cronológicos posteriores preservam o estado à época: pendências históricas encerradas pelas confirmações seguintes não são bloqueios atuais.
+GetCNPJ.Community 1.1.0 publicada no [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e na [GitHub Release estável](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0). Tag oficial `v1.1.0`, commit `abaf152d756aa8283a43bf178cdc31dc7c724fd4`. Os registros cronológicos preservam o estado à época: pendências históricas encerradas pelas confirmações seguintes não são bloqueios atuais. Evidências finais e limites consolidados em [docs/RELEASE.md](docs/RELEASE.md).
 - [x] Fork criado e clonado pelo mantenedor.
 - [x] Compilação original bem-sucedida, segundo o mantenedor.
 - [x] Branch develop criada e confirmada no GitHub.
@@ -15,11 +15,13 @@ Preparação local1.1.0 concluída; publicação e pacote definitivo pendentes d
 - [x] T04 — Timeout e fallback (revisada e validada remotamente).
 - [x] T05 — Recursos HTTP (revisada e validada remotamente).
 - [x] T06 — Dependências e provedores (CI remoto validado; revisão técnica parcial, conforme mantenedor).
-- [x] T07 — Identidade e preparação para publicação (revisão delimitada e CI remoto informados pelo mantenedor; publicação pendente).
+- [x] T07 — Identidade e preparação para publicação (escopo concluído; publicação e validação posteriores também concluídas).
 - [x] H01 — Nulabilidade e qualidade final 1.1.0 (revisão dos principais trechos/CI remoto informados pelo mantenedor).
 - [x] H02 — Homologação real dos provedores (H02 original com revisão delimitada/CI remoto; plano complementar H02.1 concluído localmente, com limitações documentadas).
 - [x] H02.1 — Concluída; revisão de relatórios/metadados e CI remoto informados pelo mantenedor (45470735591/a069e0d).
 - [x] H03 — Concluída: revisão ChatGPT/CI45475015057 informados; mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria, sem detalhes/métricas presumidos.
+- [x] Pacote definitivo gerado do commit aprovado, CI45481606695 informado pelo mantenedor; cinco builds sem avisos/erros, 1800 testes e 20 cenários offline aprovados.
+- [x] Publicação NuGet.org, GitHub Release estável e validação pós-publicação: 48 cenários nos consumidores, assinatura verificada e 14 entradas originais idênticas.
 
 ## Handoff inicial
 - Agente: ChatGPT.
@@ -287,6 +289,24 @@ Preparação local1.1.0 concluída; publicação e pacote definitivo pendentes d
 - Candidatos preservados: T07,229798bytes/hash04F2FB78207597463E4BFC71B38AEB57AA4E648B0DF56E7B5407E2F475F44EB6; H03,234174bytes/hash3DD07A96B6B29411B554496C79E1064B45AEEEBDB668AA324A9699B35F5A34FE. LICENSE SHA-256779E6F6DB397233CCD7AF0E7926846990E118613FB4BB2DA6A5BA9F18E4044F0. Nenhum nupkg novo/definitivo gerado. Alterações desta preparação ainda locais: exigem commit aprovado e CI antes da geração final.
 - Handoff: mantenedor revisar e autorizar separadamente versionamento/envio/merge/geração/tag/publicações conforme PUBLICATION.md. Não confundir CI2e676ae da H03 com CI do futuro commit final. Não executar consultas reais nem1.2.0. Preparação local concluída; distribuição pública e identificação/hash do pacote definitivo permanecem pendentes.
 - Revisão final do diff aprovada sem erros de whitespace; links locais conferidos, sintaxe do roteiro analisada sem execução e histórico anterior comparado integralmente com HEAD. Nenhum fonte funcional, metadado csproj, teste, ferramenta versionada, LICENSE ou workflow alterado. Os hashes dos candidatos e da licença foram reconferidos no encerramento; nenhum nupkg na pasta de preparação.
+
+## 2026-11-25 — Codex — Encerramento documental 1.1.0
+
+- Branch / base: develop sincronizada por avanço fast-forward de referência até main/`abaf152d756aa8283a43bf178cdc31dc7c724fd4`; ancestralidade e árvore limpa conferidas antes da troca. Nenhum merge, novo commit ou reescrita de histórico; origin/develop permanece sem push.
+- Estado: **encerramento documental concluído localmente**; versão **publicada e concluída** nos escopos T01–T07, H01, H02, H02.1 e H03. Alterações documentais aguardam revisão do mantenedor, sem commit/push/merge.
+- Publicação confirmada pelo mantenedor no [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e na [GitHub Release estável](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0). API GitHub reconferida nesta tarefa: `draft=false`, `prerelease=false`, tag oficial `v1.1.0` resolvida para o SHA aprovado. CI45481606695 do commit final informado pelo mantenedor; tag não movida ou recriada.
+- Evidência anterior de geração definitiva: cinco targets compilados zero avisos/erros, 1800 testes (450 por runtime) e 20 cenários offline aprovados. Validação pós-publicação: somente NuGet.org/cache novo, **48 cenários aprovados**, 24 net48/WinForms e 24 net8, com HTTP simulado e builds sem avisos/erros. Assinatura de repositório NuGet.org verificada; 14 entradas originais idênticas byte a byte, apenas `.signature.p7s` adicional. RepositoryCommit oficial e InformationalVersion nas cinco DLLs conferidos.
+
+| Artefato | Tamanho | SHA-256 |
+|---|---|---|
+| Original enviado | 227903 bytes | `210FDD0AADEA40680D03625F68E6D83E719D930DC3D55AAAAA914BFA2D1A22E0` |
+| Público assinado pelo NuGet.org | 240996 bytes | `E81F066C26CA85877CE4B93EA1D439F0F9F83E0AD3F2870D5B55E8914337A883` |
+
+- Alterações somente documentais: README com seis badges clicáveis, instalação pública e estado publicado; metadado documental do badge alfanumérico; AUDIT/ROADMAP/RELEASE/CHANGELOG sincronizados; notas definitivas e roteiro anterior identificado como histórico. Badges de versão/downloads/CI/licença/release consultam serviços; badge alfanumérico consulta JSON versionado, com alcance local/homologação pontual e sem alegar monitoramento das APIs. Seu novo endpoint estará acessível após envio autorizado da documentação.
+- Evidências locais anteriores preservadas em artifacts/Final-1.1.0-abaf152d756aa8283a43bf178cdc31dc7c724fd4 e artifacts/PostPublication-1.1.0-abaf152d756aa8283a43bf178cdc31dc7c724fd4; dados essenciais versionados em docs/RELEASE.md. Candidatos T07/H03, original, público e LICENSE preservados.
+- Limites mantidos: dados fiscais ausentes não são negativos, alfanumérico operacional apenas na amostra homologada, Framework4.8 testado sobre4.8.1 e netstandard apenas compilado; relato SysEmpresa sem métricas/cenários individuais presumidos.
+- Validação deste encerramento: restore com NuGetAudit/all aprovado após falha NU1900 de acesso no sandbox e repetição autorizada; rebuild Release dos cinco targets zero avisos/erros;450 testes aprovados em cada net48/net481/net8/net9 (1800, zero falhas/ignorados), net9 com host local9.0.23. Logs/TRX em artifacts/DocumentationClosure-1.1.0. Mensagem ambiental VSTEST_ARTIFACTS_DIRECTORY preservada, não é aviso de compilação. Links locais e seis badges conferidos estruturalmente; JSON do endpoint válido, exemplos C# idênticos aos anteriores e diff sem erros de whitespace. Não repetidos os20 cenários offline ou48 cenários dos consumidores neste encerramento documental; resultados anteriores distinguidos acima.
+- Handoff: mantenedor revisar somente as alterações documentais e autorizar separadamente eventual commit/push/merge. O endpoint novo do badge alfanumérico só ficará público após envio autorizado de docs/badges/cnpj-alfanumerico.json em develop; nenhuma publicação documental remota foi executada nesta tarefa. Tag local/remota oficial e hashes de LICENSE/T07/H03/original/público reconferidos; preservados. Sem alteração funcional/dependências/versão/binários publicados, consulta real, geração de pacote,1.2.0, commit/push/merge/tag ou nova publicação.
 
 ## Modelo para registros futuros
 Copiar a seção abaixo para cada tarefa/transferência entre agentes. Atualizar a checklist somente conforme evidência real.

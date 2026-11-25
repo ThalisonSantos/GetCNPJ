@@ -1,8 +1,19 @@
 # Roadmap — GetCNPJ
 
-Versões para planejamento interno, sujeitas à revisão de compatibilidade. Mantenedor aprovou GetCNPJ.Community 1.1.0 como identidade inicial do fork; nenhuma publicação autorizada nesta etapa.
+Versões futuras para planejamento interno, sujeitas à revisão de compatibilidade. **GetCNPJ.Community 1.1.0 publicada e concluída em 2026-11-25**; implementação de 1.2.0 não iniciada.
 
-## 1.1.0 — Estabilização
+## 1.1.0 — Estabilização — publicada e concluída
+
+[NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) · [GitHub Release estável](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0). Tag oficial `v1.1.0`, commit `abaf152d756aa8283a43bf178cdc31dc7c724fd4`. T01–T07, H01, H02, H02.1 e H03 concluídas nos respectivos escopos; revisões parciais e limites operacionais/ambientais preservados.
+
+Validação pós-publicação em cache novo exclusivamente do NuGet.org: **48 cenários aprovados**, 24 net48/WinForms e 24 net8, com HTTP simulado e builds sem avisos/erros. Assinatura de repositório verificada e **14 entradas originais idênticas byte a byte**; somente `.signature.p7s` adicional no público. RepositoryCommit e InformationalVersion corretos nas cinco DLLs.
+
+| Artefato | Tamanho | SHA-256 |
+|---|---|---|
+| Original enviado | 227903 bytes | `210FDD0AADEA40680D03625F68E6D83E719D930DC3D55AAAAA914BFA2D1A22E0` |
+| Público assinado pelo NuGet.org | 240996 bytes | `E81F066C26CA85877CE4B93EA1D439F0F9F83E0AD3F2870D5B55E8914337A883` |
+
+Histórico, candidatos preservados e limitações em [docs/RELEASE.md](docs/RELEASE.md). Não regenerar 1.1.0 nem mover ou recriar sua tag.
 
 | ID | Tarefa | Critérios de aceite |
 |---|---|---|
@@ -20,7 +31,7 @@ Versões para planejamento interno, sujeitas à revisão de compatibilidade. Man
 
 Ordem proposta: T01, T02, T03, T04, T05, T06, T07. A separação de CI e publicação deve ser feita antes de qualquer merge em main.
 
-Estado em 2026-11-24:
+Histórico do estado em 2026-11-24 — anterior à publicação, superado pelo encerramento acima:
 - T01 concluída local e remotamente. Mantenedor confirmou sucesso de todas as etapas do GitHub Actions na execução [45415710723](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45415710723), commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475.
 - T02 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45418466167](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45418466167), commit e4863f10bbd4da2bcddfba59a54364607373b0ea, informados pelo mantenedor. Suporte externo foi investigado documentalmente na T06; não houve testes reais.
 - T03 concluída local e remotamente: revisão pelo ChatGPT e GitHub Actions [45428236555](https://github.com/ThalisonSantos/GetCNPJ/actions/runs/45428236555), commit 45d4a6476a7a661da96877295679849efdd32c8a, informados pelo mantenedor. Protocolo legado separado continua não atômico por compatibilidade.
@@ -51,6 +62,6 @@ Critério de saída: build e testes aprovados nos ambientes pertinentes, compati
 - T14: automatizar release autorizada, documentação e exemplos de uso.
 
 ## Decisões pendentes
-- Publicação futura de GetCNPJ.Community 1.1.0 depende de autorização específica, nova conferência de disponibilidade do nome e artefato aprovado; identidade já aprovada pelo mantenedor.
+- Versão 1.1.0 encerrada, sem pendência de publicação. Qualquer versão futura exige planejamento, revisão e autorizações próprias; não iniciada nesta tarefa.
 - Suporte explícito a .NET 10/11 sem abandono do .NET Framework 4.8.
 - Políticas de cache e seleção de provedores.

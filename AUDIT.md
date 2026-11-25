@@ -2,7 +2,7 @@
 
 Data: 2026-11-24. Base: develop, commit ea643091f02534494b6b63887d923a474d904ad8.
 
-Registro inicial preservado: inspeção estática do projeto original, cuja compilação bem-sucedida foi informada pelo mantenedor. Naquela etapa não foram reproduzidos build/testes/consultas. As seções datadas seguintes registram a evolução e as validações posteriores; o estado final1.1.0 está na seção de preparação final, sem apagar resultados históricos.
+Registro inicial preservado: inspeção estática do projeto original, cuja compilação bem-sucedida foi informada pelo mantenedor. Naquela etapa não foram reproduzidos build/testes/consultas. As seções datadas registram a evolução; o estado atual é **1.1.0 publicada e concluída**, conforme o encerramento de 2026-11-25 abaixo, sem apagar resultados históricos.
 
 | ID | Prioridade | Estado | Evidência / ação recomendada |
 |---|---|---|---|
@@ -13,9 +13,27 @@ Registro inicial preservado: inspeção estática do projeto original, cuja comp
 | A05 | Alta | Auditado e resolvido localmente na T06 | NuGet Audit direto/transitivo anterior/final sem vulnerabilidades conhecidas reportadas. JSON 8.0.6 somente nos legados; net8/net9 usam framework. HTTP 4.3.4 removido por redundância, referência nativa Framework validada. Inventário e justificativas completas em docs/DEPENDENCIES.md. |
 | A06 | Alta | Resolvido na T01 e ampliado até H01/H03 | Projeto tests/GetCNPJ.Tests integrado e excluído da distribuição;450 casos por runtime aprovados na validação final, mais20 cenários offline. Três casos iniciais e evolução posteriores permanecem nos registros históricos; sem HTTP cadastral no CI. |
 | A07 | Alta | Resolvido na T01; validação remota informada pelo mantenedor | CI somente restore/build/test, sem pack, push ou segredo NuGet. Sucesso de todas as etapas informado para a execução 45415710723, commit 28ad05a1fe781658ce4faff5e2d4ccd3b1dc8475. |
-| A08 | Alta | Preparação T07/H03 concluída; definitivo/publicação pendentes | Identidade1.1.0, namespace/assembly e licença/créditos preservados; candidatos/hashes inspecionados e preservados. Homologação manual SysEmpresa relatada pelo mantenedor. Nome NuGet revalidado404 sem reserva garantida; checklist exige commit final aprovado/árvore limpa/CI antes do definitivo. Logo fora da distribuição; sem publicação. |
+| A08 | Alta | Resolvido; 1.1.0 publicada e validada | NuGet.org e GitHub Release estável v1.1.0, commit abaf152d756aa8283a43bf178cdc31dc7c724fd4. Pacote definitivo e público assinado distinguidos por hash/tamanho; 48 cenários pós-publicação, assinatura NuGet.org e 14 entradas originais idênticas. Identidade/MIT/créditos preservados; logo fora da distribuição. Evidências e limitações em docs/RELEASE.md. |
 | A09 | Alta | Auditado/corrigido na T06 e homologado pontualmente na H02/H02.1 | Matriz docs/PROVIDERS.md; tipos/nomes BrasilAPI e ID textual CNPJá corrigidos, identidade/erros JSON validados e ausência preservada. BrasilAPI/ReceitaWS com evidência documental alfanumérica; H02.1 confirma operação por teste real autorizado nos quatro para a amostra/data/endpoint. Sem garantia de cobertura integral, disponibilidade futura ou certificação fiscal. |
 | A10 | Média | H01 corrigida e validada remotamente conforme mantenedor; revisão dos principais trechos | 1275 avisos reproduzidos e resolvidos sem supressões; anotações públicas refletem ausência, DTOs/IDs/listas opcionais corrigidos e NRE/valores inventados cobertos por regressões. API CLR (307 entradas) preservada; 450 casos por target e rebuild dos cinco targets sem avisos/erros. Revisão não garante toda implementação externa ou operação de API real. |
+
+## Encerramento 1.1.0 — publicação e validação pós-publicação — 2026-11-25
+
+- Versão **publicada e concluída** no [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e na [GitHub Release](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0). Confirmação do mantenedor complementada por leitura da API GitHub nesta tarefa: release publicada, `draft=false`, `prerelease=false`; tag anotada `v1.1.0` resolvida para `abaf152d756aa8283a43bf178cdc31dc7c724fd4`. CI45481606695 do commit final aprovado informado pelo mantenedor.
+- Geração definitiva anterior em checkout limpo do SHA aprovado: auditoria direta/transitiva sem vulnerabilidades conhecidas reportadas, rebuild dos cinco targets sem avisos/erros, 450 testes por framework executável (1800) e 20 cenários offline aprovados. Candidatos T07/H03 preservados; nenhuma regeneração nesta tarefa.
+- Validação pós-publicação anterior, cujas evidências foram reconferidas: restore somente NuGet.org, cache novo isolado e fonte offline implícita do SDK excluída. **48 cenários aprovados** (24 net48/WinForms e 24 net8), HTTP simulado, builds zero avisos/erros; origem pública e DLLs consumidas conferidas. Assinatura de repositório NuGet.org verificada com trust store padrão, sem bypass TLS/assinaturas.
+- As **14 entradas originais** são idênticas byte a byte, inclusive nuspec, DLLs, documentos e MIT; público com 15 entradas pela adição de `.signature.p7s`. RepositoryCommit oficial e InformationalVersion `1.1.0+abaf152d756aa8283a43bf178cdc31dc7c724fd4` confirmados nas cinco DLLs.
+
+| Artefato | Tamanho | SHA-256 |
+|---|---|---|
+| Original enviado | 227903 bytes | `210FDD0AADEA40680D03625F68E6D83E719D930DC3D55AAAAA914BFA2D1A22E0` |
+| Público assinado pelo NuGet.org | 240996 bytes | `E81F066C26CA85877CE4B93EA1D439F0F9F83E0AD3F2870D5B55E8914337A883` |
+
+Evidências locais preservadas em artifacts/Final-1.1.0-abaf152d756aa8283a43bf178cdc31dc7c724fd4 e artifacts/PostPublication-1.1.0-abaf152d756aa8283a43bf178cdc31dc7c724fd4; resumo versionado em [docs/RELEASE.md](docs/RELEASE.md), sem depender desses diretórios ignorados para conhecer o resultado. A mudança de hash do ZIP é esperada pela assinatura e não constitui divergência do conteúdo.
+
+Limites mantidos: homologação alfanumérica pontual, sem SLA/certificação fiscal; passagem real após falha não observada; net48 sobre Framework4.8.1, netstandard compilado; relato SysEmpresa sem cenários ou métricas presumidos. Nesta etapa apenas documentação: develop avançada por fast-forward até main, sem merge ou reescrita; código, dependências, versão, LICENSE, tag e artefatos publicados preservados. Sem novas consultas reais, pacote, publicação ou início1.2.0. Registros anteriores abaixo são históricos.
+
+Validação do encerramento documental: restore auditado aprovado após falha de acesso NU1900 no sandbox; rebuild cinco targets zero avisos/erros e450 testes por runtime (1800 aprovações, zero falhas/ignorados), net9 com host local. Evidências em artifacts/DocumentationClosure-1.1.0. Links locais/badges/JSON e preservação dos exemplos C# conferidos, diff sem erros de whitespace; mensagem VSTest ambiental mantida, não é diagnóstico de compilação.20 cenários offline e48 cenários pós-publicação permanecem evidências das etapas anteriores, sem reexecução nesta tarefa. Endpoint documental novo do badge alfanumérico depende de envio autorizado, sem afirmar que já está público.
 
 ## Procedimento de auditoria
 Para cada item registrar evidência, reprodução, impacto, alteração proposta, testes de regressão e resultado. Não marcar problema como resolvido apenas porque o código foi modificado.

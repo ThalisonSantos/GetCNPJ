@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.1.0] — Preparada para publicação, ainda não publicada
+## [1.1.0] — 2026-11-25 — Publicada
 
-Primeira versão do fork independente **GetCNPJ.Community**, mantido por **Thalison Santos**, derivado de GetCNPJ de **Bruno da Cunha Felipe**. Licença MIT e copyright original preservados. Preparação final registrada em2026-11-24; sem data de publicação, tag ou GitHub Release criada nesta etapa.
+Primeira versão do fork independente **GetCNPJ.Community**, mantido por **Thalison Santos**, derivado de GetCNPJ de **Bruno da Cunha Felipe**. Licença MIT e copyright original preservados. Disponível no [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e na [GitHub Release estável v1.1.0](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0), commit `abaf152d756aa8283a43bf178cdc31dc7c724fd4`.
 
 ### Adicionado
 
@@ -39,7 +39,7 @@ Primeira versão do fork independente **GetCNPJ.Community**, mantido por **Thali
 - T01–T07, H01, H02, H02.1 e H03 concluídas nos escopos documentados. Revisões/CI remotos informados pelo mantenedor, com limites preservados em AUDIT.md/PROGRESS.md.
 - H02/H02.1: quatro consultas numéricas dirigidas e seis complementares autorizadas, com HTTP200/identidade correspondente. Operação alfanumérica pontual confirmada nos quatro provedores. Automáticas encerraram em CNPJWS; transição real após falha não observada, coberta por HTTP simulado.
 - H03: revisão ChatGPT e CI45475015057 para2e676ae4055cff9ab0497f2d644b8c2c305c7f0b informados. Mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria ante a original. Relato manual sem detalhes de casos/métricas/ambiente; não é benchmark ou certificação de todos os fluxos.
-- Candidatos T07/H03, caminhos, tamanhos e hashes preservados em docs/RELEASE.md. Nenhum pacote definitivo gerado nesta preparação: dependerá de commit final aprovado, árvore limpa, CI, inspeção, consumidores e autorizações externas separadas.
+- Candidatos T07/H03 preservados. Definitivo gerado uma única vez de checkout limpo do commit aprovado; cinco builds zero avisos/erros, 1800 testes e 20 cenários offline aprovados. Publicação e validação pós-publicação concluídas: 48 cenários nos consumidores net48/WinForms/net8, assinatura NuGet.org verificada e 14 entradas originais idênticas byte a byte. Somente a assinatura foi acrescentada ao público; hashes/tamanhos distintos registrados em docs/RELEASE.md.
 - Provedores sem SLA/cobertura fiscal garantidos; termos/cotas e informações ausentes permanecem aplicáveis. Framework4.8 testado localmente sobre4.8.1; netstandard compilado. Não houve consulta real nova nem implementação1.2.0 nesta preparação.
 
 ## [1.0.0] — Versão original herdada

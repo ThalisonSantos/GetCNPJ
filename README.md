@@ -1,10 +1,17 @@
 # GetCNPJ Community
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NuGet](https://img.shields.io/nuget/v/GetCNPJ.Community)](https://www.nuget.org/packages/GetCNPJ.Community)
+[![Downloads NuGet](https://img.shields.io/nuget/dt/GetCNPJ.Community)](https://www.nuget.org/packages/GetCNPJ.Community)
+[![GitHub Actions — main](https://img.shields.io/github/actions/workflow/status/ThalisonSantos/GetCNPJ/main.yml?branch=main&label=build%20main)](https://github.com/ThalisonSantos/GetCNPJ/actions/workflows/main.yml?query=branch%3Amain)
+[![Licença MIT](https://img.shields.io/github/license/ThalisonSantos/GetCNPJ)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/ThalisonSantos/GetCNPJ)](https://github.com/ThalisonSantos/GetCNPJ/releases/latest)
+[![CNPJ alfanumérico — validação local e homologação pontual](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FThalisonSantos%2FGetCNPJ%2Fdevelop%2Fdocs%2Fbadges%2Fcnpj-alfanumerico.json)](docs/PROVIDERS.md)
 
 Fork independente do [GetCNPJ de Bruno da Cunha Felipe](https://github.com/azumamagus/GetCNPJ), mantido por **Thalison Santos** em [ThalisonSantos/GetCNPJ](https://github.com/ThalisonSantos/GetCNPJ). Licença [MIT](LICENSE) e copyright original preservados. Sem afiliação oficial com a Receita Federal ou com os provedores.
 
-**GetCNPJ.Community 1.1.0 está preparada para publicação, ainda não publicada por esta preparação.** T01–T07, H01, H02, H02.1 e H03 foram concluídas nos escopos registrados. O mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria em relação à biblioteca original. Esse relato não contém métricas ou detalhes de testes individuais. O pacote definitivo será gerado somente de commit final aprovado, com árvore limpa e CI validado; os candidatos anteriores permanecem identificados no [procedimento de release](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md).
+**GetCNPJ.Community 1.1.0 está publicada e concluída**, disponível no [NuGet.org](https://www.nuget.org/packages/GetCNPJ.Community/1.1.0) e na [GitHub Release estável v1.1.0](https://github.com/ThalisonSantos/GetCNPJ/releases/tag/v1.1.0), do commit `abaf152d756aa8283a43bf178cdc31dc7c724fd4`. T01–T07, H01, H02, H02.1 e H03 foram concluídas nos escopos registrados. O mantenedor confirmou instalação, compilação e teste no SysEmpresa, funcionando normalmente, com percepção de melhoria em relação à biblioteca original. Esse relato não contém métricas ou detalhes de testes individuais. A validação pós-publicação aprovou 48 cenários com HTTP simulado nos consumidores net48/WinForms e net8; assinatura NuGet.org e conteúdo original conferidos no [relatório de release](docs/RELEASE.md).
+
+O badge alfanumérico acompanha o estado documental versionado: validação local e homologação real pontual dos provedores, com as limitações descritas abaixo; não representa monitoramento de disponibilidade das APIs.
 
 ## Compatibilidade e instalação
 
@@ -18,13 +25,19 @@ Fork independente do [GetCNPJ de Bruno da Cunha Felipe](https://github.com/azuma
 
 **Não instale GetCNPJ e GetCNPJ.Community simultaneamente**, inclusive por dependências transitivas: ambos fornecem a mesma DLL e os mesmos tipos. Remova a referência ao original e confira o grafo antes de migrar. Anotações nullable corrigidas podem exigir checagens/ajustes de overrides ao recompilar; assinaturas CLR existentes foram preservadas.
 
-Após publicação autorizada no NuGet.org:
+Instale o pacote público pelo NuGet.org:
 
 ```powershell
-dotnet add package GetCNPJ.Community --version 1.1.0
+dotnet add package GetCNPJ.Community --version 1.1.0 --source https://api.nuget.org/v3/index.json
 ```
 
-Até lá, a instalação local deve selecionar o **candidato H03**, em `artifacts/H03/packages`, com hash conferido, fonte mapeada e cache isolado conforme o [guia de integração](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/INTEGRATION.md). Não usar a pasta histórica `artifacts/packages`. Esses candidatos não substituem o futuro pacote definitivo.
+No Console do Gerenciador de Pacotes do Visual Studio, com NuGet.org selecionado:
+
+```powershell
+Install-Package GetCNPJ.Community -Version 1.1.0
+```
+
+Os candidatos T07/H03 são evidências históricas de homologação, não fontes de instalação da versão publicada. Para migração e configuração da aplicação, consulte o [guia de integração](docs/INTEGRATION.md).
 
 ## Validação local numérica e alfanumérica
 
@@ -125,6 +138,6 @@ System.Text.Json8.0.6 é referência apenas em netstandard2.0/net48/net481; net8
 
 Build dos cinco targets e **450 testes por framework executável** (net48/net481/net8/net9), mais **20 cenários offline** da ferramenta manual. Framework4.8 foi executado sobre4.8.1; netstandard é compilado, sem runtime próprio. Evidências e limites em [tests/README.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/tests/README.md), [HOMOLOGATION.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/HOMOLOGATION.md) e [RELEASE.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/docs/RELEASE.md). A homologação manual do SysEmpresa é relato do mantenedor, sem cenário individual ou métrica presumidos.
 
-CI realiza restore/build/test sem pack/publicação automática. Notas e checklist de1.1.0 são rascunhos locais até autorização das etapas externas. Planejamento futuro exclusivamente em [ROADMAP.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/ROADMAP.md); nenhuma funcionalidade1.2.0 é parte desta preparação.
+CI realiza restore/build/test sem pack/publicação automática. A versão 1.1.0 foi publicada e validada; [notas definitivas](docs/RELEASE_NOTES_1.1.0.md), hashes e evidências estão em [RELEASE.md](docs/RELEASE.md). O roteiro anterior em PUBLICATION.md é histórico e não deve ser repetido para gerar ou publicar outro pacote 1.1.0. Planejamento futuro exclusivamente em [ROADMAP.md](https://github.com/ThalisonSantos/GetCNPJ/blob/develop/ROADMAP.md); a implementação de 1.2.0 não foi iniciada.
 
 Para contribuir, ler AGENTS.md, trabalhar em develop/feature/*/fix/* e abrir revisão no [repositório do fork](https://github.com/ThalisonSantos/GetCNPJ). Relatos de falhas devem omitir dados pessoais/segredos. Mantenedor: Thalison Santos. Autor original: Bruno da Cunha Felipe. Logotipo fora da distribuição por ausência de comprovação de autorização específica.
